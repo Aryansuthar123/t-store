@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "@/styles/home/hero.module.css";
+import styles from "@/styles/Home/hero.module.css";
 // import Container from "../Container";
 import Slider from "./Slider"
 
