@@ -1,4 +1,4 @@
-import { response } from "express"
+// import { response } from "express"
 
 const getCategories = async () => {
     const response = await fetch('https://fakestoreapi.in/api/products/category');

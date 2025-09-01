@@ -1,7 +1,7 @@
-// import React from "react";
+import React from "react";
 import styles from "@/styles/home/hero.module.css";
 // import Container from "../Container";
-// import Slider from "./Slider"
+import Slider from "./Slider"
 
 //  export default function HeroSection() {
 //     return(
