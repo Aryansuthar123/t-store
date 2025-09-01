@@ -7,12 +7,10 @@ const getCategories = async () => {
 }
 
 
-const getProducts = async (products_id = null) => {
-    let API = 'https://fakestoreapi.in/api/products'
-    if(products_id =! null){
-        API += "/" + products_id;
-    }
-    const response = await fetch(API);
+const getProducts = async () => {
+    const response= await fetch('https://fakestoreapi.in/api/products');
+   
+ 
     const data = await response.json();
     return data.products; 
 }
