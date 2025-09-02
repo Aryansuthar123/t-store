@@ -1,4 +1,4 @@
-'use client';
+
 
 import { serve } from "inngest/next";
 import { inngest, syncUserCreation, syncUserUpdation, syncUserDeletion } from "@/Config/inngest";
