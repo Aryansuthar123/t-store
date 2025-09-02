@@ -1,4 +1,4 @@
-import { CartIcon } from "@/assets/assets";
+// import { CartIcon } from "@/assets/assets";
 import mongoose from "mongoose";
 import { unique } from "next/dist/build/utils";
 

@@ -11,7 +11,7 @@
   "dependencies": {
     "inngest": "^3.40.1",
     "mongoose": "^8.18.0",
-    "next": "15.5.0",
+    "next": "^15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-icons": "^5.5.0"
@@ -24,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.0",
+    "inngest-cli": "^1.11.9",
     "typescript": "^5"
   }
 }
