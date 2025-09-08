@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ProductProvider } from './context/ProductContext';
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

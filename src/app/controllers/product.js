@@ -1,4 +1,4 @@
-import Product from "../models/product";
+import Product from "../Models/product";
 import { NextResponse } from "next/server";
 
 // add product
