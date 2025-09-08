@@ -1,7 +1,7 @@
 import Container from "../Container" ;
 import React from "react";
 import ProductBox from "../ProductBox";
- export default async function Featuredproduct() {
+ export default async function FeaturedProduct() {
    const response = await fetch('https://fakestoreapi.in/api/products?limit=5')
    const data = await response.json();
     return(
