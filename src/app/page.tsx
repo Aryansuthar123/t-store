@@ -8,7 +8,7 @@ import { Features } from "tailwindcss";
       <>
         <HeroSection />
         <RecentlyAdded />
-        <FeaturedProduct />
+        {/* <FeaturedProduct /> */}
         
         
       </>
