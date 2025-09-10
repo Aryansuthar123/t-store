@@ -1,10 +1,10 @@
- // import { CartIcon } from "@/assets/assets";
-import { verify } from "crypto";
+//  import { CartIcon } from "@/assets/assets";
+// import { verify } from "crypto";
 import mongoose from "mongoose";
-import { unique } from "next/dist/build/utils";
-import { type } from "os";
 // import { unique } from "next/dist/build/utils";
-
+// import { type } from "os";
+// import { unique } from "next/dist/build/utils";
+// import User from "@/models/userModel";
 
 const userSchema  = new mongoose.Schema({
     username: {
@@ -35,6 +35,6 @@ const userSchema  = new mongoose.Schema({
     verifyTokenExpiry: Date,
 })
 
-const User = mongoose.models.user || mongoose.model('users', userSchema);
-
-export default User; 
+const User = mongoose.models.users || mongoose.model('users', userSchema);
+ 
+export default User;  

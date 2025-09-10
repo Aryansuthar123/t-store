@@ -13,19 +13,21 @@ export default function SignupPage() {
         password: "",
         username: "",
     })
-    const [buttonDisabled, setButtonDisables] = React.useState(false);
+    const [buttonDisabled, setButtonDisabled] = React.useState(false);
 
     const [loading, setLoading] = React.useState(false);
 
     const onSignup = async() => {
         try {
             setLoading(true);
-            const response = await axios.post("/api/user/signup", user)
-            router.push("/login")
+            const response = await axios.post("/api/users/signup", user);
+            console.log("Signup success:", response.data);
+            toast.success("Signup successful! Redirecting to login...");
+            router.push("/login");
         } catch (error) {
-            console.log("Signup faild", error.message)
+            console.log("Signup faild", error.message);
 
-            toast.error(error.message)
+            toast.error(error.message);
 
         }finally{
             setLoading(false);
@@ -35,9 +37,9 @@ export default function SignupPage() {
     useEffect(() => {
         if (user.email.length > 0 && user.password.length > 0
             && user.username.length > 0) {
-            setButtonDisables(false);
+            setButtonDisabled(false);
         } else {
-            setButtonDisables(true);
+            setButtonDisabled(true);
         }
     }, [user]);
 
@@ -71,9 +73,9 @@ export default function SignupPage() {
                 
                 <button onClick={onSignup}
                 className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none  focus:border-gray-600 text-black">
-                    {buttonDisabled ? "No singup" : "Signup"}
+                    {buttonDisabled ? "No signup" : "Signup"}
                 </button>
                 <Link href="/login">Visit login page</Link>
         </div>
-    )
+    ) 
 }

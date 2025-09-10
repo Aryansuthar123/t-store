@@ -1,13 +1,13 @@
 import connectDB from "../../../utils/database";
 import User from "../../../../models/userModel";
-import { NextRequest, NextResponse } from "next/server";
+import  {NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 connectDB();
 
 export async function POST(request: NextRequest) {
     try {
         const reqBody = await request.json()
-        const { username, login, password } = reqBody
+        const { username, email, password } = reqBody
         console.log(reqBody);
 
         //check if user alredy exists
