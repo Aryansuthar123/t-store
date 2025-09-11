@@ -44,7 +44,7 @@ export default function SignupPage() {
     }, [user]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen py-2">
+        <div className="flex flex-col items-center justify-center min-h-screen  py-2">
             <h1>{loading ? "Processing" : "Signup"}</h1>
             <hr />
                 <label htmlFor="username">Username</label >
@@ -72,7 +72,7 @@ export default function SignupPage() {
                 placeholder= "password"/>
                 
                 <button onClick={onSignup}
-                className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none  focus:border-gray-600 text-black">
+                className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none  focus:border-gray-600 text-red-600">
                     {buttonDisabled ? "No signup" : "Signup"}
                 </button>
                 <Link href="/login">Visit login page</Link>

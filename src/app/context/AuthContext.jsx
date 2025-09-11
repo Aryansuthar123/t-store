@@ -1,0 +1,18 @@
+// "use client"
+
+// import { onAuthStateChanged } from "firebase/auth";
+// import { createContext, useContext, useEffect, useState } from "react";
+// const AuthContext = createContext();
+// export default function AuthContextProvider({children}){
+    
+//     const [user, setUser] = useState(undefined);
+//     useEffect(()=>{
+//         const unsub = onAuthStateChanged(auth, (user)=> {
+//             if(user){
+//                 setUser
+//             }
+//         })
+//     }, [])
+//     return <AuthContext.Provider>{children}</AuthContext.Provider>;
+// }
+// export const useAuth = () => useContext(AuthContext);
