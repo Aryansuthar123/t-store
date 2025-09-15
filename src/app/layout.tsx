@@ -9,7 +9,7 @@ import LayoutWrapper from '@/components/LayoutWrapper'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 
-const hideHeaderRoutes = ["/signup", "/login"];
+const showHeaderRoutes = [];
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,7 +45,7 @@ export default function RootLayout({
               className={`${geistSans.variable} ${geistMono.variable} `}>
               <ProductProvider>
                 <LayoutWrapper>
-    
+                
                 {children}
                 </LayoutWrapper>
               </ProductProvider>

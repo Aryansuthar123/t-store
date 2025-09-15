@@ -3,17 +3,17 @@
 import { usePathname } from 'next/navigation';
 import Header from './Header';
 import Footer from './Footer';
+import { auth } from "@/lib/firebase";
 
-const hideHeaderRoutes = ['/signup', '/login']
+const showHeaderRoutes = ['/','/store']
 
-export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
+export default function LayoutWrapper({ children }) {
   const pathname = usePathname()
-  const hideHeader = hideHeaderRoutes.includes(pathname)
+  const showHeader = showHeaderRoutes.includes(pathname)
 
-  
   return (
     <>
-      {!hideHeader && <Header />}
+      {showHeader && <Header />}
       {children}
       <Footer />
     </>

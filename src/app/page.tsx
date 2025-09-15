@@ -1,14 +1,17 @@
 // app/page.tsx
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-
-export default async function RootPage() {
-  const cookieStore = await cookies();   // await lagao
-  const token = cookieStore.get("token");
-
-  if (token) {
-    redirect("/home");
-  } else {
-    redirect("/signup");
-  }
-}
+import HeroSection from "@/components/Home/HeroSection"
+import RecentlyAdded from "@/components/Home/RecentlyAdded"
+// import FeaturedProduct from "@/components/Home/FeaturedProduct"
+import React from "react";
+import { Features } from "tailwindcss";
+ export default function Home() {
+    return(
+      <>
+        <HeroSection />
+        <RecentlyAdded />
+        {/* <FeaturedProduct /> */}
+        
+        
+      </>
+    )
+ }

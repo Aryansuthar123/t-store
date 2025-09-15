@@ -1,7 +1,7 @@
 export default function page(){
     return(
         <main>
-            <h1>
+            <h1 >
                 Admin Panel
             </h1>
         </main>

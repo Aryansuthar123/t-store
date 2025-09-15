@@ -4,6 +4,9 @@ import React, { useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+
 
 export default function LoginPage() {
     const router = useRouter();
@@ -16,21 +19,19 @@ export default function LoginPage() {
     const [loading, setLoading] = React.useState(false);
 
     const onSignup = async () => {
-        try {
-            setLoading(true);
-            const response = await axios.post("/api/users/login", user);
-            console.log("Login success", response.data);
-            toast.success("Login seccess")
-            router.push("/home")
-        } catch (error) {
-            console.log("Signup faild", error.message)
-
-            toast.error(error.message)
-
-        } finally {
-            setLoading(false);
-        }
+    setLoading(true);
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password);
+        console.log("Firebase Login Success", userCredential.user);
+        toast.success("Login success");
+        router.push("/dashboard");
+    } catch (error) {
+        console.error("Firebase Login Error:", error.message);
+        toast.error("Login failed: " + error.message);
+    } finally {
+        setLoading(false);
     }
+};
 
     useEffect(() => {
         if (user.email.length > 0 && user.password.length > 0
@@ -63,7 +64,7 @@ export default function LoginPage() {
             <button onClick={onSignup}
                 className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none  focus:border-gray-600 text-black">
                     Login here </button>
-                <Link href="/login">Visit signup page</Link>
+                <Link href="/signup">Visit signup page</Link>
         </div>
     )
 

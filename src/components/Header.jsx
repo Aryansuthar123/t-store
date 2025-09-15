@@ -1,11 +1,13 @@
 import React from "react";
 import styles from "@/styles/header.module.css";
 import Container from "./Container";
-import {FiSearch, FiShoppingCart} from "react-icons/fi";
+import {FiSearch, FiShoppingCart, FiMenu} from "react-icons/fi";
 import Link from "next/link";
+
 
 export default function Header() {
   return (
+    
     <header className={`${styles.header} py-3 px-1 shadow`}>
       <Container className="flex justify-between items-center">
         
@@ -14,7 +16,8 @@ export default function Header() {
               T-Store<b className="text-black">.</b>
             </span>
           </div>
-          <div className={`${styles.searchBar} fles items-center`}>
+          
+          <div className={`${styles.searchBar} flex items-center`}>
             <input type="text"
             placeholder="Search fro products.."
             className={styles.searchInput}
@@ -27,7 +30,7 @@ export default function Header() {
       </Container>
     </header>
 
-
+  
   );
 };
 
