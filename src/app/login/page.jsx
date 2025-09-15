@@ -18,9 +18,10 @@ export default function LoginPage() {
     const [buttonDisabled, setButtonDisables] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
 
-    const onSignup = async () => {
+    const onLogin = async () => {
     setLoading(true);
     try {
+        console.log("Attempting login with:", user);
         const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password);
         console.log("Firebase Login Success", userCredential.user);
         toast.success("Login success");
@@ -61,7 +62,7 @@ export default function LoginPage() {
                 value={user.password}
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
                 placeholder="password" />
-            <button onClick={onSignup}
+            <button onClick={onLogin}
                 className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none  focus:border-gray-600 text-black">
                     Login here </button>
                 <Link href="/signup">Visit signup page</Link>

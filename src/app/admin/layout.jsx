@@ -6,7 +6,7 @@ import AdminLayout from "./components/AdminLayout";
 import { useRouter } from "next/navigation";
 import { CircularProgress } from "@nextui-org/react";
 
-export default function Layout({ cildren }) {
+export default function layout({ children }) {
   return (
     <AuthContextProvider>
       <AdminChecking>
@@ -15,7 +15,7 @@ export default function Layout({ cildren }) {
     </AuthContextProvider>
   )
 }
-function AdminChecking({Children}) {
+function AdminChecking({children}) {
   const {user, isLoading} = useAuth();
   const router = useRouter();
 

@@ -46,7 +46,7 @@ useEffect(() => {
       </div>
       <section className="flex-1 bg-amber-50 flex flex-col min-h-screen">
         <AdminHeader toggleSidebar={toggleSidebar} />
-          <section className="flex-1 bg-[#eff3f4]">{children}</section>
+          <section className="flex-1 bg-[#eff3f4] p-6">{children}</section>
          
         </section>
     </main>

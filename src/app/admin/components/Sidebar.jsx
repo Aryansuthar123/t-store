@@ -1,14 +1,16 @@
 
 "use client";
-import { icons } from "lucide-react";
+import { icons, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { LayoutDashboard, Boxes, LogOut } from "lucide-react";
+import { LayoutDashboard, Boxes, LogOut, Layers2} from "lucide-react";
 import { usePathname } from "next/navigation";
-
 import { toast } from 'react-hot-toast';
-
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase"; 
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
+  const router = useRouter();
   const menuList = [
     {
       name: "Dashboard",
@@ -20,30 +22,20 @@ export default function Sidebar() {
       link: "/admin/products",
       icon: <Boxes className="h-5 w-6 text-gray-700 group-hover:text-black" />
     },
-    
     {
-      name: "Products",
-      link: "/admin/products",
-      icon: <Boxes className="h-5 w-6 text-gray-700 group-hover:text-black" />
+      name: "Categories",
+      link: "/admin/categories",
+      icon: <Layers2  className="h-5 w-6 text-gray-700 group-hover:text-black" />
     },
     {
-      name: "Products",
-      link: "/admin/products",
-      icon: <Boxes className="h-5 w-6 text-gray-700 group-hover:text-black" />
-    },
-    {
-      name: "Products",
-      link: "/admin/products",
-      icon: <Boxes className="h-5 w-6 text-gray-700 group-hover:text-black" />
-    },{
-      name: "Products",
-      link: "/admin/products",
-      icon: <Boxes className="h-5 w-6 text-gray-700 group-hover:text-black" />
+      name: "Admins",
+      link: "/admin/admins",
+      icon: <ShieldCheck className="h-5 w-6 text-gray-700 group-hover:text-black" />
     },
       
   ]
   return (
-    <section className=" flxed left-0 top-0 flex flex-col gap-10 bg-white  py-3 h-screen  overflow-hidden w-[260px]">
+    <section className=" flxed left-0 top-0 flex flex-col gap-10 bg-white px-2  py-3 h-screen  overflow-hidden w-[260px]">
       <div className="flex justify-center">
         <img className="h-12" src="/favicon.ico" alt="Logo" />
       </div>
@@ -59,13 +51,13 @@ export default function Sidebar() {
       {
         try {
           await toast.promise(signOut(auth),{
-            error: (e) => e?.message,
             loading: "Loading...!",
             success: "Successfully logged out",
-
+            error: (e) => e?.message || "Logout failed",
           });
+          router.push("/login")
         } catch (error) {
-          toast.error(error?.message);
+          toast.error(error?.message || "Logout failed");
         }
       }} className="flex gap-2 items-center px-3 py-1 hover:bg-indigo-100 rounded justify-center ease-soft-spring transition-all 
         duration-600">
