@@ -24,6 +24,7 @@ function AdminChecking({children}) {
       router.push("/login");
     } 
   }, [user, isLoading]);
+  
   if (isLoading) {
     return(
       <div className="h-screen w-screen flex justify-center items-center">

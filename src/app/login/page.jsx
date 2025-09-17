@@ -4,8 +4,7 @@ import React, { useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+
 
 
 export default function LoginPage() {
@@ -20,18 +19,33 @@ export default function LoginPage() {
 
     const onLogin = async () => {
     setLoading(true);
-    try {
-        console.log("Attempting login with:", user);
-        const userCredential = await signInWithEmailAndPassword(auth, user.email, user.password);
-        console.log("Firebase Login Success", userCredential.user);
-        toast.success("Login success");
-        router.push("/dashboard");
-    } catch (error) {
-        console.error("Firebase Login Error:", error.message);
-        toast.error("Login failed: " + error.message);
-    } finally {
-        setLoading(false);
+     try {
+    console.log("Attempting login with:", user);
+
+    // MongoDB login API call
+   const res = await axios.post("/api/users/login", user, {
+  withCredentials: true, 
+});
+
+    if (res.data.success) {
+      toast.success("Login success");
+      router.push("/admin"); 
+    } else {
+      toast.error(res.data.error || "Login failed");
     }
+
+  } catch (error) {
+  const errMsg =
+    error && error.response && error.response.data
+      ? error.response.data.error || JSON.stringify(error.response.data)
+      : error.message || "Login failed";
+
+  console.error("Login Error:", errMsg);
+  toast.error(errMsg);
+} finally {
+  setLoading(false);
+}
+
 };
 
     useEffect(() => {

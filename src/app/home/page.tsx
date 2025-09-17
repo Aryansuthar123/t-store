@@ -8,7 +8,7 @@
    const token = cookieStore.get("token");
  
    if (token) {
-     redirect("/dashboard");
+     redirect("/admin");
    } else {
      redirect("/signup");
    }

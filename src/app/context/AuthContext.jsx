@@ -1,28 +1,48 @@
 'use client';
 
-import { onAuthStateChanged } from "firebase/auth";
+
 import { createContext, useContext, useEffect, useState, setIsLoading } from "react";
-import {auth} from "@/lib/firebase"
+import axios from "axios";
 
 const AuthContext = createContext();
+
 export default function AuthContextProvider({children}){
-    
-    const [user, setUser] = useState(undefined);
+    const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true); 
-    useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (firebaseUser)=> {
-            if(firebaseUser){
-                setUser(firebaseUser);
-            } else  {
-                setUser(null);
-            }
-            setIsLoading(false);
-        });
-        return () => unsub();
-    }, [])
-    return <AuthContext.Provider value={{
+
+useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const res = await axios.get("/api/users/me", { withCredentials: true });
+        if (res.data.success) {
+          setUser(res.data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkUser();
+  }, []);
+
+  const logout = async () => {
+    try {
+      await axios.post("/api/users/logout"); 
+      setUser(null);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  
+    return( <AuthContext.Provider value={{
         user,
-        isLoading
-    }}>{children}</AuthContext.Provider>;
+        isLoading,
+        setUser,
+        logout
+    }}>{children}</AuthContext.Provider>);
 }
 export const useAuth = () => useContext(AuthContext);

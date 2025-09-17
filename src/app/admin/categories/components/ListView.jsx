@@ -4,4 +4,4 @@ export default function ListView(){
             <h1>Categories</h1>
         </div>
     )
-}
+}   

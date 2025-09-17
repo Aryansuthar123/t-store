@@ -2,7 +2,7 @@ export default function page(){
     return(
         <main>
             <h1 >
-                Dashbord
+                Admin
             </h1>
         </main>
     )

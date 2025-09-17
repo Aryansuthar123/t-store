@@ -4,10 +4,12 @@ import { icons, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { LayoutDashboard, Boxes, LogOut, Layers2} from "lucide-react";
 import { usePathname } from "next/navigation";
-import { toast } from 'react-hot-toast';
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase"; 
+import { toast } from 'react-hot-toast'; 
+import axios from "axios";
 import { useRouter } from "next/navigation";
+
+
+
 
 export default function Sidebar() {
   const router = useRouter();
@@ -50,12 +52,9 @@ export default function Sidebar() {
       <button onClick={async () =>
       {
         try {
-          await toast.promise(signOut(auth),{
-            loading: "Loading...!",
-            success: "Successfully logged out",
-            error: (e) => e?.message || "Logout failed",
-          });
-          router.push("/login")
+          await axios.post("/api/logout"); 
+      toast.success("Successfully logged out");
+      router.push("/login");
         } catch (error) {
           toast.error(error?.message || "Logout failed");
         }
