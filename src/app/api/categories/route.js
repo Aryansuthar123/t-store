@@ -1,10 +1,17 @@
 import connectDB from "../../utils/database";
 import Category from "@/Models/Category";
-import Product from "../../../models/Prodect";
 import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
+
+import fs from "fs";
 import path from "path";
 
+const uploadDir = path.join(process.cwd(), "public/uploads");
+
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 export async function POST(req) {
   try {
     await connectDB();
@@ -21,7 +28,7 @@ export async function POST(req) {
       );
     }
 
-    // ✅ image ko server pe save karo (public/uploads)
+    
     const bytes = await image.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
@@ -30,34 +37,35 @@ export async function POST(req) {
 
     await writeFile(filePath, buffer);
 
-    const imageUrl = `/uploads/${image.name}`; // ✅ sirf path DB me store hoga
+    const imageUrl = `/uploads/${image.name}`;
 
-    // ✅ Category create
+    
     const newCategory = await Category.create({
       name,
       slug,
       image: imageUrl,
     });
 
-    // ✅ Linked Product bhi create karo
-    const newProduct = await Product.create({
-      title: name,
-      description: `${name} auto-generated product`,
-      category: name,
-      price: 0,
-      image: imageUrl,
-    });
-
     return NextResponse.json({
       success: true,
-      message: "Category and linked Product created",
+      message: "Category created successfully",
       category: newCategory,
-      product: newProduct,
     });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
     );
+  }
+}
+
+
+export async function GET() {
+  try {
+    await connectDB();
+    const categories = await Category.find();
+    return NextResponse.json({ success: true, categories });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

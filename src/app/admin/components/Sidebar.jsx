@@ -37,7 +37,7 @@ export default function Sidebar() {
       
   ]
   return (
-    <section className=" flxed left-0 top-0 flex flex-col gap-10 bg-white px-2  py-3 h-screen  overflow-hidden w-[260px]">
+    <section className=" flxed left-0 top-0 flex flex-col gap-10 bg-white px-2  py-3 h-screen  overflow-hidden w-[260px] z-[1000]">
       <div className="flex justify-center">
         <img className="h-12" src="/favicon.ico" alt="Logo" />
       </div>
@@ -48,21 +48,28 @@ export default function Sidebar() {
            
           })}
       </ul>
-     <div className=" p-2 flex justify-center mt-4"> 
-      <button onClick={async () =>
-      {
-        try {
-          await axios.post("/api/logout"); 
-      toast.success("Successfully logged out");
-      router.push("/login");
-        } catch (error) {
-          toast.error(error?.message || "Logout failed");
+    <div className="p-2 flex justify-center mt-4"> 
+  <button
+    onClick={async () => {
+      try {
+        const res = await axios.post("/api/users/logout");
+
+        if (res.data.success) {
+          toast.success(res.data.message || "Successfully logged out");
+          router.push("/login");
+        } else {
+          toast.error(res.data.message || "Logout failed");
         }
-      }} className="flex gap-2 items-center px-3 py-1 hover:bg-indigo-100 rounded justify-center ease-soft-spring transition-all 
-        duration-600">
-        <LogOut className=" h-5 w-5"/>Logout
-        </button>
-      </div>
+      } catch (error) {
+        toast.error(error?.response?.data?.message || "Logout failed");
+      }
+    }}
+    className="flex gap-2 items-center px-3 py-1 hover:bg-indigo-100 rounded justify-center ease-soft-spring transition-all duration-600"
+  >
+    <LogOut className="h-5 w-5" /> Logout
+  </button>
+</div>
+
     </section>
   );
 }

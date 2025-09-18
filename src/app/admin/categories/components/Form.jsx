@@ -4,7 +4,7 @@ import { useState } from "react";
 export default function Form() {
   const [data, setData] = useState({});
   const [image, setImage] = useState(null);
-
+  const [isLoading, setISLoading] = useState(false); 
   const handleData = (key, value) => {
     setData((preData) => ({
       ...(preData ?? {}),
@@ -12,14 +12,11 @@ export default function Form() {
     }));
   };
 
-  const handleCreate = async () => {
-    try {
+  const handleCreate = async () => {try {
       if (!data?.name || !data?.slug || !image) {
         alert("All fields are required!");
         return;
       }
-
-      // FormData banani hai kyunki image bhej rahe ho
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("slug", data.slug);
@@ -34,7 +31,7 @@ export default function Form() {
       console.log("API Response:", result);
 
       if (result.success) {
-        alert("Category Created Successfully ✅");
+        alert("Category Created Successfully ");
         setData({});
         setImage(null);
       } else {
@@ -44,9 +41,10 @@ export default function Form() {
       console.error("Error creating category:", err);
     }
   };
+    
 
   return (
-    <div className="flex flex-col gap-3 bg-white rounded-xl p-4 w-full md:w-[400px] ">
+    <div className="flex flex-col gap-3 bg-white rounded-xl p-3 w-full md:w-[350px] lg:w-[400px]">
       <h1 className="font-semibold ">Create Categories</h1>
       <form
         onSubmit={(e) => {

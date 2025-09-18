@@ -22,26 +22,22 @@ export default function LoginPage() {
      try {
     console.log("Attempting login with:", user);
 
-    // MongoDB login API call
+    
    const res = await axios.post("/api/users/login", user, {
   withCredentials: true, 
 });
 
-    if (res.data.success) {
-      toast.success("Login success");
-      router.push("/admin"); 
-    } else {
-      toast.error(res.data.error || "Login failed");
+   if (res.data.success) {
+      toast.success("Login successfully");  
+      router.push("/admin");                   
     }
-
   } catch (error) {
   const errMsg =
-    error && error.response && error.response.data
-      ? error.response.data.error || JSON.stringify(error.response.data)
-      : error.message || "Login failed";
+    error?.response?.data?.error   
+      || error?.message
+      || "Login failed";
 
-  console.error("Login Error:", errMsg);
-  toast.error(errMsg);
+  toast.error(errMsg);  
 } finally {
   setLoading(false);
 }

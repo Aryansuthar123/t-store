@@ -5,6 +5,7 @@ import AuthContextProvider, {useAuth} from "../context/AuthContext";
 import AdminLayout from "./components/AdminLayout";
 import { useRouter } from "next/navigation";
 import { CircularProgress } from "@nextui-org/react";
+import { Toaster } from "react-hot-toast";
 
 export default function layout({ children }) {
   return (
