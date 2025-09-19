@@ -3,6 +3,10 @@ import { Button } from "@nextui-org/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { deleteCategory } from "@/lib/categoryService";
+import { updateCategory } from "@/lib/categoryService";
+import { useRouter } from "next/navigation";
+
 
 export default function ListView() {
   const [categories, setCategories] = useState([]);
@@ -48,17 +52,33 @@ return (
 
 function Row({cat, index}) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter(); 
 
-  const handleDelete = async ()=> {
+  const handleDelete = async (id)=> {
+    if (!confirm("Are you sure?") ) return;
     setIsDeleting(true);
+    
     try {
-      await deletCategory({ id: cat?.id });
+      await deleteCategory(id);
       toast.success("Successfully Deleted");
+      fetchCategories();
     } catch (error) {
       toast.error(error?.message); 
     }
     setIsDeleting(false)
   };
+
+
+  const handleEdit = (id) => {
+   router.push(`/admin/categories?id=${cat._id}`);
+  // try {
+  //   const edit = await editCategory(id, { name: "editing Name" });
+  //   toast.success("Successfully Updated");
+  //   fetchCategories(); 
+  // } catch (error) {
+  //   toast.error(error?.message || "Error editing category");
+  // } 
+};
    return (
             <tr key={cat._id} className="text-center hover:bg-gray-50">
               <td className="p-2 border">{index + 1}</td>
@@ -71,15 +91,17 @@ function Row({cat, index}) {
               </td>
               <td className="p-2 border font-medium">{cat.name}</td>
               <td className="p-2 flex justify-center border-r-lg gap-2 text-gray-600">
-                <button
+                <Button
                   onClick={() => handleEdit(cat._id)}
+                  isDisabled={isDeleting}
+                  isIconOnly
                   className="p-2 bg-gray-200 rounded hover:bg-gray-300">
                   <Pencil size={16} />
-                </button>
+                </Button>
                 <Button
-                  onClick={handleDelete}
+                  onClick={() => handleDelete(cat._id)}  
                   isLoading={isDeleting}
-                  isDisable={isDeleting}
+                  isDisabled={isDeleting}
                   isIconOnly
                   className="p-2 bg-red-500 text-white rounded hover:bg-red-600">
                   <Trash2 size={16} />

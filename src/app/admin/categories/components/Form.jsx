@@ -1,10 +1,39 @@
 "use client";
-import { useState } from "react";
+import { getCategories , getCategory} from "@/lib/categoryService";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Form() {
   const [data, setData] = useState({});
   const [image, setImage] = useState(null);
   const [isLoading, setISLoading] = useState(false); 
+
+  const searchParems = useSearchParams();
+  const id = searchParems.get('id');
+  const fetchData = async()=>{
+    try {
+      const res = await getCategory(id);
+    console.log("Fetched category:", res);
+      if (!res) {
+        toast.error("Category not found!");
+
+      }else{
+        setData(res);
+        
+      }
+    } catch (error) {
+      toast.error(error?.message)
+    }
+  }
+useEffect(() => {
+  console.log("useEffect triggered with id:", id);
+  if (id) {
+    fetchData();
+  }
+}, [id]);
+
+
   const handleData = (key, value) => {
     setData((preData) => ({
       ...(preData ?? {}),
@@ -12,15 +41,18 @@ export default function Form() {
     }));
   };
 
-  const handleCreate = async () => {try {
-      if (!data?.name || !data?.slug || !image) {
-        alert("All fields are required!");
+
+const handleCreate = async () => {try {
+      if (!data?.name || !data?.slug ) {
+        alert("Name and slug are required!");
         return;
       }
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("slug", data.slug);
-      formData.append("image", image);
+     if (image) {
+           formData.append("image", image); 
+            }
 
       const res = await fetch("/api/categories", {
         method: "POST",
@@ -41,11 +73,41 @@ export default function Form() {
       console.error("Error creating category:", err);
     }
   };
-    
+const handleEdit = async () => {
+    try {
+      if (!data?.name || !data?.slug) {
+        alert("Name and Slug are required!");
+        return;
+      }
+ const res = await fetch(`/api/categories/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: data.name,
+        slug: data.slug,
+      }),
+    });
+    const result = await res.json();
+    console.log("API Response:", result);
+
+    if (result.success) {
+      alert("Category Updated Successfully");
+      setData({});
+      setImage(null);
+    } else {
+      alert("Error: " + result.error);
+    }
+  } catch (err) {
+    console.error("Error updating category:", err);
+  }
+};
+
 
   return (
     <div className="flex flex-col gap-3 bg-white rounded-xl p-3 w-full md:w-[350px] lg:w-[400px]">
-      <h1 className="font-semibold ">Create Categories</h1>
+      <h1 className="font-semibold ">{id ? "Edit" : "Create" } Category</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -55,7 +117,7 @@ export default function Form() {
       >
         <div className="flex flex-col gap-1">
           <label htmlFor="category-image" className="text-gray-500 text-sm">
-            Image <span className="text-red-500">*</span>
+            Image (optional)<span className="text-red-500">*</span>
           </label>
           {image && (
             <div className="flex justify-center items-center p-3">
@@ -109,7 +171,7 @@ export default function Form() {
           type="submit"
           className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
         >
-          Create
+          {id ? "Update" : "Create"}
         </button>
       </form>
     </div>
