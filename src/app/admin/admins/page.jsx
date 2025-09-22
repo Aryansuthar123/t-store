@@ -4,7 +4,7 @@ import ListView from "./components/ListView";
 
 export default function page() {
     return(
-        <main className="flex flex-1 flex-col gap-6 md:flex-row  items-center ">
+        <main className="flex gap-5 flex-col md:flex-row  items-start p-2">
             <Form />
             <ListView />
         </main>

@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { ProductProvider } from './context/ProductContext';
 import LayoutWrapper from '@/components/LayoutWrapper'
 import 'bootstrap/dist/css/bootstrap.min.css'
-
+import { Toaster } from "react-hot-toast";
 
 const showHeaderRoutes = [];
 
@@ -45,8 +45,8 @@ export default function RootLayout({
               className={`${geistSans.variable} ${geistMono.variable} `}>
               <ProductProvider>
                 <LayoutWrapper>
-                
-                {children}
+                <Toaster position="top-right" /> 
+                  {children}
                 </LayoutWrapper>
               </ProductProvider>
             </body>
