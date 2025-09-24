@@ -1,8 +1,9 @@
 import Link from "next/link";
+import ListView from "../products/components/ListView"
 
 export default function Page() {
     return(
-        <main className="p-5">
+        <main className=" flex flex-col gap-4 p-5">
             
             <div className="flex justify-center items-center gap-x-4">
                  <h1 className="text-xl ">Products</h1>
@@ -12,6 +13,7 @@ export default function Page() {
                     </button>
                  </Link>
             </div>
+            <ListView />
         </main>
     );
 }

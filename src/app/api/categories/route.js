@@ -46,7 +46,7 @@ export async function POST(req) {
       image: imageUrl,
     });
 
-    return NextResponse.json({
+    return NextResponse.json({  
       success: true,
       message: "Category created successfully",
       category: newCategory,

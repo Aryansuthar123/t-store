@@ -4,10 +4,11 @@ import Product from '../Components/product';
 import  {useProductContext} from '../context/ProductContext'
 
 const page = () => {
-    const {data} = useProductContext();
-    // console.log("context hook = ", useProductContext())
+    const {products} = useProductContext();
+   
     return (
-        <div><Product items={data}/></div>
+        <div><Product items={products}/>
+        </div>
     )
 }
 

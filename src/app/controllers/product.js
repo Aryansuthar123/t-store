@@ -1,21 +1,30 @@
-import Product from "../Models/product";
+import Product from "../../models/Prodect";
 import { NextResponse } from "next/server";
 
-// add product
-export const createProduct  = async (req) => {
-        const body = await req.json();                                                                                                                                                                                                                                       
-        const newProduct = await Product.create(body);
+export async function getProducts() {
+  try {
+    const products = await Product.find();
+    return NextResponse.json({ success: true, products });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+}
 
-  return NextResponse.json({
-    message:"Product added Successfully..!",
-    newProduct,
-  });
-};    
+export async function createProduct(req) {
+  try {
+    const body = await req.json();
+    console.log("Incoming Body:", body);
+    const newProduct = await Product.create(body);
 
-// get all products
-export const getProducts = async (req) => {
-  const product = await Product.find();
-  return NextResponse.json({
-    message: "All product Fetched..!", success: true, product,
-  });
-};
+    return NextResponse.json({ success: true, product: newProduct });
+  } catch (error) {
+    console.error("Product creation failed:", error);
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+}

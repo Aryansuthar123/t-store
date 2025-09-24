@@ -1,8 +1,10 @@
+'use client'
+import { ProductProvider } from '../context/ProductContext';
+
 export default function StoreLayout({ children }) {
   return (
-    <div>
-      
+    <ProductProvider>
       {children}
-    </div>
+    </ProductProvider>
   );
 }

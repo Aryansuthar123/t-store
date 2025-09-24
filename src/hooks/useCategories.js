@@ -1,8 +1,8 @@
 "use client";
 import useSWR from "swr";
-import { getCategories } from "@/lib/categoryService"; // ✅ tumhara service
+import { getCategories } from "@/lib/categoryService"; 
 
-// SWR fetcher
+
 const fetcher = async () => {
   return await getCategories();
 };

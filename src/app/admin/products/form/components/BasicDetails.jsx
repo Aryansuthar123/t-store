@@ -9,7 +9,7 @@ import { useCategories } from "@/hooks/useCategories";
     return (
         <section className="flex flex-col flex-1   gap-2 bg-white  rounded-lg px-4 border">
             
-            <h1 className="font-semibold text-xs">BasicDetails</h1>
+            <h1 className="font-semibold text-xl">BasicDetails</h1>
             
             <div className="flex flex-col gap-1">
                 <label className="text-gray-500 text-xs" htmlFor="product-title">
@@ -52,9 +52,9 @@ import { useCategories } from "@/hooks/useCategories";
                     placeholder="Enter category"
                     id="product-category"
                     name="product-category"
-                    value={data?.categoryID ?? ""}
+                    value={data?.category ?? ""}
                     onChange={(e) => {
-                        handleData("categoryID", e.target.value);
+                        handleData("category", e.target.value);
                     }}
                     className="border px-4 py-2 rounded-lg w-full outline-none"
                      required>

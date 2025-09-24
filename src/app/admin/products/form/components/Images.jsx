@@ -1,5 +1,5 @@
 "use client";
-export default function BasicDetails({ data, setFeatureImage, featureImage ,imageList, setImageList}) {
+export default function Images({ data, setFeatureImage, featureImage ,imageList, setImageList}) {
     return (
         <section className="flex-1 flex flex-col gap-2 bg-white  rounded-lg px-4 border">
             <h1 className="font-semibold text-xs">Images</h1>
@@ -56,7 +56,7 @@ export default function BasicDetails({ data, setFeatureImage, featureImage ,imag
                         for(let i = 0 ; i < e.target.files.length; i++) {
                             newFiles.push(e.target.files[i]);
                         }
-                        setImageList(newFiles);
+                        setImageList((prev) => [...prev, ...newFiles]);
 
                     }}
                     className="border px-4 py-2 rounded-lg w-full outline-none" />

@@ -13,8 +13,8 @@ export const ProductProvider = ({ children }) => {
 
     const fetchAllProducts = async () => {
         const api = await axios.get(`${API_BASE_URL}/products`);
-        setProducts(api.data.product)
-        setData(api.data.product)
+        setProducts(api.data.products)
+      
 
         console.log("fetched all products = ", products);
     }
@@ -22,6 +22,10 @@ export const ProductProvider = ({ children }) => {
         fetchAllProducts();
 
     }, []);
+    
+      const addProduct = (newProduct) => {
+        setProducts((prev) => [...prev, newProduct]); 
+    };
     console.log("fetched all products = ", products);
     return (
         <ProductContext.Provider value={{products, data}}>{children}</ProductContext.Provider>
@@ -30,7 +34,6 @@ export const ProductProvider = ({ children }) => {
 
 
 
-// custom Hook from context
 
 export const useProductContext = () => useContext(ProductContext);
 

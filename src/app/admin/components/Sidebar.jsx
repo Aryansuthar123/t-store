@@ -37,7 +37,7 @@ export default function Sidebar() {
       
   ]
   return (
-    <section className=" flxed left-0 top-0 flex flex-col gap-10 bg-white px-2  py-3 h-screen  overflow-hidden w-[260px] z-[1000]">
+    <section className="sticky top-0 flxed left-0  flex flex-col gap-10 bg-white px-2  py-3 h-screen  overflow-hidden w-[260px] z-[1000]">
       <div className="flex justify-center">
         <img className="h-12" src="/favicon.ico" alt="Logo" />
       </div>

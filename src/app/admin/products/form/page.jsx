@@ -5,12 +5,26 @@ import Images from "./components/Images"
 import Description from "./components/Description"
 import { Button } from "@nextui-org/react";
 import toast from "react-hot-toast";
+import { createNewProduct } from "@/lib/productService"; 
+
+import { useSearchParams } from "next/navigation";
 
 export default function Page() {
     const [data, setData] = useState(null);
     const [featureImage, setFeatureImage] = useState(null);
     const [imageList, setImageList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    
+    const searchParams = useSearchParams();
+     const id = searchParams.get("id");
+
+     const fatchData = async () => {
+        try {
+             const res = await getProduct()
+        } catch (error) {
+            toast.error(error?.message);
+        }
+     }
 
     const handleData = (key, value) => {
         setData((prevData) => {
@@ -47,7 +61,7 @@ export default function Page() {
 
         className="text-xl font-semibold flex flex-col gap-1 p-1 px-1 py-1">
            <div className="flex justify-between w-full">
-             <h1 className="font-semibold">Create new Product</h1>
+             <h1 className="font-semibold">{id ? "Edit Product" : "Create new Product"}</h1>
              <Button isLoading={isLoading} isDisabled={isLoading} type="submit">Create</Button>
            </div>
             <div className="flex flex-col md:flex-row gap-3">

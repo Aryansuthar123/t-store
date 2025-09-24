@@ -1,13 +1,17 @@
 'use client'
 import React from 'react';
 import Link from 'next/link';
-const Product = ({items}) => {
+import { ProductContext } from "../context/ProductContext";
+
+const Product = ({items = []}) => {
     return (
         <>
             <div className="container my-5">
                 <div className='row'>
-                    {items.map((product)=>(
-                        <div key={product._id} className='col-lg-4 col-md-6 my-3 text-center d-flex justify-content-center
+                    {items.length > 0 ? (
+                    items.map((product)=>(
+                        <div
+                         key={product._id} className='col-lg-4 col-md-6 my-3 text-center d-flex justify-content-center
                     align-items-center'>
                             <div className='card bg-dark text-light' style={{width: '18rem'}}>
                                 <Link href='/'>
@@ -27,7 +31,9 @@ const Product = ({items}) => {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                    )) ) : (
+                    <p className="text-center text-muted">No products available</p> 
+                )}
                 </div>
             </div>
         </>
