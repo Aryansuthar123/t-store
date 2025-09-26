@@ -71,13 +71,7 @@ function Row({cat, index}) {
 
   const handleEdit = (id) => {
    router.push(`/admin/categories?id=${cat._id}`);
-  // try {
-  //   const edit = await editCategory(id, { name: "editing Name" });
-  //   toast.success("Successfully Updated");
-  //   fetchCategories(); 
-  // } catch (error) {
-  //   toast.error(error?.message || "Error editing category");
-  // } 
+ 
 };
    return (
             <tr key={cat._id} className="text-center hover:bg-gray-50">

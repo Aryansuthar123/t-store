@@ -4,7 +4,8 @@ import { useEffect, useState, useRef } from "react";
 import Sidebar from "./Sidebar";
 import AdminHeader from "./AdminHeader";
 import {usePathname, } from 'next/navigation';
-
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 
 export default function AdminLayout({ children }) {
@@ -12,11 +13,22 @@ export default function AdminLayout({ children }) {
    const [isOpen, setIsOpen] = useState(false);
    const pathname = usePathname();
    const  sidebarRef = useRef(null);
+   const {user} = useAuth();
+   const router = useRouter();
+
 
     const toggleSidebar = () => {
       setIsOpen(!isOpen);
     };
+
+
     
+useEffect(() => {
+  if (!user || !user.isAdmin) {
+    
+    router.replace("/"); 
+  }
+}, [user, router]);
 useEffect(() => {
   toggleSidebar();
 }, [pathname]); 
@@ -35,7 +47,9 @@ useEffect(() => {
       document.removeEventListener("mousedown", handleClickOutsideEvent);
     };
   }, [isOpen]);
-
+ if (!user || !user.isAdmin) {
+    return null; 
+  }
   return (
     <main className="relative flex">
       <div className="hidden md:block">
@@ -47,7 +61,7 @@ useEffect(() => {
       </div>
       <section className="flex-1 bg-amber-50 flex flex-col min-h-screen overflow-hidden">
         <AdminHeader toggleSidebar={toggleSidebar} />
-          <section className=" pt-22 flex-1 bg-[#eff3f4] p-6">
+          <section className=" pt-24 flex-1 bg-[#eff3f4] p-6">
             {children}
           </section>
       </section>

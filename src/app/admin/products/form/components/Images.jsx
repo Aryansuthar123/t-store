@@ -1,18 +1,30 @@
 "use client";
-export default function Images({ data, setFeatureImage, featureImage ,imageList, setImageList}) {
+export default function Images({ data,
+    setFeatureImage,
+    featureImage,
+    imageList,
+    setImageList }) {
     return (
         <section className="flex-1 flex flex-col gap-2 bg-white  rounded-lg px-4 border">
             <h1 className="font-semibold text-xs">Images</h1>
             <div className="flex flex-col gap-1">
-                {featureImage && <div className="flex justify-center">
-                    <img 
+                {data?.featureImage && !featureImage && (<div className="flex justify-center">
+                    <img
 
-                    className="h-20 object-cover rounded-lg" 
-                    src={URL.createObjectURL(featureImage)} 
-                    alt=""/>
+                        className="h-20 object-cover rounded-lg"
+                        src={data?.featureImage}
+                        alt="" />
+                </div>)}
+                {featureImage &&
+                    <div className="flex justify-center">
+                        <img
+
+                            className="h-20 object-cover rounded-lg"
+                            src={URL.createObjectURL(featureImage)}
+                            alt="" />
                     </div>}
                 <label
-                 className="text-gray-500 text-xs" htmlFor="product-feature-image">
+                    className="text-gray-500 text-xs" htmlFor="product-feature-image">
                     Feature Image <span className="text-red-500">*</span>{""}
                 </label>
 
@@ -21,7 +33,7 @@ export default function Images({ data, setFeatureImage, featureImage ,imageList,
                     id="product-feature-image"
                     name="product-feature-image"
                     onChange={(e) => {
-                        if (e.target.files.length > 0){
+                        if (e.target.files.length > 0) {
                             setFeatureImage(e.target.files[0]);
                         }
                     }}
@@ -29,21 +41,35 @@ export default function Images({ data, setFeatureImage, featureImage ,imageList,
             </div>
 
             <div className="flex flex-col gap-1">
-                    {imageList?.length > 0 && (
-                        <div className="flex flex-wrap gap-3">
-                            {imageList?.map((item, index) => {
-                                return(
-                                <img 
-                                    key={index}
-                                    className="w-20 object-cover rounded-lg" 
-                                    src={URL.createObjectURL(item)} 
-                                    alt=""/>
-                                );
-                            })}
-                        </div>
-                    )}
+                
+                {Array.isArray(data?.images) && imageList.length === 0 && (
+                    <div className="flex flex-wrap gap-3">
+                        {data.images.map((url, idx) => (
+                            <img
+                                key={idx}
+                                className="w-20 object-cover rounded-lg"
+                                src={url}
+                                alt=""
+                            />
+                        ))}
+                    </div>
+                )}
+
+             
+                {imageList.length > 0 && (
+                    <div className="flex flex-wrap gap-3">
+                        {imageList.map((item, index) => (
+                            <img
+                                key={index}
+                                className="w-20 object-cover rounded-lg"
+                                src={URL.createObjectURL(item)}
+                                alt=""
+                            />
+                        ))}
+                    </div>
+                )}
                 <label className="text-gray-500 text-xs" htmlFor="product-images">
-                     Images <span className="text-red-500">*</span>{""}
+                    Images <span className="text-red-500">*</span>{""}
                 </label>
 
                 <input
@@ -53,7 +79,7 @@ export default function Images({ data, setFeatureImage, featureImage ,imageList,
                     multiple
                     onChange={(e) => {
                         const newFiles = [];
-                        for(let i = 0 ; i < e.target.files.length; i++) {
+                        for (let i = 0; i < e.target.files.length; i++) {
                             newFiles.push(e.target.files[i]);
                         }
                         setImageList((prev) => [...prev, ...newFiles]);

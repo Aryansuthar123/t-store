@@ -4,8 +4,6 @@ import dynamic from 'next/dynamic';
 import 'react-quill-new/dist/quill.snow.css';
 
 
-
-
 const modules = {
     toolbar: {
         container: [

@@ -1,28 +1,34 @@
 "use client";
-import { Button } from "@nextui-org/react";
+import { Button, inputOtp } from "@nextui-org/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { deleteProduct } from "../../../../lib/productService";
+
+import {updateProduct} from "@/lib/productService";
 import { useRouter } from "next/navigation";
+import { number } from "framer-motion";
 
 
 export default function ListView() {
   const [pageLimit, setPageLimit] = useState(3);
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    fetch("/api/products")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          console.log("Products from API:", data.products);
-          setProducts(data.products);
-        }
-      })
-      .catch((err) => console.error("Error fetching products:", err));
-  }, []);
+  const fetchProducts = () => {
+  fetch("/api/products")
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        setProducts(data.products);
+      }
+    })
+    .catch((err) => console.error("Error fetching products:", err));
+};
 
+useEffect(() => {
+  fetchProducts();
+}, []);
+  
   return (
 
     <div className="flex flex-col flex-1 md:pr-5 md:px-0 px-5 bg-white p-2 rounded-xl w-full overflow-x-auto  ">
@@ -56,7 +62,7 @@ export default function ListView() {
         </Button>
         <select 
             value={pageLimit}
-            onChange={(e) => setPageLimit(e.target.value)}
+            onChange={(e) => setPageLimit(number(e.target.value))}
             className="px-5 rounded-xl" 
             name="perpage" id="perpage"
         >
@@ -84,7 +90,7 @@ function Row({ products, index }) {
       await deleteProduct(id);
       toast.success("Successfully Deleted");
        router.refresh();
-      fetchProducts();
+      
     } catch (error) {
       toast.error(error?.message);
     }
@@ -93,7 +99,7 @@ function Row({ products, index }) {
 
 
   const handleEdit = (id) => {
-    router.push(`/admin/products/form?id=${products._id}`);
+    router.push(`/admin/products/form?id=${id}`);
 
   };
   return (

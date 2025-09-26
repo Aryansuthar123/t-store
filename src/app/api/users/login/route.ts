@@ -26,23 +26,37 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
+if (!user.isApproved) {
+  return NextResponse.json(
+    { success: false, error: "Your account is not approved yet. Please contact admin." },
+    { status: 403 }
+  );
+}
     // check password
     const validPassword = await bcryptjs.compare(password, user.password);
+    console.log("Password match result:", validPassword);
     if (!validPassword) {
       return NextResponse.json(
         { success: false, error: "Invalid password" },
         { status: 401 }
       );
     }
+    if (!user.isApproved) {
+  return NextResponse.json(
+    { success: false, error: "Your account is not approved yet. Please contact admin." },
+    { status: 403 }
+  );
+}
 
     // token payload
     const tokenData = {
       id: user._id,
       username: user.username,
       email: user.email,
-        role: user.role,
+       
        isAdmin: user.isAdmin,
+       isApproved: user.isApproved, 
+        role: user.role || "user", 
     };
 
     // create token

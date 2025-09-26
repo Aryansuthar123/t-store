@@ -13,10 +13,9 @@ export const ProductProvider = ({ children }) => {
 
     const fetchAllProducts = async () => {
         const api = await axios.get(`${API_BASE_URL}/products`);
-        setProducts(api.data.products)
-      
 
-        console.log("fetched all products = ", products);
+        setProducts(api.data.products)
+        console.log("fetched all products = ", api.data.products);
     }
     useEffect(() => {
         fetchAllProducts();

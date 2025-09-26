@@ -16,7 +16,13 @@ const Product = ({items = []}) => {
                             <div className='card bg-dark text-light' style={{width: '18rem'}}>
                                 <Link href='/'>
                                 <div className='d-flex justify-content-center align-items-center p-3'>
-                                  <img src={product.imgSrc} alt='img' className='card-img-top' 
+                                  <img   src={
+                                                product.featureImage
+                                                    ? `http://localhost:3000${product.featureImage}`
+                                                    : product.imgSrc   
+                                            }
+                                            alt={product.title}
+                                            className="card-img-top"
                                   style={{width: "200px",
                                         borderRadius: "10px",
                                         border: "1px solid yellow"
@@ -25,7 +31,10 @@ const Product = ({items = []}) => {
                                 </Link>
                                 <div className='card-body'>
                                     <h5 className='card-title'>{product.title}</h5>
-                                    <button className='card-text'>{product.description}</button>
+                                     <div
+                                           className="card-text"
+                                          dangerouslySetInnerHTML={{ __html: product.description }}
+                                         />
                                     <button className='btn btn-primary mx-3'>{product.price}</button>
                                     <button className='btn btn-warning mx-3'>Card</button>
                                 </div>
