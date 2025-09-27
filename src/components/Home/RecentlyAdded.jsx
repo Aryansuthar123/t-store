@@ -1,36 +1,31 @@
-"use client"
-import React, { useEffect, useState } from "react";
-import Container from '../Container'
-import ProductBox from "../ProductBox";
+"use client";
+import { useEffect, useState } from "react";
+import ProductBox from "../../components/ProductBox";
+
+export default function RecentlyAdded() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setProducts(data.products.slice(0, 5));
+      })
+      .catch((err) => console.error("Fetch products error:", err));
+  }, []);
 
 
- export default function RecentlyAdded() {
-  const [products, setProduct] = useState([]);
-  const getProducts = async () => {
-    const response = await fetch('https://fakestoreapi.in/api/products?limit=5');
-    const data = await response.json();
-    // console.log(data);
-    setProduct(data.products);
-  }
-  useEffect(
-    () => {
-      getProducts();
-    }, []
-  )
-    return(
-      <div className="bg-gray-100 p-3">
-        <Container>
-         <h1 className="text-center text-3xl font-bold">Recently Added Products</h1>
-         <div className="my-4 grid grid-cols-5 gap-3">
-            {
-              products.map(
-                (prod) => {
-                  return <ProductBox key={prod.id} product={prod}/> 
-                }
-              )
-            }
-         </div>
-        </Container>
+  return (
+    <section className="py-6">
+      <h2 className="text-center text-2xl font-bold mb-3">
+        Recently Added Products
+      </h2>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 max-w-6xl mx-auto">
+        {products.map((item) => (
+          <ProductBox key={item._id} product={item} />
+        ))}
       </div>
-    )
- }
+    </section>
+  );
+}

@@ -14,7 +14,7 @@ const ProductSchema = new mongoose.Schema({
   images: [{ type: String }], 
   imgSrc: { type: String },
   createdAt: { type: Date, default: Date.now }
-});
+}, { timestamps: true }); 
 
 
 export default mongoose.models.Product || mongoose.model("Product", ProductSchema);

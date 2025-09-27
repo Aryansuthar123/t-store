@@ -1,7 +1,7 @@
 // app/page.tsx
 import HeroSection from "@/components/Home/HeroSection"
 import RecentlyAdded from "@/components/Home/RecentlyAdded"
-// import FeaturedProduct from "@/components/Home/FeaturedProduct"
+import FeaturedProduct from "@/components/Home/FeaturedProduct"
 import React from "react";
 import { Features } from "tailwindcss";
  export default function Home() {
@@ -9,7 +9,8 @@ import { Features } from "tailwindcss";
       <>
         <HeroSection />
         <RecentlyAdded />
-        {/* <FeaturedProduct /> */}
+
+        <FeaturedProduct />
         
         
       </>

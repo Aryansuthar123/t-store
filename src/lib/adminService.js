@@ -10,7 +10,7 @@ export const createNewAdmin = async (formData) => {
 export const getAdmins = async () => {
   const res = await axios.get("/api/users?>role=admin");
   return res.data.users;
-};
+};  
 
 export const updateAdmin = async ( id, data ) => {
   if (!id) {
@@ -58,5 +58,15 @@ export async function toggleApproval(id, isApproved) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ isApproved }),
   });
+ if (!res.ok) {
+ 
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.error || "Failed to update approval");
+  }
   return res.json();
 }
+
+// export const toggleApproval = async (id, isApproved) => {
+//   const res = await axios.patch(`/api/users/${id}/approve`, { isApproved });
+//   return res.data;
+// };

@@ -71,9 +71,18 @@ export async function POST(req) {
     const email = form.get("email");
     const password = form.get("password") || "123456";
     const image = form.get("image") || "";
+    const imageName = imageFile?.name || "";
+
+    const existing = await User.findOne({ $or: [{ email }, { username }] });
+    if (existing) {
+      return NextResponse.json(
+        { success: false, message: "Username or Email already exists" },
+        { status: 400 }
+      );
+    }
 
     const hashed = await bcrypt.hash(password, 10);
-
+    console.log(" Incoming Data =>", { username, email, password, image });
     const newUser = await User.create({
       username,
       email,
@@ -82,7 +91,7 @@ export async function POST(req) {
       isAdmin: true,
       isApproved: true
     });
-
+    console.log("User Created =>", newUser);
     return NextResponse.json({ success: true, user: newUser });
   } catch (err) {
     return NextResponse.json({ success: false, message: err.message }, { status: 400 });

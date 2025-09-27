@@ -1,15 +1,16 @@
 "use client";
-import { getAdmin } from "@/lib/adminService";
+import { getAdmin } from "../../../../lib/adminService";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-export default function Form({ id }) {     // ← id prop accept
+export default function Form({ id }) {   
   const [data, setData] = useState({});
   const [image, setImage] = useState(null);
   const router = useRouter();
 
-  // Fetch admin when editing
+
+  
   useEffect(() => {
     if (!id) return;
     const fetchData = async () => {
@@ -39,10 +40,14 @@ export default function Form({ id }) {     // ← id prop accept
       if (image) formData.append("image", image);
 
       const res = await fetch("/api/users", { method: "POST", body: formData });
+      console.log("RAW RESPONSE =>", res);
       const result = await res.json();
+console.log("PARSED RESULT =>", result);
+
       if (result.success) {
+         console.log("Created Admin:", result.user);
         alert("Admin created");
-        router.push("/admin/admins");  // ← back to list
+        router.push("/admin/admins"); 
       } else alert("Error: " + result.error);
     } catch (err) {
       console.error(err);
@@ -61,7 +66,7 @@ export default function Form({ id }) {     // ← id prop accept
       const result = await res.json();
       if (result.success) {
         alert("Admin updated");
-        router.push("/admin/admins");  // ← back to list
+        router.push("/admin/admins"); 
       } else alert("Error: " + result.error);
     } catch (err) {
       console.error(err);
@@ -78,14 +83,14 @@ export default function Form({ id }) {     // ← id prop accept
         }}
         className="flex flex-col gap-3"
       >
-        {/* Image */}
+       
         <input
           type="file"
           onChange={(e) => e.target.files[0] && setImage(e.target.files[0])}
           className="border px-4 py-2 rounded-lg w-full"
         />
 
-        {/* Name */}
+  
         <input
           type="text"
           placeholder="Name"
@@ -94,7 +99,7 @@ export default function Form({ id }) {     // ← id prop accept
           className="border px-4 py-2 rounded-lg w-full"
         />
 
-        {/* Email */}
+     
         <input
           type="email"
           placeholder="Email"

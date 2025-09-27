@@ -1,9 +1,11 @@
+import CountMeter from "./components/CountMeter"
+
+
 export default function page(){
     return(
-        <main>
-            <h1 >
-                Admin
-            </h1>
+        <main className="p-2">
+            <CountMeter/>
         </main>
     )
 }
+

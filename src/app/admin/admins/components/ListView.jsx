@@ -1,17 +1,22 @@
 "use client";
 
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button} from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { toggleApproval, deleteAdmin } from "@/lib/adminService";
+import { deleteAdmin, toggleApproval } from "../../../../lib/adminService";
 import { useRouter } from "next/navigation";
 
 export default function ListView() {
-  const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [admins, setAdmins] = useState([]);
+
+  const [approvalModal, setApprovalModal] = useState({
+    open: false,
+    userId: null,
+    currentStatus: false,
+  });
   const router = useRouter();
+
 
   const fetchAdmins = async () => {
     try {
@@ -26,27 +31,6 @@ export default function ListView() {
   useEffect(() => {
     fetchAdmins();
   }, []);
-
-  const handleConfirm = async () => {
-  try {
-    const res = await fetch(`/api/admins/${selectedUser._id}/approve`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isApproved: !selectedUser.isApproved })
-    });
-    const updated = await res.json();
-
- 
-    setAdmins((prev) =>
-      prev.map((a) => (a._id === updated._id ? updated : a))
-    );
-
-    setOpen(false);
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 
   const handleDelete = async (id) => {
     if (!confirm("Are you sure?")) return;
@@ -89,19 +73,30 @@ export default function ListView() {
               </td>
               <td className="p-2 border">
                 <div className="flex justify-center gap-3">
-                
-                  <Button
-                    color={admin.isApproved ? "success" : "warning"}
-                    variant="flat"
-                    onClick={() => {
-                      setSelectedUser(admin);
-                      setOpen(true);
+                  <Button className="bg-green-300 text-white "
+                    color="primary"
+                    onClick={async () => {
+                      const result = window.confirm(
+                        "Give admin panel access to this user?\nClick OK for Yes or Cancel for No."
+                      );
+
+                      try {
+                        await toggleApproval(admin._id, result); 
+                        toast.success(
+                          result ? "Approval Granted" : "Approval Removed"
+                        );
+                        fetchAdmins(); 
+                      } catch (err) {
+                        toast.error(err.message);
+                      }
                     }}
                   >
-                    {admin.isApproved ? "Approved" : "Approve"}
+                    Approve
                   </Button>
 
+
                   <Button
+                   className="bg-blue-400 text-white hover:bg-blue-500 rounded-lg"
                     onClick={() => router.push(`/admin/admins/${admin._id}`)}
                     color="default"
                     variant="flat"
@@ -110,6 +105,7 @@ export default function ListView() {
                   </Button>
 
                   <Button
+                   className="bg-red-400 text-white hover:bg-red-400 rounded-lg"
                     color="danger"
                     variant="flat"
                     onClick={() => handleDelete(admin._id)}
@@ -122,26 +118,36 @@ export default function ListView() {
           ))}
         </tbody>
       </table>
-
-   
-      <Modal isOpen={open} onOpenChange={setOpen}>
+      <Modal isOpen={approvalModal.open} onClose={() => setApprovalModal({ open: false })}>
         <ModalContent>
-          <ModalHeader>Confirm Approval</ModalHeader>
+          <ModalHeader>Give Admin Access?</ModalHeader>
           <ModalBody>
-            {selectedUser && (
-              <p>
-                {selectedUser.isApproved
-                  ? `Remove approval from ${selectedUser.username}?`
-                  : `Give approval to ${selectedUser.username}?`}
-              </p>
-            )}
+            Are you sure you want to {approvalModal.currentStatus ? "remove" : "grant"} admin panel access?
           </ModalBody>
           <ModalFooter>
-            <Button onPress={() => setOpen(false)}>Cancel</Button>
-            <Button color="primary" onPress={handleConfirm}>Yes</Button>
+            <Button onPress={() => setApprovalModal({ open: false })}>Cancel</Button>
+            <Button color="success"
+              onPress={async () => {
+                try {
+                  await toggleApproval(approvalModal.userId, true);
+                  toast.success("Approval Granted");
+                  reloadData();
+                } catch (e) { toast.error(e.message); }
+                setApprovalModal({ open: false });
+              }}>Yes</Button>
+            <Button color="danger"
+              onPress={async () => {
+                try {
+                  await toggleApproval(approvalModal.userId, false);
+                  toast.success("Approval Removed");
+                  reloadData();
+                } catch (e) { toast.error(e.message); }
+                setApprovalModal({ open: false });
+              }}>No</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
+
     </div>
   );
 }
