@@ -8,6 +8,7 @@ import { ProductProvider } from './context/ProductContext';
 import LayoutWrapper from '@/components/LayoutWrapper'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Toaster } from "react-hot-toast";
+import {CartProvider} from "./context/CartContext"
 
 const showHeaderRoutes = [];
 
@@ -44,10 +45,12 @@ export default function RootLayout({
             <body
               className={`${geistSans.variable} ${geistMono.variable} `}>
               <ProductProvider>
+                <CartProvider>
                 <LayoutWrapper>
                 <Toaster position="top-right" /> 
                   {children}
                 </LayoutWrapper>
+                </CartProvider>
               </ProductProvider>
             </body>
           

@@ -27,10 +27,12 @@ export default function ProductBox({ product }) {
             <div className='mt-4'>
                 <h3 className='text-sm min-h-[70px] font-semibold text-gray-800'>{product.title}</h3>
                 <p className="text-gray-900 font-semibold mt-2">{product.price}</p>
+                <Link href={`/store/product-details/${productId}`}>
                 <button className=" bg-pink-500 text-white px-3 py-1 rounded
-                     hover:bg-pink-600 transition duration-300 mt-3">Buy Now
+                     hover:bg-pink-600 transition duration-300 mt-3 ">View Now
                 </button>
-            </div>
+            </Link>
         </div>
+    </div>
     )
 }

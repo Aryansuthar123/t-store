@@ -40,3 +40,99 @@
 //             </Container>
 //         )
 // }
+
+
+
+'use client';
+import { useParams } from "next/navigation";
+import { useProductContext } from "../../../context/ProductContext";
+import Image from "next/image";
+import { useCart } from '../../../context/CartContext';
+import { useState } from "react";
+import toast from "react-hot-toast";
+
+export default function ProductDetailsPage() {
+    const { products } = useProductContext();
+    const { product_id } = useParams();
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
+    const { fetchCartItems } = useCart();
+
+    const product = products.find((p) => p._id === product_id);
+
+    if (!product) {
+        return <h1 className="text-center text-red-500 text-xl"> Product Not Found</h1>;
+    }
+  
+    const handleAddToCart = async () => {
+        setLoading(true);
+        setMessage("");
+
+        const cartItem = {
+            title: product.title,
+            imgSrc: product.featureImage,
+            price: product.price,
+            description: product.description,
+            quantity: 1,
+        };
+
+        try {
+            const res = await fetch("/api/cart", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(cartItem),
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                toast.success(" Product added to cart!");
+                fetchCartItems(); 
+            } else {
+                toast.error("You already added this product to the cart");
+            }
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            setMessage("Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    };
+    return (
+        <div className="max-w-4xl mx-auto p-6">
+
+            <Image
+                src={product.featureImage || "/placeholder.jpg"}
+                alt={product.title}
+                width={300}
+                height={300}
+                className="object-cover  shadow-amber-400 rounded-lg shadow-md"
+            />
+
+
+            <h1 className="text-3xl font-bold mt-8">{product.title}</h1>
+            <p className="text-xl text-gray-700 border-amber-200 mt-2">₹{product.price}</p>
+
+
+            <div
+                className="mt-4 text-gray-600"
+                dangerouslySetInnerHTML={{ __html: product.description || "No description available." }}
+            />
+
+
+            <div className="flex gap-4 mt-6">
+                <button
+                    className="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600 disabled:opacity-50"
+                    onClick={handleAddToCart}
+                    disabled={loading}
+                >
+                    {loading ? "Adding..." : "Add to Cart"}
+                </button>
+                <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                    Buy Now
+                </button>
+            </div>
+        </div>
+    );
+}

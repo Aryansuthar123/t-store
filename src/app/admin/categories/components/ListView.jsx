@@ -11,6 +11,12 @@ import { useRouter } from "next/navigation";
 export default function ListView() {
   const [categories, setCategories] = useState([]);
 
+  const fetchCategories = async () => {
+    const res = await fetch("/api/categories");
+    const data = await res.json();
+    if (data.success) setCategories(data.categories);
+  };
+
   useEffect(() => {
     fetch("/api/categories")
       .then((res) => res.json())
@@ -24,7 +30,7 @@ export default function ListView() {
 
 return (
 
-    <div className="flex flex-col flex-1 md:pr-5 md:px-0 px-5 bg-white p-2 rounded-xl  ">
+    <div className="flex flex-col flex-1 md:pr-5 md:px-0 px-5 py-3 bg-white p-2 rounded-xl  ">
       <h1 className="font-semibold   text-lg">Categories</h1>
 
       <table className="w-full border border-gray-200 rounded-lg overflow-hidden text-sm">
@@ -39,7 +45,10 @@ return (
         <tbody>
           {categories.map((cat, index) => {
            return (
-            <Row cat={cat} index={index} key={index} />
+            <Row cat={cat}
+             index={index}
+              key={index} 
+              refresh={fetchCategories}/>
            )
           }
         )}
@@ -61,7 +70,7 @@ function Row({cat, index}) {
     try {
       await deleteCategory(id);
       toast.success("Successfully Deleted");
-      fetchCategories();
+      await refresh();
     } catch (error) {
       toast.error(error?.message); 
     }
