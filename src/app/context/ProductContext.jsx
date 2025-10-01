@@ -27,12 +27,11 @@ export const ProductProvider = ({ children }) => {
     };
     console.log("fetched all products = ", products);
     return (
-        <ProductContext.Provider value={{products, data}}>{children}</ProductContext.Provider>
+        <ProductContext.Provider value={{products, data ,addProduct}}>
+            {children}</ProductContext.Provider>
     );
 };
-
-
-
+    
 
 export const useProductContext = () => useContext(ProductContext);
 
