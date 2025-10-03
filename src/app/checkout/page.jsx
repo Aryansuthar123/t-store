@@ -1,16 +1,27 @@
 'use client';
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
     const [product, setProduct] = useState(null);
-
+    const [orderDate, setOrderDate] = useState("");
+    const [deliveryDate, setDeliveryDate] = useState("");
+    const router = useRouter();
     useEffect(() => {
-    const stored = localStorage.getItem("checkoutProduct");
-    if (stored) {
-        console.log("Checkout Product:", JSON.parse(stored)); 
-        setProduct(JSON.parse(stored));
-    }
-}, []);
+        const stored = localStorage.getItem("checkoutProduct");
+        if (stored) {
+            console.log("Checkout Product:", JSON.parse(stored));
+            setProduct(JSON.parse(stored));
+
+            const today = new Date();
+            const delivery = new Date();
+            delivery.setDate(today.getDate() + 6);
+
+            const options = { year: "numeric", month: "long", day: "numeric" };
+            setOrderDate(today.toLocaleDateString("en-IN", options));
+            setDeliveryDate(delivery.toLocaleDateString("en-IN", options));
+        }
+    }, []);
 
 
     if (!product) {
@@ -38,10 +49,14 @@ export default function CheckoutPage() {
                     <p className="font-bold mt-2">
                         Total: ₹{(parseFloat(product.salePrice ?? product.price) || 0) * (product.quantity || 1)}
                     </p>
-                </div>  
+                    <p className="mt-2 text-gray-700">Order Date: <b>{orderDate}</b></p>
+                    <p className="text-gray-700">Estimated Delivery: <b>{deliveryDate}</b></p>
+                </div>
             </div>
 
-            <button className="mt-6 bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700">
+            <button
+                onClick={() => router.push("/payment")}
+                className="mt-6 bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700" >
                 Proceed to Payment
             </button>
         </div>

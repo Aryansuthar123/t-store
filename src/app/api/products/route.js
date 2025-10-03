@@ -21,20 +21,20 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import connectDB from "../../utils/database"; 
 
-// 👉 GET  /api/products
+
 export async function GET() {
   await connectDB();
   const products = await Product.find().sort({ createdAt: -1 });
   return NextResponse.json({ success: true, products });
 }
 
-// 👉 POST /api/products
+
 export async function POST(req) {
   await connectDB();
   try {
     const form = await req.formData();
 
-    // text fields
+  
     const title            = form.get("title");
     const shortDescription = form.get("shortDescription");
     const description      = form.get("description");
@@ -43,7 +43,6 @@ export async function POST(req) {
     const price            = Number(form.get("price") || 0);
     const salePrice        = form.get("salePrice") ? Number(form.get("salePrice")) : undefined;
 
-    // single feature image
     const featureImage     = form.get("featureImage");
     let featureImageUrl    = "";
     if (featureImage && featureImage.size > 0) {
@@ -55,7 +54,7 @@ export async function POST(req) {
       featureImageUrl = `/uploads/${filename}`;
     }
 
-    // multiple gallery images
+    
     const galleryImages = form.getAll("images");
     const imageUrls     = [];
     for (const img of galleryImages) {
@@ -69,7 +68,6 @@ export async function POST(req) {
       }
     }
 
-    // create product
     const product = await Product.create({
       title,
       shortDescription,

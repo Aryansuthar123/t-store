@@ -31,20 +31,20 @@ export default function ProductDetailsPage() {
         return <h1 className="text-center text-red-500 text-xl"> Product Not Found</h1>;
     }
 
-    const handleAddToCart = async () => {
-        setLoading(true);
-        setMessage("");
-        const cartItem = {
-            _id: product._id,
-            title: product.title,
-            featureImage: product.featureImage || product.images?.[0] || "/placeholder.jpg",
-            images: product.images || [],
-            price: product.price,
-            salePrice: product.salePrice ?? null,
-            description: product.description,
-            quantity: quantity
-        };
+   const handleAddToCart = async () => {
+     setLoading(true); setMessage(""); 
 
+    const cartItem = {
+        _id: product._id,
+        title: product.title,
+        featureImage: product.featureImage || product.images?.[0] || "/placeholder.jpg",
+        images: product.images || [],
+        imgSrc: product.imgSrc || product.featureImage || product.images?.[0] || "/placeholder.jpg",
+        price: product.price,
+        salePrice: product.salePrice ?? null,
+        description: product.description,
+        quantity: quantity
+        };
 
         try {
             const res = await fetch("/api/cart", {
@@ -70,20 +70,19 @@ export default function ProductDetailsPage() {
         }
     };
 
-
-    const handleBuyNow = () => {
-        const checkoutProduct = {
-            id: product._id,
-            title: product.title,
-            imgSrc:
-                product.imgSrc ||
-                product.featureImage ||
-                (product.images?.[0] ?? "/placeholder.jpg"),
-            price: product.price,
-            salePrice: product.salePrice ?? null,
-            description: product.description,
-            quantity: quantity,
-        };
+const handleBuyNow = () => { 
+    const checkoutProduct = { 
+        id: product._id, title:
+         product.title, 
+         imgSrc:
+  product.imgSrc ||
+  product.featureImage ||
+  product.images?.find(img => typeof img === "string" && img.startsWith("/uploads")) ||
+  "",
+        price: product.price, 
+        salePrice: product.salePrice ?? null, 
+        description: product.description, 
+        quantity: quantity, };
 
 
         localStorage.setItem("checkoutProduct", JSON.stringify(checkoutProduct));
@@ -97,7 +96,7 @@ export default function ProductDetailsPage() {
                     <div className="flex flex-col gap-2">
                         {[featureImage, ...images].map((img, i) => (
                             <button key={i} onClick={() => setPreview(img)}>
-                                <Image
+                                <img
                                     src={img}
                                     alt={`thumb-${i}`}
                                     width={70}
@@ -109,7 +108,7 @@ export default function ProductDetailsPage() {
                     </div>
 
 
-                    <Image
+                    <img
                         src={preview || featureImage}
                         alt={product.title}
                         width={350}

@@ -5,17 +5,19 @@ import Header from './Header';
 import Footer from './Footer';
 
 
-const showHeaderRoutes = ['/','/store']
+
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname()
-  const showHeader = showHeaderRoutes.includes(pathname)
+
+
+ const isAdminRoute = pathname.startsWith('/admin')
 
   return (
     <>
-      {showHeader && <Header />}
+      { !isAdminRoute && <Header />}
       {children}
       <Footer />
     </>
-  )
+  );
 }

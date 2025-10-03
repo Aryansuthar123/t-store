@@ -1,13 +1,10 @@
 "use client";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [previews, setPreviews] = useState({});
   const router = useRouter();
 
@@ -36,7 +33,6 @@ export default function CartPage() {
         body: JSON.stringify({ _id, quantity: newQty }),
       });
       const data = await res.json();
-      console.log("Cart Items:", data.cartItems);
       if (data.success) fetchCartItems();
     } catch (err) {
       console.error("Quantity update failed", err);
@@ -44,13 +40,7 @@ export default function CartPage() {
   };
 
   const handleBuyNow = (item) => {
-    localStorage.setItem(
-      "checkoutProduct",
-      JSON.stringify({
-        ...item,
-        salePrice: item.salePrice ?? null,
-      })
-    );
+    localStorage.setItem("checkoutProduct", JSON.stringify(item));
     router.push(`/checkout?product_id=${item._id}`);
   };
 
@@ -73,6 +63,7 @@ export default function CartPage() {
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
+
       <ul className="space-y-6">
         {cartItems.map((item) => {
           const feature =
@@ -81,16 +72,19 @@ export default function CartPage() {
               : item.images?.[0] || item.imgSrc || "/placeholder.jpg";
 
           const currentPreview =
-  item?._id && previews[item._id] ? previews[item._id] : feature;
-          const allImages = [feature, ...(item.images?.filter(Boolean) || [])].filter(
-            (img, index, self) => self.indexOf(img) === index 
-          );
+            item?._id && previews[item._id] ? previews[item._id] : feature;
+
+          const allImages = [
+            feature,
+            ...(item.images?.filter(Boolean) || []),
+          ].filter((img, index, self) => self.indexOf(img) === index);
+
           return (
             <li
               key={item._id}
-              className="flex flex-wrap gap-6 p-6 border rounded-xl shadow bg-white"
+              className="flex flex-wrap md:flex-nowrap gap-6 p-6 border rounded-xl shadow bg-white"
             >
-
+             
               <div className="flex flex-col gap-2">
                 {allImages.map((img, i) => (
                   <button
@@ -108,17 +102,28 @@ export default function CartPage() {
                 ))}
               </div>
 
-
+            
               <img
                 src={currentPreview}
                 alt={item.title}
                 className="w-44 h-44 object-cover rounded-lg shadow"
               />
 
-
+            
               <div className="flex-1 min-w-[250px]">
                 <h2 className="text-xl font-semibold">{item.title}</h2>
-                <p className="text-gray-700 mt-1">₹{item.price}</p>
+
+                {item.salePrice ? (
+                  <p className="text-gray-700 mt-1">
+                    <span className="line-through mr-2">₹{item.price}</span>
+                    <span className="font-bold text-green-700">
+                      ₹{item.salePrice}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-gray-700 mt-1">₹{item.price}</p>
+                )}
+
                 {item.description && (
                   <div
                     className="text-sm text-gray-600 mt-1"
@@ -126,6 +131,7 @@ export default function CartPage() {
                   />
                 )}
 
+               
                 <div className="flex flex-wrap items-center gap-3 mt-4">
                   <button
                     onClick={() => updateQuantity(item._id, item.quantity - 1)}
@@ -143,17 +149,20 @@ export default function CartPage() {
 
                   <p className="ml-3 font-medium flex p-2 text-green-400">
                     Total: ₹
-                    {(parseFloat(item.price) || 0) * (item.quantity || 1)}
+                    {(parseFloat(item.salePrice ?? item.price) || 0) *
+                      (item.quantity || 1)}
                   </p>
 
                   <button
                     onClick={() => handleBuyNow(item)}
-                    className="ml-4 bg-orange-400 text-white px-4 py-1 rounded hover:bg-orange-500" >
+                    className="ml-4 bg-orange-400 text-white px-4 py-1 rounded hover:bg-orange-500"
+                  >
                     Buy Now
                   </button>
                   <button
                     onClick={() => handleRemoveItem(item._id)}
-                    className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">
+                    className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+                  >
                     Remove
                   </button>
                 </div>
