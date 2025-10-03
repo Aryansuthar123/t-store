@@ -1,17 +1,29 @@
 'use client';
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function CheckoutPage() {
     const [product, setProduct] = useState(null);
     const [orderDate, setOrderDate] = useState("");
     const [deliveryDate, setDeliveryDate] = useState("");
-    const router = useRouter();
+    const [preview, setPreview] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [addressSaved, setAddressSaved] = useState(false);
+
+    const [address, setAddress] = useState({
+        fullName: "",
+        mobile: "",
+        pincode: "",
+        flat: "",
+        area: "",
+    });
+
     useEffect(() => {
         const stored = localStorage.getItem("checkoutProduct");
         if (stored) {
-            console.log("Checkout Product:", JSON.parse(stored));
-            setProduct(JSON.parse(stored));
+            const parsed = JSON.parse(stored);
+            console.log("Loaded product:", parsed);
+            setProduct(parsed);
 
             const today = new Date();
             const delivery = new Date();
@@ -25,40 +37,177 @@ export default function CheckoutPage() {
 
 
     if (!product) {
-        return <p className="text-center mt-10">No product selected for checkout</p>;
+        return <p className="text-center mt-10">No product found for payment</p>;
     }
+    const featureImage = product.featureImage || "/placeholder.jpg";
+    const images = product.images || [];
+
+
+    const handleSaveAddress = () => {
+        if (
+            address.fullName &&
+            address.mobile &&
+            address.pincode &&
+            address.flat &&
+            address.area
+        ) {
+            setAddressSaved(true);
+            setIsModalOpen(false);
+        } else {
+            alert("Please fill all address fields.");
+        }
+    };
 
     return (
-        <div className="max-w-5xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-6">Checkout</h1>
+        <div className="max-w-6xl mx-auto p-6">
+            <h1 className="text-center font-bold  rounded-lg text-black">Checkout</h1>
+            <h1 className="text-2xl font-bold mb-6">Address </h1>
+            <div className="flex flex-col md:flex-row gap-10">
+                <div className="md:w-1/2 flex flex-col gap-6">
 
-            <div className="flex gap-20 py-6 px-10  border p-8 rounded-lg shadow">
-                <img src={product.imgSrc} alt={product.title} className="w-4- h-40 object-cover rounded" />
-
-                <div>
-                    <h2 className="text-xl font-semibold">{product.title}</h2>
-                    {product.salePrice ? (
-                        <p className="text-gray-700">
-                            <span className="line-through mr-2">₹{product.price}</span>
-                            <span className="font-bold text-green-700">₹{product.salePrice}</span>
-                        </p>
+                    {!addressSaved ? (
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600">
+                            Add Delivery Address
+                        </button>
                     ) : (
-                        <p className="text-gray-950">₹{product.price}</p>
+                        <div className="border p-4 rounded bg-gray-100">
+                            <h2 className="text-xl font-semibold mb-2">Delivery Address</h2>
+                            <p><b>Name:</b> {address.fullName}</p>
+                            <p><b>Mobile:</b> {address.mobile}</p>
+                            <p><b>Address:</b> {address.flat}, {address.area}</p>
+                            <p><b>Pincode:</b> {address.pincode}</p>
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="mt-3 text-blue-600 underline">
+                                Edit Address
+                            </button>
+                        </div>
                     )}
-                    <p>Quantity: {product.quantity}</p>
-                    <p className="font-bold mt-2">
-                        Total: ₹{(parseFloat(product.salePrice ?? product.price) || 0) * (product.quantity || 1)}
-                    </p>
-                    <p className="mt-2 text-gray-700">Order Date: <b>{orderDate}</b></p>
-                    <p className="text-gray-700">Estimated Delivery: <b>{deliveryDate}</b></p>
+
+                    <div className="border p-4 rounded-lg">
+                        <h2 className="text-2xl font-semibold mb-4">Choose Payment Method</h2>
+                        <div className="flex flex-col gap-4">
+                            <label className="flex items-center gap-2">
+                                <input type="radio" name="payment" defaultChecked /> UPI / Wallet
+                            </label>
+                            <label className="flex items-center gap-2">
+                                <input type="radio" name="payment" /> Credit / Debit Card
+                            </label>
+                            <label className="flex items-center gap-2">
+                                <input type="radio" name="payment" /> Cash on Delivery (COD)
+                            </label>
+                        </div>
+
+                        <button className="mt-6 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            Pay Now
+                        </button>
+                    </div>
+                </div>
+                <div className="md:w-1/2 flex flex-col bg-pink-100 items-center border p-4 rounded-lg">
+                    <div className="flex gap-4">
+
+                        <div className="flex flex-col gap-2">
+                            {[featureImage, ...images].map((img, i) => (
+                                <button key={i} onClick={() => setPreview(img)}>
+                                    <Image
+                                        src={img}
+                                        alt={`thumb-${i}`}
+                                        width={60}
+                                        height={60}
+                                        className={`object-cover rounded border hover:scale-105 transition 
+                                            ${(preview || featureImage) === img ? "ring-2 ring-blue-500" : ""}`}
+                                    />
+                                </button>
+                            ))}
+                        </div>
+
+                        <Image
+                            src={preview || featureImage}
+                            alt={product.title}
+                            width={200}
+                            height={200}
+                            className="object-cover rounded-lg shadow-md "
+                        />
+                    </div>
+                    <div className="mt-6 text-center">
+                        <h2 className="text-xl font-semibold">{product.title}</h2>
+                       
+                         {product.description && (
+                            <div
+                                className="text-gray-700 mt-2"
+                                dangerouslySetInnerHTML={{ __html: product.description }} />
+                        )} 
+                        <p>Price: ₹{product.salePrice ?? product.price}</p>
+                        <p>Quantity: {product.quantity}</p>
+                        <p className="font-bold mt-2">
+                            Total: ₹
+                            {(parseFloat(product.salePrice ?? product.price) || 0) *
+                                (product.quantity || 1)}
+                        </p>
+                       
+                        <p className="mt-2 text-gray-700">Order Date: <b>{orderDate}</b></p>
+                        <p className="text-gray-700">Estimated Delivery: <b>{deliveryDate}</b></p>
+                    </div>
                 </div>
             </div>
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded-lg shadow-md w-[90%] md:w-[500px] relative">
+                        <button
+                            className="absolute top-3 right-4 text-2xl font-bold"
+                            onClick={() => setIsModalOpen(false)} >
+                            ×
+                        </button>
+                        <h2 className="text-xl font-semibold mb-4">Enter Delivery Address</h2>
+                        <div className="flex flex-col gap-4">
+                            <input
+                                type="text"
+                                placeholder="Full Name"
+                                className="border p-2 rounded"
+                                value={address.fullName}
+                                onChange={(e) =>
+                                    setAddress({ ...address, fullName: e.target.value })
+                                } />
+                            <input
+                                type="text"
+                                placeholder="Mobile Number"
+                                className="border p-2 rounded"
+                                value={address.mobile}
+                                onChange={(e) =>
+                                    setAddress({ ...address, mobile: e.target.value })} />
+                            <input
+                                type="text"
+                                placeholder="Pincode"
+                                className="border p-2 rounded"
+                                value={address.pincode}
+                                onChange={(e) =>
+                                    setAddress({ ...address, pincode: e.target.value })} />
+                            <input
+                                type="text"
+                                placeholder="Flat, House no., Building"
+                                className="border p-2 rounded"
+                                value={address.flat}
+                                onChange={(e) =>
+                                    setAddress({ ...address, flat: e.target.value })} />
+                            <input
+                                type="text"
+                                placeholder="Area, Street, Sector, Village"
+                                className="border p-2 rounded"
+                                value={address.area}
+                                onChange={(e) =>
+                                    setAddress({ ...address, area: e.target.value })} />
 
-            <button
-                onClick={() => router.push("/payment")}
-                className="mt-6 bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700" >
-                Proceed to Payment
-            </button>
+                            <button
+                                onClick={handleSaveAddress}
+                                className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                                Save Address
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

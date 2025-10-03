@@ -1,28 +1,46 @@
-import React from "react";
+"use client"
+import React, {useState} from "react";
 import styles from "@/styles/header.module.css";
 import Container from "./Container";
-import { FiSearch, FiShoppingCart, FiMenu } from "react-icons/fi";
+import { FiSearch, FiShoppingCart } from "react-icons/fi";
 import Link from "next/link";
 import { useCart } from '../app/context/CartContext';
+import { Button } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
+   const [search, setSearch] = useState("");
+
+   const handleSearch = () => {
+    if (search.trim()) {
+      router.push(`/store?search=${encodeURIComponent(search)}`);
+    } else {
+      router.push("/store");
+    }
+  };
   return (
 
     <header className={`${styles.header} py-3 px-1 shadow`}>
       <Container className="flex justify-between items-center">
 
-        <div className="flex items-center">
-          <span className="text-pink-500 font-bold text-4xl">
+        <div className="flex items-center text-4xl ">
+          <Button className="text-pink-500 font-bold " onClick={() => router.push("/")}>
             T-Store<b className="text-black">.</b>
-          </span>
+          </Button>
         </div>
 
         <div className={`${styles.searchBar} flex items-center`}>
           <input type="text"
-            placeholder="Search fro products.."
+            placeholder="Search for products..."
             className={styles.searchInput}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
-          <button className={styles.searchButton}>
+          <button
+            className={styles.searchButton}
+            onClick={handleSearch}
+          >
             <FiSearch size={18} />
           </button>
         </div>

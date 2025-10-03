@@ -70,27 +70,23 @@ export default function ProductDetailsPage() {
         }
     };
 
-const handleBuyNow = () => { 
-    const checkoutProduct = { 
-        id: product._id, title:
-         product.title, 
-         imgSrc:
-  product.imgSrc ||
-  product.featureImage ||
-  product.images?.find(img => typeof img === "string" && img.startsWith("/uploads")) ||
-  "",
+const handleBuyNow = () => 
+    { const checkoutProduct = { 
+        id: product._id, 
+        title: product.title, 
+        featureImage: product.featureImage || product.images?.[0] || "/placeholder.jpg", 
+        images: product.images || [],
         price: product.price, 
         salePrice: product.salePrice ?? null, 
         description: product.description, 
         quantity: quantity, };
 
-
         localStorage.setItem("checkoutProduct", JSON.stringify(checkoutProduct));
         router.push("/checkout");
     };
     return (
-        <div className="flex justify-center py-10 bg-gray-70">
-            <div className="flex flex-wrap md:flex-nowrap gap-6 p-6 bg-white rounded-2xl shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-10">
+            <div className="flex flex-wrap md:flex-nowrap gap-6 p-6 bg-white rounded-2xl">
 
                 <div className="flex gap-4">
                     <div className="flex flex-col gap-2">

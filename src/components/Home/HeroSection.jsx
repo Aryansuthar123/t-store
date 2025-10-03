@@ -1,9 +1,12 @@
+"use client"
 import React from "react";
 import styles from "@/styles/Home/hero.module.css";
 import Container from "../Container";
 import Slider from "./Slider"
+import {useRouter} from "next/navigation";
 
  export default function HeroSection() {
+    const router = useRouter();
     return(
       <div>
         <Container>
@@ -16,7 +19,8 @@ import Slider from "./Slider"
               <p>
                 Exclusive deals for you!
               </p>
-              <button className={styles.ctaButton}>Shop Now</button>
+              <button className={styles.ctaButton} onClick={() => router.push("/store")}
+                >Shop Now</button>
             </div>
             <Slider/>
           </section>

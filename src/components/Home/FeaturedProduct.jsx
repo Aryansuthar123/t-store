@@ -19,7 +19,7 @@ export default function FeaturedProduct() {
   }, []);
 
   return (
-    <section className="py-3">
+    <section className="py-5">
       <h2 className="text-center text-2xl font-bold mb-4">
         Feature Products
       </h2>

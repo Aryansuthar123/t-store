@@ -16,8 +16,8 @@ export default function RecentlyAdded() {
 
 
   return (
-    <section className="py-6">
-      <h2 className="text-center text-2xl font-bold mb-3">
+    <section className="py-8 ">
+      <h2 className="text-center text-8xl font-extrabold text-gray-900 mb-6">
         Recently Added Products
       </h2>
 

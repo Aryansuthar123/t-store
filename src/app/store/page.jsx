@@ -3,7 +3,7 @@ import React  from 'react';
 import Product from '../Components/product';
 import  {useProductContext} from '../context/ProductContext'
 
-const page = () => {
+const StorePage = () => {
     const {products} = useProductContext();
    
     return (
@@ -13,4 +13,4 @@ const page = () => {
 }
 
 
-export default page;
+export default StorePage;

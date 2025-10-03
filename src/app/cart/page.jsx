@@ -61,7 +61,7 @@ export default function CartPage() {
     return <p className="text-center mt-10">Your cart is empty.</p>;
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-8xl mx-auto p-6 ">
       <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
 
       <ul className="space-y-6">
