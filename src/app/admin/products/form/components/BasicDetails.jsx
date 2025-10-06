@@ -61,7 +61,7 @@ import { useCategories } from "@/hooks/useCategories";
                     <option value="">Setect Category</option>
                    {categories?.map((item, index) => {
                     return (
-                        <option key={item?.id ?? `category-${index}` } value={item?.id ?? index} >
+                        <option key={item?.id ?? `category-${index}` } value={item?._id ?? index} >
                             {item?.name}
                         </option>
                     )

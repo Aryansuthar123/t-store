@@ -30,7 +30,7 @@ export default function Header() {
           </Button>
         </div>
 
-        <div className={`${styles.searchBar} flex items-center`}>
+        {/* <div className={`${styles.searchBar} flex items-center`}>
           <input type="text"
             placeholder="Search for products..."
             className={styles.searchInput}
@@ -43,7 +43,7 @@ export default function Header() {
           >
             <FiSearch size={18} />
           </button>
-        </div>
+        </div> */}
         <NavBar />
       </Container>
     </header>

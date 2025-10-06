@@ -19,12 +19,12 @@ export default function FeaturedProduct() {
   }, []);
 
   return (
-    <section className="py-5">
-      <h2 className="text-center text-2xl font-bold mb-4">
+    <section className="py-8 px-22">
+      <h2 className="text-left text-3xl font-bold mb-6 text-gray-900">
         Feature Products
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 max-w-6xl mx-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-3  md:grid-cols-3 lg:grid-cols-5 gap-1 max-w-7xl  mx-auto border rounded-lg ">
         {products.map((item) => (
           <ProductBox key={item._id} product={item} />
         ))}

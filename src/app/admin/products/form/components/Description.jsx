@@ -22,7 +22,8 @@ const modules = {
         handleData('description', value);
     };
     return (
-        <section className="flex-1 flex flex-col gap-2 bg-white  rounded-lg px-4 border">
+        <section className="flex-1 flex flex-col gap-2 bg-white rounded-lg px-4 border overflow-hidden">
+
             <h1 className="font-semibold text-xs">Description</h1>
              <ReactQuill
                 value={data?.description}

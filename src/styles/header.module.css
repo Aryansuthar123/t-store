@@ -36,13 +36,43 @@
 }
 .navLink  a {
     color: #333;
+    text-decoration: none;
     transition: color 0.3s ease;
 }
 .navLink a:hover {
     color: #ec4899;
+    text-decoration: none;
 }
 .cartBadge {
     font-size: 0.75rem;
     font-weight: bold;
     
+}
+
+.footer a {
+  text-decoration: none !important;
+}
+
+.footer a:hover {
+  text-decoration: none !important;
+}
+
+.ql-container {
+  border: none !important; 
+  border-top: 1px solid #e5e7eb !important; 
+  border-radius: 0 0 8px 8px !important; 
+  overflow: hidden !important; 
+}
+
+.ql-toolbar {
+  border: none !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.ql-editor {
+  min-height: 100px !important;
+  border: none !important;
+  overflow: auto !important;
+  box-sizing: border-box;
 }

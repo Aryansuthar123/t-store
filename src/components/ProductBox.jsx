@@ -13,7 +13,7 @@ export default function ProductBox({ product }) {
 
 
       return (
-        <div className={`${styles.cart} bg-white p-2  rounded-lg w-full`}>
+        <div className={`${styles.cart} bg-white p-4  rounded-lg w-full`}>
             <Link href={`/store/product-details/${productId}`}>
                 <Image
                     width={300}
@@ -25,7 +25,7 @@ export default function ProductBox({ product }) {
             </Link>
 
             <div className="mt-4">
-                <h3 className="text-sm min-h-[70px] font-semibold text-gray-800">
+                <h3 className="text-xs min-h-[40-px] font-medium text-gray-800">
                     {product.title}
                 </h3>
 
@@ -45,7 +45,7 @@ export default function ProductBox({ product }) {
                 )}
 
                 <Link href={`/store/product-details/${productId}`}>
-                    <button className="bg-pink-500 text-white px-3 py-1 rounded hover:bg-pink-600 transition duration-300 mt-3">
+                    <button className="bg-pink-500 text-white px-3 py-1 rounded hover:bg-pink-300 hover:text-pink-500 transition duration-300 mt-3">
                         View Now
                     </button>
                 </Link>

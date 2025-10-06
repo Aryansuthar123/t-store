@@ -59,11 +59,12 @@ export default function CheckoutPage() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto p-6">
-            <h1 className="text-center font-bold  rounded-lg text-black">Checkout</h1>
+        <div className="max-w-7xl px-0 mx-auto p-9">
+            <h1 className="text-left font-bold  rounded-lg text-black">Checkout
+                <b className="text-pink-500">.</b></h1>
             <h1 className="text-2xl font-bold mb-6">Address </h1>
             <div className="flex flex-col md:flex-row gap-10">
-                <div className="md:w-1/2 flex flex-col gap-6">
+                <div className="md:w-1/2 flex flex-col gap-4">
 
                     {!addressSaved ? (
                         <button
@@ -86,7 +87,7 @@ export default function CheckoutPage() {
                         </div>
                     )}
 
-                    <div className="border p-4 rounded-lg">
+                    <div className="border p-4  rounded-lg">
                         <h2 className="text-2xl font-semibold mb-4">Choose Payment Method</h2>
                         <div className="flex flex-col gap-4">
                             <label className="flex items-center gap-2">
@@ -100,7 +101,7 @@ export default function CheckoutPage() {
                             </label>
                         </div>
 
-                        <button className="mt-6 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                        <button className="mt-6 bg-green-600 text-white px-7 py-2 rounded-lg hover:bg-green-700">
                             Pay Now
                         </button>
                     </div>
