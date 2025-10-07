@@ -11,7 +11,7 @@ export default function FeaturedProduct() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-       
+
           setProducts(data.products.slice(0, 5));
         }
       })
@@ -24,7 +24,7 @@ export default function FeaturedProduct() {
         Feature Products
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3  md:grid-cols-3 lg:grid-cols-5 gap-1 max-w-7xl  mx-auto border rounded-lg ">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-3 max-w-7xl mx-auto">
         {products.map((item) => (
           <ProductBox key={item._id} product={item} />
         ))}

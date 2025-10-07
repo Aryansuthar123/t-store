@@ -13,7 +13,8 @@ export default function ProductBox({ product }) {
 
 
       return (
-        <div className={`${styles.cart} bg-white p-4  rounded-lg w-full`}>
+        <div className={`${styles.cart} bg-white p-3 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-transform hover:scale-105`}>
+
             <Link href={`/store/product-details/${productId}`}>
                 <Image
                     width={300}

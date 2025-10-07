@@ -2,13 +2,13 @@ import Cart from '../Models/Cart';
 import { NextResponse } from 'next/server';
 
 
-// ✅ Add to Cart
+
 export const addToCart = async (req) => {
     try {
         const body = await req.json();
         console.log("Cart Item Received:", body);
 
-        // check if product already exists in cart (by productId or title)
+       
         const existingItem = await Cart.findOne({ title: body.title });
         if (existingItem) {
             return NextResponse.json({
@@ -17,11 +17,11 @@ export const addToCart = async (req) => {
             });
         }
 
-        // create new cart entry (with images)
+     
         const newCart = await Cart.create({
             title: body.title,
-            featureImage: body.featureImage || body.imgSrc || "",  // 👈 feature image safe
-            images: body.images || [],   // 👈 multiple images safe
+            featureImage: body.featureImage || body.imgSrc || "",  
+            images: body.images || [],  
             imgSrc: body.imgSrc || "",
             price: body.price,
             salePrice: body.salePrice,
@@ -41,7 +41,7 @@ export const addToCart = async (req) => {
 };
 
 
-// ✅ Update Cart Item
+
 export const updateCartItem = async (req) => {
     const body = await req.json();
     const { _id, quantity } = body;
@@ -64,7 +64,6 @@ export const updateCartItem = async (req) => {
 };
 
 
-// ✅ Get all Cart Items
 export const getCartItems = async () => {
     try {
         const cartItems = await Cart.find();
@@ -79,7 +78,6 @@ export const getCartItems = async () => {
 };
 
 
-// ✅ Clear Cart
 export const clearCart = async () => {
     try {
         await Cart.deleteMany({});

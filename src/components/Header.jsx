@@ -21,10 +21,10 @@ export default function Header() {
   };
   return (
 
-    <header className={`${styles.header} py-3 px-1 shadow`}>
+    <header className={`${styles.header} py-3 px-4 shadow`}>
       <Container className="flex justify-between items-center">
 
-        <div className="flex items-center text-4xl ">
+        <div className="flex items-center text-4xl -ml-4 ">
           <Button className="text-pink-500 font-bold " onClick={() => router.push("/")}>
             T-Store<b className="text-black">.</b>
           </Button>

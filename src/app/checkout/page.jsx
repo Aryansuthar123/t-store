@@ -59,11 +59,11 @@ export default function CheckoutPage() {
     };
 
     return (
-        <div className="max-w-7xl px-0 mx-auto p-9">
+        <div className="max-w-6xl px-0  mx-auto p-8">
             <h1 className="text-left font-bold  rounded-lg text-black">Checkout
                 <b className="text-pink-500">.</b></h1>
-            <h1 className="text-2xl font-bold mb-6">Address </h1>
-            <div className="flex flex-col md:flex-row gap-10">
+          
+            <div className="flex flex-col md:flex-row gap-4">   
                 <div className="md:w-1/2 flex flex-col gap-4">
 
                     {!addressSaved ? (
@@ -87,7 +87,7 @@ export default function CheckoutPage() {
                         </div>
                     )}
 
-                    <div className="border p-4  rounded-lg">
+                    <div className="border p-3  rounded-lg">
                         <h2 className="text-2xl font-semibold mb-4">Choose Payment Method</h2>
                         <div className="flex flex-col gap-4">
                             <label className="flex items-center gap-2">
@@ -101,12 +101,12 @@ export default function CheckoutPage() {
                             </label>
                         </div>
 
-                        <button className="mt-6 bg-green-600 text-white px-7 py-2 rounded-lg hover:bg-green-700">
+                        <button className="mt-6 bg-amber-500 text-white px-3 py-1 !rounded-lg hover:bg-amber-600">
                             Pay Now
                         </button>
                     </div>
                 </div>
-                <div className="md:w-1/2 flex flex-col bg-pink-100 items-center border p-4 rounded-lg">
+                <div className="md:w-1/2 flex flex-col bg-gray-100 text-left  border p-4 rounded-lg">
                     <div className="flex gap-4">
 
                         <div className="flex flex-col gap-2">
@@ -115,11 +115,10 @@ export default function CheckoutPage() {
                                     <Image
                                         src={img}
                                         alt={`thumb-${i}`}
-                                        width={60}
-                                        height={60}
+                                        width={80}
+                                        height={80}
                                         className={`object-cover rounded border hover:scale-105 transition 
-                                            ${(preview || featureImage) === img ? "ring-2 ring-blue-500" : ""}`}
-                                    />
+                                            ${(preview || featureImage) === img ? "ring-2 ring-blue-500" : ""}`} />
                                 </button>
                             ))}
                         </div>
@@ -127,13 +126,12 @@ export default function CheckoutPage() {
                         <Image
                             src={preview || featureImage}
                             alt={product.title}
-                            width={200}
-                            height={200}
-                            className="object-cover rounded-lg shadow-md "
-                        />
+                            width={300}
+                            height={300}
+                            className="object-cover rounded-lg shadow-md " />
                     </div>
-                    <div className="mt-6 text-center">
-                        <h2 className="text-xl font-semibold">{product.title}</h2>
+                    <div className="mt-6 text-left">
+                        <h2 className="text-xl text-left font-semibold">{product.title}</h2>
                        
                          {product.description && (
                             <div

@@ -61,8 +61,8 @@ export default function CartPage() {
     return <p className="text-center mt-10">Your cart is empty.</p>;
 
   return (
-    <div className="max-w-8xl mx-auto p-6 ">
-      <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
+    <div className="max-w-7xl px-8 mx-auto p-6 ">
+      <h1 className="text-2xl font-bold px-4 mb-6">Your Cart</h1>
 
       <ul className="space-y-6">
         {cartItems.map((item) => {
@@ -79,35 +79,32 @@ export default function CartPage() {
             ...(item.images?.filter(Boolean) || []),
           ].filter((img, index, self) => self.indexOf(img) === index);
 
-          return (
+  return (
             <li
               key={item._id}
-              className="flex flex-wrap md:flex-nowrap gap-6 p-6 border rounded-xl shadow bg-white"
-            >
+              className="flex flex-wrap md:flex-nowrap gap-6 p-10 border rounded-xl shadow bg-white" >
              
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 {allImages.map((img, i) => (
                   <button
                     key={i}
                     onClick={() =>
                       setPreviews((p) => ({ ...p, [item._id]: img }))
-                    }
-                  >
+                    } >
+
                     <img
                       src={img}
                       alt={`thumb-${i}`}
-                      className="w-16 h-16 object-cover rounded border hover:scale-105 transition"
+                      className="w-15 h-16 object-cover rounded border hover:scale-105 transition"
                     />
                   </button>
                 ))}
               </div>
-
-            
+      
               <img
                 src={currentPreview}
                 alt={item.title}
-                className="w-44 h-44 object-cover rounded-lg shadow"
-              />
+                className="w-58 h-58 object-cover rounded-lg " />
 
             
               <div className="flex-1 min-w-[250px]">
@@ -127,23 +124,19 @@ export default function CartPage() {
                 {item.description && (
                   <div
                     className="text-sm text-gray-600 mt-1"
-                    dangerouslySetInnerHTML={{ __html: item.description }}
-                  />
+                    dangerouslySetInnerHTML={{ __html: item.description }}/>
                 )}
-
                
                 <div className="flex flex-wrap items-center gap-3 mt-4">
                   <button
                     onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                    className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
-                  >
+                    className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">
                     −
                   </button>
                   <span>{item.quantity}</span>
                   <button
                     onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                    className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
-                  >
+                    className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300" >
                     +
                   </button>
 
@@ -155,14 +148,12 @@ export default function CartPage() {
 
                   <button
                     onClick={() => handleBuyNow(item)}
-                    className="ml-4 bg-orange-400 text-white px-4 py-1 rounded hover:bg-orange-500"
-                  >
+                    className="ml-4 bg-orange-400 text-white px-3 py-1 rounded hover:bg-orange-500" >
                     Buy Now
                   </button>
                   <button
                     onClick={() => handleRemoveItem(item._id)}
-                    className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-                  >
+                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
                     Remove
                   </button>
                 </div>

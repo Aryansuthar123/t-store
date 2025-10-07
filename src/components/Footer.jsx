@@ -6,7 +6,7 @@ import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
-      <div className="container text-left mx-auto px-1 py-4 grid gap-14 md:grid-cols-4">
+      <div className="container text-left mx-auto  py-4 grid gap-14 md:grid-cols-4">
         <div className="text-left">
           <h3 className="mb-4 text-lg font-semibold text-white">T-Store</h3>
 

@@ -4,9 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-connectDB();
+
 
 export async function POST(request: NextRequest) {
+  connectDB();
   try {
     const reqBody = await request.json();
     const { email, password } = reqBody;
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // check if user exists
+   
     const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json(
@@ -32,7 +33,7 @@ if (!user.isApproved) {
     { status: 403 }
   );
 }
-    // check password
+    
     const validPassword = await bcryptjs.compare(password, user.password);
     console.log("Password match result:", validPassword);
     if (!validPassword) {
@@ -41,14 +42,11 @@ if (!user.isApproved) {
         { status: 401 }
       );
     }
-    if (!user.isApproved) {
-  return NextResponse.json(
-    { success: false, error: "Your account is not approved yet. Please contact admin." },
-    { status: 403 }
-  );
-}
+    
+    if (!process.env.TOKEN_SECRET) {
+      throw new Error("TOKEN_SECRET is not defined");
+    }
 
-    // token payload
     const tokenData = {
       id: user._id,
       username: user.username,
@@ -59,16 +57,17 @@ if (!user.isApproved) {
         role: user.role || "user", 
     };
 
-    // create token
+  
     const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
       expiresIn: "1d",
     });
 
-    // response
+  
     const response = NextResponse.json({
       success: true,
       message: "Login successfully",
       user: tokenData,
+      token: token,
     });
 
    response.cookies.set("token", token, {
