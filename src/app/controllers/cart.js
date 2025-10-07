@@ -1,4 +1,4 @@
-import Cart from '../Models/Cart';
+import Cart from '../../models/Category';
 import { NextResponse } from 'next/server';
 
 

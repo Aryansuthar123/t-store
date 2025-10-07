@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import connectDB from "../../../utils/database";
-import Category from "@/Models/Category";
+import Category from "../../../../models/Category";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
