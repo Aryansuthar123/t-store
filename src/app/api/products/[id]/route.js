@@ -34,8 +34,8 @@ export async function PUT(req, { params }) {
     const stock = formData.get("stock");
     const price = formData.get("price");
     const salePriceRaw = formData.get("salePrice");
-    const salePrice =
-      salePriceRaw !== null && salePriceRaw !== "" ? Number(salePriceRaw) : null;
+    
+    
 
 
     let featureImageUrl = null;

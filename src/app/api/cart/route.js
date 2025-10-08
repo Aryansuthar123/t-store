@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import connectDB from "../../utils/database"; 
 import {
     addToCart,
-    clearCart,
+    
     getCartItems,
     updateCartItem
 } from "../../controllers/cart"; 

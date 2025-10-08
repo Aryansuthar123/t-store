@@ -1,4 +1,4 @@
-import { response } from "express"
+
 
 const getCategories = async () => {
     const response = await fetch('https://fakestoreapi.in/api/products/category');
@@ -7,12 +7,5 @@ const getCategories = async () => {
 }
 
 
-const getProducts = async () => {
-    const response= await fetch('https://fakestoreapi.in/api/products');
-   
- 
-    const data = await response.json();
-    return data.products; 
-}
 
 export {getCategories}

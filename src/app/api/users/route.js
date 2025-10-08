@@ -28,7 +28,7 @@ export async function POST(req) {
     const email = form.get("email");
     const password = form.get("password") || "123456";
     const image = form.get("image") || "";
-    const imageName = imageFile?.name || "";
+    
 
     const existing = await User.findOne({ $or: [{ email }, { username }] });
     if (existing) {

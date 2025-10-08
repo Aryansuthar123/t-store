@@ -1,6 +1,6 @@
 import connectDB from "../../../utils/database";
 import User from "../../../../models/userModel";
-import  {NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 connectDB();
 
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
         const reqBody = await request.json()
         const { username, email, password } = reqBody
         console.log(reqBody);
- 
+
         const user = await User.findOne({ email })
         if (user) {
             return NextResponse.json({ error: "User already exists" }, { status: 400 })
@@ -22,24 +22,27 @@ export async function POST(request: NextRequest) {
         const newUser = new User({
             username,
             email,
-            password ,
-            isAdmin: false,   
-            role: "user"  
+            password: hashedPassword,
+            isAdmin: false,
+            role: "user"
         })
-        
+
         const savedUser = await newUser.save()
         console.log(savedUser);
 
         return NextResponse.json({
-            message : "User created Successfully",
+            message: "User created Successfully",
             success: true,
             savedUser
         })
 
 
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message },
-            { status: 500 })
+    } catch (error) {
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+        return NextResponse.json({ error: "Unknown error occurred" }, { status: 500 });
     }
+
 
 }

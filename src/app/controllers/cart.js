@@ -8,7 +8,7 @@ export const addToCart = async (req) => {
         const body = await req.json();
         console.log("Cart Item Received:", body);
 
-       
+
         const existingItem = await Cart.findOne({ title: body.title });
         if (existingItem) {
             return NextResponse.json({
@@ -17,11 +17,11 @@ export const addToCart = async (req) => {
             });
         }
 
-     
+
         const newCart = await Cart.create({
             title: body.title,
-            featureImage: body.featureImage || body.imgSrc || "",  
-            images: body.images || [],  
+            featureImage: body.featureImage || body.imgSrc || "",
+            images: body.images || [],
             imgSrc: body.imgSrc || "",
             price: body.price,
             salePrice: body.salePrice,
@@ -63,7 +63,6 @@ export const updateCartItem = async (req) => {
     }
 };
 
-
 export const getCartItems = async () => {
     try {
         const cartItems = await Cart.find();
@@ -73,6 +72,7 @@ export const getCartItems = async () => {
             cartItems,
         });
     } catch (error) {
+        console.error("Error fetching cart items:", error);
         return NextResponse.json({ success: false, message: "Error fetching cart items" });
     }
 };
@@ -86,6 +86,7 @@ export const clearCart = async () => {
             success: true,
         });
     } catch (error) {
+        console.error("Error clearing cart:", error);
         return NextResponse.json({ success: false, message: "Error clearing cart" });
     }
 };

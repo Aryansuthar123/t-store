@@ -1,5 +1,4 @@
 import mongoose from "mongoose"
-import { NextRequest } from "next/server";
 
 const connectDB = async () => {
     if (mongoose.connection.readyState) {

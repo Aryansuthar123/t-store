@@ -2,15 +2,13 @@ import React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { ProductProvider } from './context/ProductContext';
 import LayoutWrapper from '@/components/LayoutWrapper'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Toaster } from "react-hot-toast";
 import {CartProvider} from "./context/CartContext"
 
-const showHeaderRoutes = [];
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,8 +37,7 @@ export default function RootLayout({
               href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
               rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNLyT2bRJXh0JMHjY6hW+ALEwIH"
-              crossOrigin="anonymous"
-            />
+              crossOrigin="anonymous" />
           </head>
             <body
               className={`${geistSans.variable} ${geistMono.variable} `}>
