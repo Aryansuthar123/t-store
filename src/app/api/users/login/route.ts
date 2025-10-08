@@ -79,11 +79,14 @@ if (!user.isApproved) {
 });
 
     return response;
-  } catch (error: any) {
-    console.error("Login API Error:", error.message);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
-  }
+  } catch (error: unknown) {
+  const message =
+    error instanceof Error ? error.message : "Something went wrong";
+  console.error("Login API Error:", message);
+  return NextResponse.json(
+    { success: false, error: message },
+    { status: 500 }
+  );
+}
+
 }

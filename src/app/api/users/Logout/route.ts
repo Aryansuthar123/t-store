@@ -14,10 +14,14 @@
         });
 
         return response;
-    } catch (error: any) {
-        return NextResponse.json(
-        { success: false, message: error.message },
-        { status: 500 }
-        );
-    }
+   } catch (error: unknown) {
+  const message =
+    error instanceof Error ? error.message : "Something went wrong";
+
+  return NextResponse.json(
+    { success: false, message },
+    { status: 500 }
+  );
+}
+
     }
