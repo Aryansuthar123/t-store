@@ -164,8 +164,7 @@ export default function Form() {
               <img
                 src={data.featureImagePreview || data.featureImage}
                 alt="Feature Preview"
-                className="w-40 h-40 object-cover border mt-1"
-  />
+                className="w-40 h-40 object-cover border mt-1"/>
             </div>
           )}
           <input

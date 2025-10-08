@@ -58,7 +58,7 @@ export default function RevenueChart(){
         };
   
     return (
-    <section className="bg-white p-5 rounded-lg shadow w-full">
+    <section className="bg-white p-5 rounded-lg  shadow w-full">
             <Line data={data} options={options}/>
     </section>);
 }

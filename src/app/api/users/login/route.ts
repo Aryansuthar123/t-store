@@ -7,8 +7,9 @@ import jwt from "jsonwebtoken";
 
 
 export async function POST(request: NextRequest) {
-  connectDB();
+ 
   try {
+    await connectDB();
     const reqBody = await request.json();
     const { email, password } = reqBody;
 
@@ -62,7 +63,8 @@ if (!user.isApproved) {
       expiresIn: "1d",
     });
 
-  
+  console.log("Generated token:", token);
+
     const response = NextResponse.json({
       success: true,
       message: "Login successfully",
@@ -72,7 +74,7 @@ if (!user.isApproved) {
 
    response.cookies.set("token", token, {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure: process.env.NODE_ENV === "production" ? true : false,
   path: "/",    
   sameSite: "lax",      
   maxAge: 60 * 60 * 24, 
