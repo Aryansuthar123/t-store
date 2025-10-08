@@ -3,8 +3,8 @@ import { Button } from "@nextui-org/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { deleteCategory } from "@/lib/categoryService";
-import { updateCategory } from "@/lib/categoryService";
+import { deleteCategory ,updateCategory} from "../../../../lib/categoryService";
+
 import { useRouter } from "next/navigation";
 
 
@@ -89,8 +89,7 @@ function Row({cat, index}) {
                 <img
                   src={cat.image}
                   alt={cat.name}
-                  className="w-10 h-10 object-cover rounded mx-auto"
-                />
+                  className="w-10 h-10 object-cover rounded mx-auto" />
               </td>
               <td className="p-2 border font-medium">{cat.name}</td>
               <td className="p-2 flex justify-center border-r-lg gap-2 text-gray-600">

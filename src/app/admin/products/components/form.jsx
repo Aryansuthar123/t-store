@@ -3,7 +3,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getProduct, createNewProduct, updateProduct } from "../../../../lib/productService";
 import toast from "react-hot-toast";
-import { createNewProduct, updateProduct } from "@/lib/productService";
+import { createNewProduct, updateProduct } from "../../../../lib/productService";
 
 export default function Form() {
   const searchParams = useSearchParams();
@@ -26,7 +26,6 @@ export default function Form() {
   });
 
 
-  // fetch product details if editing
   useEffect(() => {
     if (id) {
       setLoading(true);
@@ -58,7 +57,7 @@ export default function Form() {
     }
   }, [id]);
 
-  // handle change
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({
@@ -67,7 +66,7 @@ export default function Form() {
     }));
   };
 
-  // handle submit
+ 
        
         const handleSubmit = async (e) => {
     e.preventDefault();
@@ -111,8 +110,7 @@ export default function Form() {
             placeholder="Title"
             value={data.title}
             onChange={handleChange}
-            className="border p-2 w-full"
-          />
+            className="border p-2 w-full"/>
 
           <input
             type="number"
@@ -120,8 +118,7 @@ export default function Form() {
             placeholder="Price"
             value={data.price}
             onChange={handleChange}
-            className="border p-2 w-full"
-          />
+            className="border p-2 w-full"/>
 
           <input
             type="number"
@@ -129,8 +126,7 @@ export default function Form() {
             placeholder="Sale Price"
             value={data.salePrice}
             onChange={handleChange}
-            className="border p-2 w-full"
-          />
+            className="border p-2 w-full" />
 
           <input
             type="number"
@@ -138,24 +134,21 @@ export default function Form() {
             placeholder="Stock"
             value={data.stock}
             onChange={handleChange}
-            className="border p-2 w-full"
-          />
+            className="border p-2 w-full"/>
 
           <textarea
             name="shortDescription"
             placeholder="Short Description"
             value={data.shortDescription}
             onChange={handleChange}
-            className="border p-2 w-full"
-          />
+            className="border p-2 w-full"/>
 
           <textarea
             name="description"
             placeholder="Description"
             value={data.description}
             onChange={handleChange}
-            className="border p-2 w-full"
-          />
+            className="border p-2 w-full" />
 
           <input
             type="text"
@@ -163,8 +156,7 @@ export default function Form() {
             placeholder="Category ID"
             value={data.category}
             onChange={handleChange}
-            className="border p-2 w-full"
-          />
+            className="border p-2 w-full"/>
 
           {(data.featureImagePreview || (typeof data.featureImage === "string" && data.featureImage)) && (
             <div className="mt-2">
@@ -173,7 +165,7 @@ export default function Form() {
                 src={data.featureImagePreview || data.featureImage}
                 alt="Feature Preview"
                 className="w-40 h-40 object-cover border mt-1"
-              />
+  />
             </div>
           )}
           <input
@@ -189,8 +181,7 @@ export default function Form() {
                   featureImagePreview: URL.createObjectURL(file),
                 }));
               }
-            }}
-          />
+            }} />
 
               {data.imagesPreview?.length > 0 && (
                 <div className="flex gap-2 flex-wrap mt-2">
@@ -199,8 +190,7 @@ export default function Form() {
                       key={idx}
                       src={src}
                       alt={`preview-${idx}`}
-                      className="w-24 h-24 object-cover border"
-                    />
+                      className="w-24 h-24 object-cover border" />
                   ))}
                 </div>
               )}
@@ -218,16 +208,12 @@ export default function Form() {
                     imagesPreview: files.map((file) => URL.createObjectURL(file)),
                   }));
                 }}
-                className="mt-2"
-              />
-
-
+                className="mt-2"/>
 
           <button
             type="submit"
             className="bg-blue-600 text-white px-4 py-2 rounded"
-            disabled={loading}
-          >
+            disabled={loading}>
             {loading ? "Saving..." : id ? "Update Product" : "Create Product"}
           </button>
         </form>

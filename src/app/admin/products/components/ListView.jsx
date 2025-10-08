@@ -3,9 +3,7 @@ import { Button, inputOtp } from "@nextui-org/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { deleteProduct } from "../../../../lib/productService";
-
-import {updateProduct} from "@/lib/productService";
+import { deleteProduct, updateProduct} from "../../../../lib/productService";
 import { useRouter } from "next/navigation";
 import { number } from "framer-motion";
 
@@ -64,8 +62,7 @@ useEffect(() => {
             value={pageLimit}
             onChange={(e) => setPageLimit(number(e.target.value))}
             className="px-5 rounded-xl" 
-            name="perpage" id="perpage"
-        >
+            name="perpage" id="perpage" >
           <option value={3}>3 Items</option>
           <option value={5}>5 Items</option>
           <option value={20}>20 Items</option>
@@ -109,8 +106,7 @@ function Row({ products, index }) {
         <img
           src={products?.featureImage || products?.image || products?.images?.[0] || "/no-image.png"}
           alt={products?.title || "No name"}
-          className="w-10 h-10 object-cover rounded mx-auto"
-        />
+          className="w-10 h-10 object-cover rounded mx-auto"/>
       </td>
 
 

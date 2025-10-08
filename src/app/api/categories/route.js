@@ -1,5 +1,5 @@
 import connectDB from "../../utils/database";
-import Category from "@/Models/Category";
+import Category from "../../../models/Category";
 import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 

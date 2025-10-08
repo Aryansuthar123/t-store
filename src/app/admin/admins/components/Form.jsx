@@ -81,14 +81,12 @@ console.log("PARSED RESULT =>", result);
           e.preventDefault();
           id ? handleEdit() : handleCreate();
         }}
-        className="flex flex-col gap-3"
-      >
+        className="flex flex-col gap-3" >
        
         <input
           type="file"
           onChange={(e) => e.target.files[0] && setImage(e.target.files[0])}
-          className="border px-4 py-2 rounded-lg w-full"
-        />
+          className="border px-4 py-2 rounded-lg w-full" />
 
   
         <input
@@ -96,8 +94,7 @@ console.log("PARSED RESULT =>", result);
           placeholder="Name"
           value={data?.username ?? ""}
           onChange={(e) => handleData("username", e.target.value)}
-          className="border px-4 py-2 rounded-lg w-full"
-        />
+          className="border px-4 py-2 rounded-lg w-full"/>
 
      
         <input
@@ -105,13 +102,11 @@ console.log("PARSED RESULT =>", result);
           placeholder="Email"
           value={data?.email ?? ""}
           onChange={(e) => handleData("email", e.target.value)}
-          className="border px-4 py-2 rounded-lg w-full"
-        />
+          className="border px-4 py-2 rounded-lg w-full" />
 
         <button
           type="submit"
-          className="bg-indigo-600 text-white px-4 py-2 rounded"
-        >
+          className="bg-indigo-600 text-white px-4 py-2 rounded">
           {id ? "Update" : "Create"}
         </button>
       </form>

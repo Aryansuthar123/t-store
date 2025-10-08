@@ -1,5 +1,5 @@
 
-import Cart from '../../Models/Cart';
+import Cart from '../../models/Cart';
 import { NextResponse } from 'next/server';
 import connectDB from "../../utils/database"; 
 import {

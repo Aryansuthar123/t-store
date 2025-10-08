@@ -62,8 +62,7 @@ export default function ListView() {
                 <img
                   src={admin.image || "/default-avatar.png"}
                   alt={admin.username}
-                  className="w-12 h-12 object-cover rounded-lg mx-auto"
-                />
+                  className="w-12 h-12 object-cover rounded-lg mx-auto" />
               </td>
               <td className="p-2 border">
                 <div>
@@ -89,8 +88,7 @@ export default function ListView() {
                       } catch (err) {
                         toast.error(err.message);
                       }
-                    }}
-                  >
+                    }} >
                     Approve
                   </Button>
 
@@ -99,8 +97,7 @@ export default function ListView() {
                    className="bg-blue-400 text-white hover:bg-blue-500 rounded-lg"
                     onClick={() => router.push(`/admin/admins/${admin._id}`)}
                     color="default"
-                    variant="flat"
-                  >
+                    variant="flat" >
                     <Pencil size={16} />
                   </Button>
 
@@ -108,8 +105,7 @@ export default function ListView() {
                    className="bg-red-400 text-white hover:bg-red-400 rounded-lg"
                     color="danger"
                     variant="flat"
-                    onClick={() => handleDelete(admin._id)}
-                  >
+                    onClick={() => handleDelete(admin._id)}>
                     <Trash2 size={16} />
                   </Button>
                 </div>

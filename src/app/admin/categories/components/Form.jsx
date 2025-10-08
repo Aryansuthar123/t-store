@@ -1,5 +1,5 @@
 "use client";
-import { getCategories , getCategory} from "@/lib/categoryService";
+import { getCategories , getCategory} from "../../../../lib/categoryService";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -137,8 +137,7 @@ const handleEdit = async () => {
               <img
                 className="h-20"
                 src={image ? URL.createObjectURL(image) : data.image}
-                alt="Category"
-              />
+                alt="Category" />
             </div>
           )}
           <input
@@ -150,8 +149,7 @@ const handleEdit = async () => {
             id="category-image"
             name="category-image"
             type="file"
-            className="border px-4 py-2 rounded-lg w-full"
-          />
+            className="border px-4 py-2 rounded-lg w-full"/>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -165,8 +163,7 @@ const handleEdit = async () => {
             placeholder="Enter Name"
             value={data?.name ?? ""}
             onChange={(e) => handleData("name", e.target.value)}
-            className="border px-4 py-2 rounded-lg w-full focus:outline-none"
-          />
+            className="border px-4 py-2 rounded-lg w-full focus:outline-none" />
         </div>
 
         <div className="flex flex-col gap-1">
@@ -180,14 +177,12 @@ const handleEdit = async () => {
             placeholder="Enter Slug"
             value={data?.slug ?? ""}
             onChange={(e) => handleData("slug", e.target.value)}
-            className="border px-4 py-2 rounded-lg w-full focus:outline-none"
-          />
+            className="border px-4 py-2 rounded-lg w-full focus:outline-none"  />
         </div>
 
         <button
           type="submit"
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-        >
+          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
           {id ? "Update" : "Create"}
         </button>
       </form>

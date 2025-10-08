@@ -49,8 +49,7 @@ export default function Images({ data,
                                 key={idx}
                                 className="w-20 object-cover rounded-lg"
                                 src={url}
-                                alt=""
-                            />
+                                alt="" />
                         ))}
                     </div>
                 )}
@@ -63,8 +62,7 @@ export default function Images({ data,
                                 key={index}
                                 className="w-20 object-cover rounded-lg"
                                 src={URL.createObjectURL(item)}
-                                alt=""
-                            />
+                                alt="" />
                         ))}
                     </div>
                 )}

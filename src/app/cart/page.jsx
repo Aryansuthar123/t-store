@@ -95,8 +95,7 @@ export default function CartPage() {
                     <img
                       src={img}
                       alt={`thumb-${i}`}
-                      className="w-15 h-16 object-cover rounded border hover:scale-105 transition"
-                    />
+                      className="w-15 h-16 object-cover rounded border hover:scale-105 transition"/>
                   </button>
                 ))}
               </div>

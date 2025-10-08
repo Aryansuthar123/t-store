@@ -5,7 +5,7 @@ import Images from "./components/Images"
 import Description from "./components/Description"
 import { Button } from "@nextui-org/react";
 import toast from "react-hot-toast";
-import { getProduct, createNewProduct, updateProduct } from "@/lib/productService";
+import { getProduct, createNewProduct, updateProduct } from "../../../../lib/productService";
 
 import { useSearchParams } from "next/navigation";
 
