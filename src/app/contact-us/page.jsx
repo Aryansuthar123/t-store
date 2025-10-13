@@ -35,7 +35,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-0 py-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Contact Us</h1>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -83,11 +83,11 @@ export default function ContactPage() {
 
           <button
             disabled={loading}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 disabled:opacity-60" >
+            className="bg-pink-600 text-white px-3 py-1 rounded hover:bg-pink-500 disabled:opacity-60" >
             {loading ? "Sending..." : "Send Message"}
           </button>
 
-          {msg && <p className="mt-3 text-sm">{msg}</p>}
+          {msg && <p className="mt-3 text-xl text-green-400">{msg}</p>}
         </form>
 
      

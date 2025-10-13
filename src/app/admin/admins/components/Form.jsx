@@ -42,7 +42,7 @@ export default function Form({ id }) {
       const res = await fetch("/api/users", { method: "POST", body: formData });
       console.log("RAW RESPONSE =>", res);
       const result = await res.json();
-console.log("PARSED RESULT =>", result);
+      console.log("PARSED RESULT =>", result);
 
       if (result.success) {
          console.log("Created Admin:", result.user);

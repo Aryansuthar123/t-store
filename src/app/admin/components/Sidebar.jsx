@@ -35,6 +35,11 @@ export default function Sidebar() {
       link: "/admin/admins",
       icon: <ShieldCheck className="h-5 w-6 text-gray-700 group-hover:text-black" />
     },
+     {
+      name: "About-Us",
+      link: "/admin/about",
+      icon: <ShieldCheck className="h-5 w-6 text-gray-700 group-hover:text-black" />
+    },
     {
       name: "Contact",
       link: "/admin/contact-us",
