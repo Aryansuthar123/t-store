@@ -1,113 +1,76 @@
-import connectDB from "../../utils/database";
-import About from "../../../models/aboutModel";
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import fs from "fs";
+import ConnectDB from "../../utils/database";
+import About from "../../../models/aboutModel";
 import path from "path";
-
-const uploadDir = path.join(process.cwd(), "public/uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-
+import { promises as fsPromises } from "fs";
 
 export async function GET() {
-  await connectDB();
+  await ConnectDB();
   const abouts = await About.find().sort({ createdAt: -1 });
   return NextResponse.json(abouts);
 }
 
 export async function POST(req) {
-  try {
-    await connectDB();
+  await ConnectDB();
+  const formData = await req.formData();
 
-    const formData = await req.formData();
+  const title = formData.get("title");
+  const description = formData.get("description");
+  const category = formData.get("category") || "Trending";
+  const imageFile = formData.get("image");
 
-    const title = formData.get("title");
-    const description = formData.get("description");
-    const category = formData.get("category");
-    const image = formData.get("image"); 
+  let imagePath = "";
 
-     if (!title || !description || !category || !image) {
-      return NextResponse.json(
-        { success: false, error: "All fields are required" },
-        { status: 400 }
-      );
-    }
+  
+  if (imageFile && typeof imageFile === "object" && imageFile.name) {
+    const buffer = Buffer.from(await imageFile.arrayBuffer());
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
 
-    
-    const bytes = await image.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    await fsPromises.mkdir(uploadDir, { recursive: true });
 
-   const path = require("path");
-    const fs = require("fs");
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-    
-    const filePath = path.join(uploadDir, image.name);
-    await writeFile(filePath, buffer);
+    const filePath = path.join(uploadDir, imageFile.name);
+    await fsPromises.writeFile(filePath, buffer);
 
-    const imageUrl = `/uploads/${image.name}`;
-
-    const newAbout = await About.create({
-      title,
-      description,
-      category,
-      image,
-    });
-
-    return NextResponse.json({ success: true, about: newAbout });
-  } catch (err) {
-    console.error("Error in POST /api/about:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    imagePath = `/uploads/${imageFile.name}`;
+  } else if (typeof imageFile === "string") {
+    imagePath = imageFile;
   }
-}
 
-export async function DELETE(req) {
-  await connectDB();
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
-  await About.findByIdAndDelete(id);
-  return NextResponse.json({ message: "Deleted successfully" });
+  const newAbout = new About({
+    title,
+    description,
+    image: imagePath,
+    category,
+  });
+
+  await newAbout.save();
+
+  return NextResponse.json({ success: true, data: newAbout });
 }
 
 export async function PUT(req) {
-  try {
-    await connectDB();
+  await ConnectDB();
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
+  const formData = await req.formData();
 
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-    if (!id) {
-      return NextResponse.json({ success: false, error: "Missing ID" }, { status: 400 });
-    }
+  const title = formData.get("title");
+  const description = formData.get("description");
+  const category = formData.get("category");
+  const image = formData.get("image");
 
-    const formData = await req.formData();
-    const title = formData.get("title");
-    const description = formData.get("description");
-    const category = formData.get("category");
-    const image = formData.get("image");
+  const updateData = { title, description, category };
+  if (image) updateData.image = image;
 
-    if (!title || !description || !category || !image) {
-      return NextResponse.json(
-        { success: false, error: "All fields are required" },
-        { status: 400 }
-      );
-    }
+  await About.findByIdAndUpdate(id, updateData);
+  return NextResponse.json({ success: true });
+}
 
-    const updatedAbout = await About.findByIdAndUpdate(
-      id,
-      { title, description, category, image },
-      { new: true }
-    );
+export async function DELETE(req) {
+  await ConnectDB();
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
 
-    if (!updatedAbout) {
-      return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ success: true, about: updatedAbout });
-  } catch (err) {
-    console.error("Error in PUT /api/about:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
-  }
+  await About.findByIdAndDelete(id);
+  return NextResponse.json({ success: true });
 }

@@ -3,13 +3,15 @@ import { Button } from "@nextui-org/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { deleteCategory ,updateCategory} from "../../../../lib/categoryService";
+import { deleteCategory, updateCategory } from "../../../../lib/categoryService";
 
 import { useRouter } from "next/navigation";
 
 
-export default function ListView() {
+export default function ListView({ onCreate, onEdit }) {
   const [categories, setCategories] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const router = useRouter();
 
   const fetchCategories = async () => {
     const res = await fetch("/api/categories");
@@ -18,20 +20,32 @@ export default function ListView() {
   };
 
   useEffect(() => {
-    fetch("/api/categories")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setCategories(data.categories);
-        }
-      })
-      .catch((err) => console.error("Error fetching categories:", err));
+    fetchCategories();
   }, []);
 
-return (
+  const handleDelete = async (id) => {
+    if (!confirm("Are you sure?")) return;
 
-    <div className="flex flex-col flex-1 md:pr-5 md:px-0 px-5 py-3 bg-white p-2 rounded-xl  ">
-      <h1 className="font-semibold   text-lg">Categories</h1>
+    try {
+      await deleteCategory(id);
+      toast.success("Deleted successfully");
+      fetchCategories();
+    } catch (err) {
+      toast.error(err?.message);
+    }
+  };
+
+  return (
+    <div className="flex flex-col flex-1 md:pr-5 md:px-0 px-5 py-3 bg-white p-2 rounded-xl">
+      <div className="flex justify-between items-center mb-3">
+        <h1 className="font-semibold text-lg">Categories</h1>
+        <button
+          onClick={onCreate}
+          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+        >
+          Create
+        </button>
+      </div>
 
       <table className="w-full border border-gray-200 rounded-lg overflow-hidden text-sm">
         <thead className="bg-gray-100 text-gray-700">
@@ -41,73 +55,39 @@ return (
             <th className="p-3 border w-56">Name</th>
             <th className="p-3 border">Actions</th>
           </tr>
-        </thead> 
+        </thead>
         <tbody>
-          {categories.map((cat, index) => {
-           return (
-            <Row cat={cat}
-             index={index}
-              key={index} 
-              refresh={fetchCategories}/>
-           )
-          }
-        )}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-
-function Row({cat, index}) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter(); 
-
-  const handleDelete = async (id)=> {
-    if (!confirm("Are you sure?") ) return;
-    setIsDeleting(true);
-    
-    try {
-      await deleteCategory(id);
-      toast.success("Successfully Deleted");
-      await refresh();
-    } catch (error) {
-      toast.error(error?.message); 
-    }
-    setIsDeleting(false)
-  };
-
-
-  const handleEdit = (id) => {
-   router.push(`/admin/categories?id=${cat._id}`);
- 
-};
-   return (
+          {categories.map((cat, index) => (
             <tr key={cat._id} className="text-center hover:bg-gray-50">
               <td className="p-2 border">{index + 1}</td>
               <td className="p-2 border">
                 <img
                   src={cat.image}
                   alt={cat.name}
-                  className="w-10 h-10 object-cover rounded mx-auto" />
+                  className="w-10 h-10 object-cover rounded mx-auto"
+                />
               </td>
               <td className="p-2 border font-medium">{cat.name}</td>
               <td className="p-2 flex justify-center border-r-lg gap-2 text-gray-600">
                 <Button
                   onClick={() => handleEdit(cat._id)}
-                  isDisabled={isDeleting}
                   isIconOnly
-                  className="p-2 bg-gray-200 rounded hover:bg-gray-300">
+                  className="p-2 bg-gray-200 rounded hover:bg-gray-300"
+                >
                   <Pencil size={16} />
                 </Button>
                 <Button
-                  onClick={() => handleDelete(cat._id)}  
-                  isLoading={isDeleting}
-                  isDisabled={isDeleting}
+                  onClick={() => handleDelete(cat._id)}
                   isIconOnly
-                  className="p-2 bg-red-500 text-white rounded hover:bg-red-600">
+                  className="p-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
                   <Trash2 size={16} />
-                </Button></td>
+                </Button>
+              </td>
             </tr>
-            ) 
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }

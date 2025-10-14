@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { deleteAdmin, toggleApproval } from "../../../../lib/adminService";
 import { useRouter } from "next/navigation";
 
-export default function ListView() {
+export default function ListView({ onCreate }) {
   const [admins, setAdmins] = useState([]);
 
   const [approvalModal, setApprovalModal] = useState({
@@ -27,7 +27,7 @@ export default function ListView() {
       console.error(err);
     }
   };
-
+<ListView onCreate={() => setShowForm(true)} />
   useEffect(() => {
     fetchAdmins();
   }, []);
@@ -45,6 +45,15 @@ export default function ListView() {
 
   return (
     <div className="bg-white p-5 rounded-xl">
+      <div className="flex justify-between items-center mb-3">
+        <h1 className="font-semibold text-lg">Admins</h1>
+        <button
+          onClick={onCreate}
+          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+        >
+          Create
+        </button>
+      </div>
       <table className="w-full border text-sm">
         <thead className="bg-gray-100">
           <tr>
