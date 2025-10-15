@@ -121,7 +121,7 @@ function Tab({ item, pathname, openMenu, setOpenMenu }) {
               <li key={i}>
                 <Link href={child.link}>
                   <div
-                    className={`px-3 py-1 rounded-lg transition-all duration-300 ${pathname === child.link
+                    className={`flex items-center  py-2 rounded-lg transition-all duration-300 ${pathname === child.link
                         ? "bg-[#91a4ec] text-white"
                         : "hover:bg-gray-100 text-gray-700"
                       }`} >

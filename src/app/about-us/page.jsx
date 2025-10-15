@@ -13,24 +13,24 @@ export default function AboutUsPage() {
   }, []);
 
   const topSection = abouts.find((item) => item.category === "top");
-  const topStories = abouts.find((item) => item.category === "TopStories");
+  const topStories = abouts.filter((item) => item.category === "TopStories");
 
   return (
     <div className="px-15 sm:px-10 md:px-20 py-10">
       <h2 className="text-2xl px-3 font-bold mb-8 text-left">About T-Store</h2>
 
       {(topSection || topStories) && (
-        <div className="grid grid-cols-1  md:grid-cols-2 gap-2 mb-12">
+        <div className="grid grid-cols-1  md:grid-cols-2 gap-6 mb-12">
 
           {topSection && (
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-5">
               <div className="w-full flex px-3 justify-center">
                 {topSection.image?.startsWith("/") ? (
                   <Image
                     src={topSection.image}
                     alt={topSection.title}
-                    width={750}
-                    height={550}
+                    width={950}
+                    height={650}
                     className="rounded-lg shadow-md object-contain" />
                 ) : (
                   <div className="w-full h-[350px] bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
@@ -38,27 +38,27 @@ export default function AboutUsPage() {
                   </div>
                 )}
               </div>
-              <div className="w-full px-3 text-left">
-                <h3 className="text-xl font-semibold mb-2">{topSection.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{topSection.description}</p>
+              <div className="w-full  px-3 text-left">
+                <h3 className="text-2xl  font-semibold mb-3">{topSection.title}</h3>
+                <p className="text-gray-700 text-base leading-relaxed">{topSection.description}</p>
               </div>
             </div>
           )}
 
+          <div className="flex flex-col gap-4 px-3">
+            {Array.isArray(topStories) && topStories.slice(0, 4).map((story) => (
+              <div key={story._id} className="flex items-start gap-3 ">
+                <Image
+                  src={story.image}
+                  alt={story.title}
+                  width={150}
+                  height={150}
+                  className="rounded-lg shadow-md object-contain flex-shrink-0" />
+                <h3 className="text-gray-400 text-base leading-relaxed line-clamp-2">{story.title}</h3>
+              </div>
+            ))}
 
-          {topStories && topStories.map((story) => (
-            <div key={story._id} className="flex items-center gap-4 px-3">
-              <Image
-                src={story.image}
-                alt={story.title}
-                width={200}
-                height={150}
-                className="rounded-lg shadow-md object-contain"/>
-              <h3 className="text-xs font-semibold">{story.title}</h3>
-            </div>
-          ))}
-
-
+          </div>
         </div>
       )}
 

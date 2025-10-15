@@ -49,8 +49,7 @@ export default function ListView({ onCreate }) {
         <h1 className="font-semibold text-lg">Admins</h1>
         <button
           onClick={onCreate}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-        >
+          className="bg-pink-500 text-white px-3 py-1 rounded hover:bg-pink-600" >
           Create
         </button>
       </div>
@@ -60,7 +59,7 @@ export default function ListView({ onCreate }) {
             <th className="p-3 border">SN</th>
             <th className="p-3 border">Image</th>
             <th className="p-3 border">Name</th>
-            <th className="p-3 border">Actions</th>
+            <th className="p-3 border text-center w-32">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -81,7 +80,7 @@ export default function ListView({ onCreate }) {
               </td>
               <td className="p-2 border">
                 <div className="flex justify-center gap-3">
-                  <Button className="bg-green-300 text-white "
+                  <Button className="bg-green-300 !rounded-lg text-white "
                     color="primary"
                     onClick={async () => {
                       const result = window.confirm(
@@ -103,7 +102,7 @@ export default function ListView({ onCreate }) {
 
 
                   <Button
-                   className="bg-blue-400 text-white hover:bg-blue-500 rounded-lg"
+                   className="bg-gray-400 text-white hover:bg-gray-500  !rounded-lg"
                     onClick={() => router.push(`/admin/admins/${admin._id}`)}
                     color="default"
                     variant="flat" >
@@ -111,7 +110,7 @@ export default function ListView({ onCreate }) {
                   </Button>
 
                   <Button
-                   className="bg-red-400 text-white hover:bg-red-400 rounded-lg"
+                   className="bg-red-400 text-white hover:bg-red-600 !rounded-lg"
                     color="danger"
                     variant="flat"
                     onClick={() => handleDelete(admin._id)}>

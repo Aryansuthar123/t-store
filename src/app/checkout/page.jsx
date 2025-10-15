@@ -9,7 +9,8 @@ export default function CheckoutPage() {
     const [preview, setPreview] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [addressSaved, setAddressSaved] = useState(false);
-
+    const [paymentMethod, setPaymentMethod] = useState("UPI");
+    
     const [address, setAddress] = useState({
         fullName: "",
         mobile: "",
@@ -62,8 +63,8 @@ export default function CheckoutPage() {
         <div className="max-w-6xl px-0  mx-auto p-8">
             <h1 className="text-left font-bold  rounded-lg text-black">Checkout
                 <b className="text-pink-500">.</b></h1>
-          
-            <div className="flex flex-col md:flex-row gap-4">   
+
+            <div className="flex flex-col md:flex-row gap-4">
                 <div className="md:w-1/2 flex flex-col gap-4">
 
                     {!addressSaved ? (
@@ -100,10 +101,10 @@ export default function CheckoutPage() {
                                 <input type="radio" name="payment" /> Cash on Delivery (COD)
                             </label>
                         </div>
-
-                        <button className="mt-6 bg-amber-500 text-white px-3 py-1 !rounded-lg hover:bg-amber-600">
-                            Pay Now
-                        </button>
+                        <div className="py-3">
+                            <button className="mt-6 bg-amber-500 text-white px-3 py-1 !rounded-lg hover:bg-amber-600">
+                                Pay Now
+                            </button></div>
                     </div>
                 </div>
                 <div className="md:w-1/2 flex flex-col bg-gray-100 text-left  border p-4 rounded-lg">
@@ -132,12 +133,12 @@ export default function CheckoutPage() {
                     </div>
                     <div className="mt-6 text-left">
                         <h2 className="text-xl text-left font-semibold">{product.title}</h2>
-                       
-                         {product.description && (
+
+                        {product.description && (
                             <div
                                 className="text-gray-700 mt-2"
                                 dangerouslySetInnerHTML={{ __html: product.description }} />
-                        )} 
+                        )}
                         <p>Price: ₹{product.salePrice ?? product.price}</p>
                         <p>Quantity: {product.quantity}</p>
                         <p className="font-bold mt-2">
@@ -145,7 +146,7 @@ export default function CheckoutPage() {
                             {(parseFloat(product.salePrice ?? product.price) || 0) *
                                 (product.quantity || 1)}
                         </p>
-                       
+
                         <p className="mt-2 text-gray-700">Order Date: <b>{orderDate}</b></p>
                         <p className="text-gray-700">Estimated Delivery: <b>{deliveryDate}</b></p>
                     </div>
