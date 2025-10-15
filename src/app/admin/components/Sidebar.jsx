@@ -1,7 +1,7 @@
 
 "use client";
 import Link from "next/link";
-import { InboxIcon, ShieldCheck, LayoutDashboard, Boxes, LogOut, Layers2, Index } from "lucide-react";
+import { InboxIcon, ShieldCheck,   ShoppingCart, FileText, LayoutDashboard, Boxes, LogOut, Layers2, Index } from "lucide-react";
 import { Inbox } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { toast } from 'react-hot-toast';
@@ -32,6 +32,11 @@ export default function Sidebar() {
       link: "/admin/categories",
       icon: <Layers2 className="h-5 w-6 text-gray-700 group-hover:text-black" />
     },
+     {
+      name: "Orders",
+      link: "/admin/orders",
+      icon: <ShoppingCart  className="h-5 w-6 text-gray-700 group-hover:text-black" />
+    },
     {
       name: "Admins",
       link: "/admin/admins",
@@ -39,7 +44,7 @@ export default function Sidebar() {
     },
     {
       name: "About-Us",
-      icon: <ShieldCheck className="h-5 w-6 text-gray-700 group-hover:text-black" />,
+      icon: <FileText className="h-5 w-6 text-gray-700 group-hover:text-black" />,
       children: [
         { name: "Trending Now", link: "/admin/about/trending" },
         { name: "Top Section", link: "/admin/about/top-section" },
