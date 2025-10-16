@@ -21,8 +21,7 @@ export default function Footer() {
           <div className=" space-y-2">
             <Link
               href="/about-us"
-              className="text-white no-underline hover:no-underline hover:text-white"
-            >
+              className="text-white no-underline hover:no-underline hover:text-white" >
               About Us
             </Link>
           </div>
