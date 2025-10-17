@@ -1,23 +1,19 @@
-"use client"
+"use client";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-import axios  from "axios";
-import { toast }  from "react-hot-toast";
-
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function SignupPage() {
     const router = useRouter();
-    const [user, setUser] = React.useState({
-        email: "",
-        password: "",
-        username: "",
-    })
-    const [buttonDisabled, setButtonDisabled] = React.useState(false);
+    const [user, setUser] = useState({ email: "", password: "", username: "" });
+    const [buttonDisabled, setButtonDisabled] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-    const [loading, setLoading] = React.useState(false);
-
-    const onSignup = async() => {
+    const onSignup = async () => {
         try {
             setLoading(true);
             const response = await axios.post("/api/users/signup", user);
@@ -25,18 +21,15 @@ export default function SignupPage() {
             toast.success("Signup successful! Redirecting to login...");
             router.push("/store");
         } catch (error) {
-            console.log("Signup faild", error.message);
-
-            toast.error(error.message);
-
-        }finally{
+            console.log("Signup failed", error.message);
+            toast.error(error.message || "Signup failed");
+        } finally {
             setLoading(false);
         }
+    };
 
-    }
     useEffect(() => {
-        if (user.email.length > 0 && user.password.length > 0
-            && user.username.length > 0) {
+        if (user.email && user.password && user.username) {
             setButtonDisabled(false);
         } else {
             setButtonDisabled(true);
@@ -44,38 +37,62 @@ export default function SignupPage() {
     }, [user]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen  py-2">
-            <h1>{loading ? "Processing" : "Signup"}</h1>
-            <hr />
-                <label htmlFor="username">Username</label >
-                    <input className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black" 
+        <div className="flex flex-col items-center justify-start min-h-screen pt-20">
+            <h1 className="text-3xl mb-6 font-bold">{loading ? "Processing..." : "Signup"}</h1>
+
+          
+            <div className="w-80 mb-4 flex flex-col">
+                <label htmlFor="username" className="mb-1 font-semibold">Username</label>
+                <input
                     id="username"
                     type="text"
                     value={user.username}
-                    onChange={(e) => setUser({...user,username: e.target.value})}
-                    placeholder= "username"/>
+                    onChange={(e) => setUser({ ...user, username: e.target.value })}
+                    placeholder="Username"
+                    className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-600 text-black" />
+            </div>
 
-                <label htmlFor="email">email</label >
-                    <input className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black" 
+            <div className="w-80 mb-4 flex flex-col">
+                <label htmlFor="email" className="mb-1 font-semibold">Email</label>
+                <input
                     id="email"
-                    type="text"
+                    type="email"
                     value={user.email}
-                    onChange={(e) => setUser({...user,email: e.target.value})}
-                    placeholder= "email"/>
+                    onChange={(e) => setUser({ ...user, email: e.target.value })}
+                    placeholder="Email"
+                    className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-600 text-black" />
+            </div>
 
-                <label htmlFor="password">password</label >
-                <input className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 text-black" 
-                id="password"
-                type="password"
-                value={user.password}
-                onChange={(e) => setUser({...user,password: e.target.value})}
-                placeholder= "password"/>
-                
-                <button onClick={onSignup}
-                className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none  focus:border-gray-600 text-red-600">
-                    {buttonDisabled ? "No signup" : "Signup"}
+            
+            <div className="w-80 mb-4 flex flex-col relative">
+                <label htmlFor="password" className="mb-1 font-semibold">Password</label>
+                <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={user.password}
+                    onChange={(e) => setUser({ ...user, password: e.target.value })}
+                    placeholder="Password"
+                    className="p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-600 text-black"/>
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-[32px] text-gray-500">
+                    {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
                 </button>
-                <Link href="/login">Visit login page</Link>
+            </div>
+            <div className="px-20">
+                <button
+                    onClick={onSignup}
+                    disabled={buttonDisabled}
+                    className={`w-80 py-2 px-8 mb-4 text-white font-semibold !rounded-lg transition-colors ${buttonDisabled ? "bg-pink-300 cursor-not-allowed" : "bg-pink-500 hover:bg-pink-600"
+                        }`} >
+                    {loading ? "Processing..." : "Signup"}
+                </button>
+            </div>
+
+            <Link href="/login" className="text-pink-500 hover:underline">
+                Visit login page
+            </Link>
         </div>
-    ) 
+    );
 }

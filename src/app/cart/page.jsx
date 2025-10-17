@@ -45,16 +45,20 @@ export default function CartPage() {
   };
 
   const handleRemoveItem = async (_id) => {
-    try {
-      const res = await fetch(`/api/cart?_id=${_id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.success) {
-        setCartItems((prev) => prev.filter((it) => it._id !== _id));
-      }
-    } catch (err) {
-      console.error("Remove failed", err);
+  const confirmRemove = window.confirm("Are you sure you want to remove this product?");
+  if (!confirmRemove) return;
+
+  try {
+    const res = await fetch(`/api/cart?_id=${_id}`, { method: "DELETE" });
+    const data = await res.json();
+    if (data.success) {
+      setCartItems((prev) => prev.filter((it) => it._id !== _id));
     }
-  };
+  } catch (err) {
+    console.error("Remove failed", err);
+  }
+};
+
 
   if (loading) return <p className="text-center mt-10">Loading cart…</p>;
   if (cartItems.length === 0)

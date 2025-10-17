@@ -6,26 +6,28 @@ import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
-      <div className="container text-left mx-auto  py-4 grid gap-14 md:grid-cols-4">
+      <div className="max-w-full px-6 md:px-10 lg:px-16 xl:px-24 text-left mx-auto py-8 grid gap-10 md:grid-cols-4">
         <div className="text-left">
-          <h3 className="mb-4 text-lg font-semibold text-white">T-Store</h3>
-
+          <h3 className="mb-4 text-lg font-semibold relative inline-block">
+            <span className="text-pink-500 relative z-10">T-Store<b className="text-black">.</b></span>
+           
+          </h3>
           <p className="text-sm text-gray-400">
             T-Store is an online electronics store offering the latest mobiles,
             laptops, computers, and accessories at unbeatable prices.
           </p>
         </div>
-        <div>
 
-          <h3 className="mb-4 text-lg font-semibold  text-white">ABOUT US</h3>
-          <div className=" space-y-2">
+        <div>
+          <h3 className="mb-4 text-lg font-semibold text-white">ABOUT US</h3>
+          <div className="space-y-2">
             <Link
               href="/about-us"
               className="text-white no-underline hover:no-underline hover:text-white" >
               About Us
             </Link>
           </div>
-          <div >
+          <div>
             <Link
               href="/contact-us"
               className="text-white no-underline hover:no-underline hover:text-white" >
@@ -37,20 +39,24 @@ export default function Footer() {
         <div>
           <h3 className="mb-4 text-lg font-semibold text-white">SHOP</h3>
           <div className="mb-4 flex space-x-4">
-            <Link href="/store" className="text-white no-underline hover:text-white">
+            <Link
+              href="/store"
+              className="text-white no-underline hover:text-white" >
               Store
             </Link>
           </div>
         </div>
 
         <div>
-          <h3 className="mb-3 text-lg font-semibold text-white">STAY CONNECTED</h3>
+          <h3 className="mb-3 text-lg font-semibold text-white">
+            STAY CONNECTED
+          </h3>
           <div className="mb-3 flex space-x-4">
             <a
               href="https://www.facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white">
+              className="hover:text-white" >
               <Facebook className="h-6 w-6" />
             </a>
             <a
@@ -64,14 +70,14 @@ export default function Footer() {
               href="https://www.youtube.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white" >
+              className="hover:text-white">
               <Youtube className="h-6 w-6" />
             </a>
             <a
               href="https://www.twitter.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white">
+              className="hover:text-white"  >
               <Twitter className="h-6 w-6" />
             </a>
           </div>
@@ -81,10 +87,10 @@ export default function Footer() {
           <p className="text-sm">t-store@gmail.com</p>
         </div>
       </div>
+
       <div className="border-t border-gray-600 bg-gray-800 py-4 text-center text-sm text-gray-400">
         © {new Date().getFullYear()} T-Store. All rights reserved.
       </div>
-
     </footer>
   );
 }

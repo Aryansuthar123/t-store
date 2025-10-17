@@ -4,91 +4,70 @@ import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-
-
 export async function POST(request: NextRequest) {
- 
   try {
     await connectDB();
+
     const reqBody = await request.json();
-    const { email, password } = reqBody;
+    let { email, password, adminLogin } = reqBody;
+
+    // Convert string to boolean safely
+    if (typeof adminLogin === "string") {
+      adminLogin = adminLogin === "true";
+    }
 
     if (!email || !password) {
-      return NextResponse.json(
-        { success: false, error: "Email and password required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "Email and password required" }, { status: 400 });
     }
 
-   
-    const user = await User.findOne({ email });
+    // Lowercase email for DB match
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return NextResponse.json(
-        { success: false, error: "User not found" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "User not found" }, { status: 400 });
     }
-if (!user.isApproved) {
-  return NextResponse.json(
-    { success: false, error: "Your account is not approved yet. Please contact admin." },
-    { status: 403 }
-  );
-}
-    
+
+    // Password check
     const validPassword = await bcryptjs.compare(password, user.password);
-    console.log("Password match result:", validPassword);
     if (!validPassword) {
-      return NextResponse.json(
-        { success: false, error: "Invalid password" },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: "Invalid password" }, { status: 401 });
     }
-    
-    if (!process.env.TOKEN_SECRET) {
-      throw new Error("TOKEN_SECRET is not defined");
+
+    // Admin check only if adminLogin=true AND user actually wants admin panel
+    if (adminLogin === true && !user.isAdmin) {
+      return NextResponse.json({ success: false, error: "Not authorized for admin panel" }, { status: 403 });
     }
 
     const tokenData = {
       id: user._id,
       username: user.username,
       email: user.email,
-       
-       isAdmin: user.isAdmin,
-       isApproved: user.isApproved, 
-        role: user.role || "user", 
+      isAdmin: user.isAdmin,
+      role: user.role || "user",
     };
 
-  
-    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
-      expiresIn: "1d",
-    });
+    const secret = process.env.TOKEN_SECRET;
+    if (!secret) throw new Error("TOKEN_SECRET is not defined");
 
-  console.log("Generated token:", token);
+    const token = jwt.sign(tokenData, secret, { expiresIn: "1d" });
 
     const response = NextResponse.json({
       success: true,
       message: "Login successfully",
       user: tokenData,
-      token: token,
+      token,
     });
 
-   response.cookies.set("token", token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production" ? true : false,
-  path: "/",    
-  sameSite: "lax",      
-  maxAge: 60 * 60 * 24, 
-});
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24,
+    });
 
     return response;
-  } catch (error: unknown) {
-  const message =
-    error instanceof Error ? error.message : "Something went wrong";
-  console.error("Login API Error:", message);
-  return NextResponse.json(
-    { success: false, error: message },
-    { status: 500 }
-  );
-}
-
+  } catch (error) {
+    console.error("Login API error:", error);
+    return NextResponse.json({ success: false, error: "Something went wrong" }, { status: 500 });
+  }
 }
