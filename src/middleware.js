@@ -1,20 +1,21 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
-export default function middleware(req) {
+export function middleware(req) {
   const token = req.cookies.get("token")?.value;
+  const { pathname } = req.nextUrl;
 
-  if (req.nextUrl.pathname.startsWith("/admin")) {
-    if (!token) {
-      return NextResponse.redirect(new URL("/login?redirect=/admin&adminLogin=true", req.url));
-    }
+  // ❌ Skip middleware for login page
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    if (!token) return NextResponse.redirect(new URL("/admin/login", req.url));
+
     try {
-      const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-      if (!decoded.isAdmin) {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
+      const secret = process.env.TOKEN_SECRET || "dev_secret_key";
+      const decoded = jwt.verify(token, secret);
+      if (!decoded.isAdmin) return NextResponse.redirect(new URL("/", req.url));
+      return NextResponse.next();
     } catch (err) {
-      return NextResponse.redirect(new URL("/login?redirect=/admin&adminLogin=true", req.url));
+      return NextResponse.redirect(new URL("/admin/login", req.url));
     }
   }
 

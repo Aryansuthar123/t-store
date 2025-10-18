@@ -286,47 +286,51 @@ export default function ProductDetailsPage() {
                 )}
             </div>
 
-            <div className="max-w-7xl mt-10 bg-white p-4 rounded-md border border-gray-300">
-                <h2 className="text-2xl font-semibold mb-4">Customer Reviews</h2>
+            <div className="max-w-7xl mt-10 bg-white p-6 rounded-2xl shadow-lg border border-pink-200">
+                <h2 className="text-3xl font-bold text-pink-600 mb-6 border-b-2 border-pink-300 pb-2 text-left">
+                    Customer Reviews 💬
+                </h2>
 
                 {reviews.length > 0 ? (
                     <div className="relative">
-                      
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300 ease-in-out">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 transition-all duration-300 ease-in-out">
                             {reviews
                                 .slice(currentSlide * reviewsPerSlide, currentSlide * reviewsPerSlide + reviewsPerSlide)
                                 .map((review, idx) => (
                                     <div
                                         key={idx}
-                                        className="border border-gray-200 rounded-md p-4 bg-gray-50 shadow-sm">
-                                        <p className="font-semibold text-gray-800">{review.name}</p>
-                                        <p className="text-gray-700 my-2 break-words">{review.comment}</p>
-                                        <div className="text-yellow-500">
-                                            {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
+                                        className="bg-gradient-to-br from-pink-50 to-white border border-pink-100 rounded-xl p-5 shadow-md hover:shadow-lg transition-transform hover:-translate-y-1">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <p className="font-semibold text-black text-lg">{review.name}</p>
+                                            <div className="text-yellow-400 text-lg">
+                                                {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
+                                            </div>
                                         </div>
+                                        <p className="text-gray-700 italic border-t border-pink-100 pt-2">{review.comment}</p>
                                     </div>
                                 ))}
                         </div>
 
-                        <div className="flex justify-between items-center mt-4">
+                        <div className="flex justify-between items-center mt-6">
                             <button
                                 onClick={prevSlide}
                                 disabled={currentSlide === 0}
-                                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">
-                                ← Previous
+                                className="px-5 py-2 bg-black text-white rounded-full hover:bg-pink-600 transition disabled:opacity-50">
+                                ← Prev
                             </button>
                             <button
                                 onClick={nextSlide}
                                 disabled={currentSlide === totalSlides - 1}
-                                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">
+                                className="px-5 py-2 bg-black text-white rounded-full hover:bg-pink-600 transition disabled:opacity-50">
                                 Next →
                             </button>
                         </div>
                     </div>
                 ) : (
-                    <p className="text-gray-600">No reviews yet. Be the first to write one!</p>
+                    <p className="text-gray-600 text-left">No reviews yet. Be the first to write one!</p>
                 )}
             </div>
+
 
             <div>
                 <div className="max-w-2xl ml-0  mt-4 bg-white p-3  rounded-md border border-gray-300">

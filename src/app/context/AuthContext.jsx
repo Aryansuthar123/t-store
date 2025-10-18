@@ -1,7 +1,8 @@
 'use client';
 
 
-import { createContext, useContext, useEffect, useState, setIsLoading } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+
 import axios from "axios";
 
 const AuthContext = createContext();
@@ -28,6 +29,33 @@ useEffect(() => {
     checkUser();
   }, []);
 
+  const login = async (email, password) => {
+  try {
+    const res = await axios.post(
+      '/api/users/login',
+      {
+        email,
+        password,
+        adminLogin: true,
+      },
+      { withCredentials: true }
+    );
+
+    if (res.data.success) {
+      setUser(res.data.user);
+      return res.data.user;
+    } else {
+      setUser(null);
+      return false;
+    }
+  } catch (error) {
+    console.error("Login failed:", error);
+    setUser(null);
+    return false;
+  }
+};
+
+
   const logout = async () => {
     try {
       await axios.post("/api/users/logout"); 
@@ -42,6 +70,7 @@ useEffect(() => {
         user,
         isLoading,
         setUser,
+        login,
         logout
     }}>{children}</AuthContext.Provider>);
 }

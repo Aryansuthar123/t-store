@@ -1,7 +1,8 @@
 'use client';
 
-import { children, useEffect } from "react";
-import AuthContextProvider, {useAuth} from "../context/AuthContext";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import AuthContextProvider, { useAuth } from "../context/AuthContext";
 import AdminLayout from "./components/AdminLayout";
 import { useRouter } from "next/navigation";
 import { CircularProgress } from "@nextui-org/react";
@@ -10,35 +11,39 @@ import { Toaster } from "react-hot-toast";
 export default function layout({ children }) {
   return (
     <AuthContextProvider>
-      <AdminChecking>
-        {children}
-      </AdminChecking>
+      <AdminChecking>{children}</AdminChecking>
     </AuthContextProvider>
-  )
+  );
 }
-function AdminChecking({children}) {
-  const {user, isLoading} = useAuth();
+
+function AdminChecking({ children }) {
+  const { user, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+
+  const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
-    if(!user && !isLoading) {
-      router.push("/login");
-    } 
-  }, [user, isLoading]);
-  
+    if (!user && !isLoading && !isLoginPage) {
+      router.replace("/admin/login");
+    }
+  }, [user, isLoading, pathname]);
+
+  if (isLoginPage) {
+    return children; // 👈 Allow login page without layout or redirect
+  }
+
   if (isLoading) {
-    return(
+    return (
       <div className="h-screen w-screen flex justify-center items-center">
-        <CircularProgress/> 
+        <CircularProgress />
       </div>
-    )
+    );
   }
-   if (!user) {
-    return(
-      <div className="h-screen w-screen flex justify-center items-center">
-       <h1> plese login first</h1>
-      </div>
-    )
+
+  if (!user) {
+    return null; // Or loading screen
   }
+
   return <AdminLayout>{children}</AdminLayout>;
 }
