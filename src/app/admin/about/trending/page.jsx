@@ -211,21 +211,18 @@ export default function AdminTrendingPage() {
                     <img
                       src={item.image}
                       alt=""
-                      className="h-16 mx-auto object-cover rounded"
-                    />
+                      className="h-16 mx-auto object-cover rounded" />
                   </td>
                   <td className="border p-2">{item.category}</td>
                   <td className="border p-2 flex gap-2">
                     <button
                       onClick={() => handleEdit(item)}
-                      className="bg-gray-300 text-gray-600 px-3 py-1 rounded"
-                    >
+                      className="bg-gray-300 text-gray-600 px-3 py-1 rounded" >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(item._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded"
-                    >
+                      className="bg-red-500 text-white px-3 py-1 rounded">
                       <Trash className="w-4 h-4" />
                     </button>
                   </td>

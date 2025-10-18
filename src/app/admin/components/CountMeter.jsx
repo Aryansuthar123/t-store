@@ -2,8 +2,11 @@
 import { useState, useEffect } from "react";
 
 
+
 export default function CountMeter() {
   const [productCount, setProductCount] = useState(0);
+  const [orderCount, setOrderCount] = useState(0);
+
     useEffect(() => {
         fetch("/api/products/count")
             .then((res) => res.json())
@@ -12,10 +15,17 @@ export default function CountMeter() {
     }, []);
 
 
+      useEffect(() => {
+    fetch("/api/orders/count")
+      .then((res) => res.json())
+      .then((data) => setOrderCount(data.total))
+      .catch(console.error);
+  }, []);
+
     return (
         <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Cart imgURL={"/box.png"} title={"Products"} value={productCount} />
-            <Cart imgURL={"/received.png"} title={"Order"} value={34} />
+            <Cart imgURL={"/received.png"} title={"Order"} value={orderCount} />
             <Cart imgURL={"/profit-up.png"} title={"Revenu"} value={342} />
             <Cart imgURL={"/team.png"} title={"Customer"} value={43} />
         </section>

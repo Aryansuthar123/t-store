@@ -28,7 +28,7 @@ export default function LoginPage() {
         toast.error(data.message || "Login failed");
         return;
       }
-       
+
       if (data.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("decodedUser", JSON.stringify(data.user));
@@ -38,7 +38,7 @@ export default function LoginPage() {
 
       
       window.dispatchEvent(new Event("userLogin"));
-      np
+      
       const params = new URLSearchParams(window.location.search);
       const redirect = params.get("redirect");
 

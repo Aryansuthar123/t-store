@@ -96,7 +96,7 @@ export default function Form() {
 
   return (
     <div className="p-5">
-      <h1 className="text-xl font-bold">
+      <h1 className="text-xl bg-gray-400 hover:bg-gray-500 !rounded-lg font-bold">
         {id ? "Edit Product" : "Create New Product"}
       </h1>
 

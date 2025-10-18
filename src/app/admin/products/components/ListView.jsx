@@ -3,33 +3,41 @@ import { Button, inputOtp } from "@nextui-org/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { deleteProduct, updateProduct} from "../../../../lib/productService";
+import { deleteProduct, updateProduct } from "../../../../lib/productService";
 import { useRouter } from "next/navigation";
 import { number } from "framer-motion";
-
+import Link from "next/link";
 
 export default function ListView() {
   const [pageLimit, setPageLimit] = useState(3);
   const [products, setProducts] = useState([]);
 
   const fetchProducts = () => {
-  fetch("/api/products")
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        setProducts(data.products);
-      }
-    })
-    .catch((err) => console.error("Error fetching products:", err));
-};
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.products);
+        }
+      })
+      .catch((err) => console.error("Error fetching products:", err));
+  };
 
-useEffect(() => {
-  fetchProducts();
-}, []);
-  
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
 
     <div className="flex flex-col flex-1 md:pr-5 md:px-0 px-5 bg-white p-2 rounded-xl w-full overflow-x-auto  ">
+      <div className="flex justify-between items-center mb-4 w-full">
+        <h1 className="text-xl font-semibold">Products</h1>
+        <Link href={`/admin/products/form`}>
+          <button className="bg-pink-500 text-sm text-white hover:bg-pink-600 px-3 py-1 !rounded-lg">
+            Create
+          </button>
+        </Link>
+      </div>
 
 
       <table className="w-full border border-gray-200 rounded-lg overflow-hidden text-sm">
@@ -54,22 +62,22 @@ useEffect(() => {
           )}
         </tbody>
       </table>
-      <div className= "flex  justify-between text-sm py-5">
+      <div className="flex  justify-between text-sm py-5">
         <Button size="sm" variant="bordered">
           Previous
         </Button>
-        <select 
-            value={pageLimit}
-            onChange={(e) => setPageLimit(number(e.target.value))}
-            className="px-5 rounded-xl" 
-            name="perpage" id="perpage" >
+        <select
+          value={pageLimit}
+          onChange={(e) => setPageLimit(number(e.target.value))}
+          className="px-5 rounded-xl"
+          name="perpage" id="perpage" >
           <option value={3}>3 Items</option>
           <option value={5}>5 Items</option>
           <option value={20}>20 Items</option>
           <option value={100}>100 Items</option>
-          </select> 
+        </select>
         <Button size="sm" variant="bordered">Next</Button>
-        </div>
+      </div>
     </div>
   );
 }
@@ -86,8 +94,8 @@ function Row({ products, index }) {
     try {
       await deleteProduct(id);
       toast.success("Successfully Deleted");
-       router.refresh();
-      
+      router.refresh();
+
     } catch (error) {
       toast.error(error?.message);
     }
@@ -106,7 +114,7 @@ function Row({ products, index }) {
         <img
           src={products?.featureImage || products?.image || products?.images?.[0] || "/no-image.png"}
           alt={products?.title || "No name"}
-          className="w-10 h-10 object-cover rounded mx-auto"/>
+          className="w-10 h-10 object-cover rounded mx-auto" />
       </td>
 
 
@@ -127,22 +135,27 @@ function Row({ products, index }) {
             </div>}
         </div>
       </td>
-      <td className="p-2 flex justify-center border-r-lg gap-2 text-gray-600">
-        <Button
-          onClick={() => handleEdit(products._id)}
-          isDisabled={isDeleting}
-          isIconOnly
-          className="p-2 bg-gray-200 rounded hover:bg-gray-300">
-          <Pencil size={16} />
-        </Button>
-        <Button
-          onClick={() => handleDelete(products._id)}
-          isLoading={isDeleting}
-          isDisabled={isDeleting}
-          isIconOnly
-          className="p-2 bg-red-500 text-white rounded hover:bg-red-600">
-          <Trash2 size={16} />
-        </Button></td>
+      <td className="p-2 text-center align-middle">
+        <div className="flex justify-center gap-2">
+          <Button
+            onClick={() => handleEdit(products._id)}
+            isDisabled={isDeleting}
+            isIconOnly
+            className="p-2 bg-gray-200 rounded hover:bg-gray-300">
+            <Pencil size={16} />
+          </Button>
+
+          <Button
+            onClick={() => handleDelete(products._id)}
+            isLoading={isDeleting}
+            isDisabled={isDeleting}
+            isIconOnly
+            className="p-2 bg-red-500 text-white rounded hover:bg-red-600" >
+            <Trash2 size={16} />
+          </Button>
+        </div>
+      </td>
+
     </tr>
   )
 }
