@@ -5,7 +5,7 @@ import User from "../../../../models/userModel";
 
 connectDB();
 
- type JwtPayload = { id: string };
+type JwtPayload = { id: string };
 
 export async function GET(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
@@ -14,14 +14,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-
-const decoded = jwt.verify(token, process.env.TOKEN_SECRET!) as JwtPayload;
-const user = await User.findById(decoded.id);
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET!) as JwtPayload;
+    const user = await User.findById(decoded.id);
 
     if (!user) {
       return NextResponse.json({ success: false, error: "User not found" });
     }
-   return NextResponse.json({
+
+    return NextResponse.json({
       success: true,
       user: {
         id: user._id,
@@ -30,7 +30,8 @@ const user = await User.findById(decoded.id);
         isAdmin: user.isAdmin,
       },
     });
-  } catch (_err) {
+  } catch (err) {
+    console.error("JWT verification error:", err);
     return NextResponse.json({ success: false, error: "Invalid token" });
   }
 }

@@ -1,17 +1,20 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const connectDB = async () => {
-    if (mongoose.connection.readyState) {
-        console.log("Already MongoDB  Connected..!");
-        return;
+  try {
+    if (mongoose.connection.readyState >= 1) {
+      console.log("✅ MongoDB already connected.");
+      return;
     }
 
+    await mongoose.connect(
+      "mongodb+srv://aryansuthar222_db_user:vD6hjPFTrDFeuL9I@cluster0.pba8a0n.mongodb.net/Next_js_Ecommerce"
+    );
 
-    mongoose.connect(
-        "mongodb+srv://aryansuthar222_db_user:vD6hjPFTrDFeuL9I@cluster0.pba8a0n.mongodb.net/",
-        {dbName: "Next_js_Ecommerce",}
-    ).then((msg) => console.log("Mongosdb Connected Successfully...!")).catch((err) => console.log
-        (err.message));
+    console.log("✅ MongoDB connected successfully.");
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err.message);
+  }
 };
 
-export default  connectDB;
+export default connectDB;

@@ -1,4 +1,6 @@
+"use client";
 
+import React, { useEffect } from "react";
 import ListView from "../products/components/ListView"
 
 export default function Page() {
