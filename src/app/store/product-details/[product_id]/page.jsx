@@ -9,220 +9,224 @@ import { useRouter } from "next/navigation";
 
 
 function getUserFromToken() {
-    const token = localStorage.getItem("token");
-    if (typeof window === 'undefined') return null;
-
-
-    if (!token) return null;
-
-    try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        console.log("Decoded token payload:", payload);
-        return payload;
-    } catch (err) {
-        console.error("Invalid token:", err);
-        return null;
-    }
+  if (typeof window === 'undefined') return null;
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload;
+  } catch (err) {
+    console.error("Invalid token:", err);
+    return null;
+  }
 }
 
 export default function ProductDetailsPage() {
-    const { products } = useProductContext();
-    const { product_id } = useParams();
-    const [product, setProduct] = useState(null);
-    const router = useRouter();
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState("");
-    const [quantity, setQuantity] = useState(1);
-    const [preview, setPreview] = useState(null);
-    const { fetchCartItems } = useCart();
-    const [newReview, setNewReview] = useState("");
-    const [newRating, setNewRating] = useState(5);
-    const [submittingReview, setSubmittingReview] = useState(false);
-    const [reviews, setReviews] = useState([]);
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const reviewsPerSlide = 2;
-    const totalSlides = Math.ceil(reviews.length / reviewsPerSlide);
+  const { products } = useProductContext();
+  const { product_id } = useParams();
+  const [product, setProduct] = useState(null);
+  const [productLoading, setProductLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-    const nextSlide = () => {
-        if (currentSlide < totalSlides - 1) {
-            setCurrentSlide((prev) => prev + 1);
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [preview, setPreview] = useState(null);
+  const { fetchCartItems } = useCart();
+  const [newReview, setNewReview] = useState("");
+  const [newRating, setNewRating] = useState(5);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const reviewsPerSlide = 2;
+  const totalSlides = Math.ceil(reviews.length / reviewsPerSlide);
+
+  const nextSlide = () => {
+    if (currentSlide < totalSlides - 1) setCurrentSlide((p) => p + 1);
+  };
+  const prevSlide = () => {
+    if (currentSlide > 0) setCurrentSlide((p) => p - 1);
+  };
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setProductLoading(true);
+      setNotFound(false);
+      try {
+    
+        if (products && products.length > 0) {
+          const found = products.find((p) => p._id === product_id);
+          if (found) {
+            setProduct(found);
+            setProductLoading(false);
+            return;
+          }
         }
+
+      
+        const baseUrl =
+          process.env.NEXT_PUBLIC_BASE_URL ||
+          (typeof window !== "undefined" ? window.location.origin : "");
+        const res = await fetch(`${baseUrl}/api/products/${product_id}`, {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          if (res.status === 404) setNotFound(true);
+          setProduct(null);
+          setProductLoading(false);
+          return;
+        }
+
+        const data = await res.json();
+      
+        if (data.success) {
+          setProduct(data.product ?? data.data ?? null);
+          setNotFound(false);
+        } else {
+          setProduct(null);
+          setNotFound(true);
+        }
+      } catch (err) {
+        console.error("Error fetching product details:", err);
+        setProduct(null);
+        setNotFound(true);
+      } finally {
+        setProductLoading(false);
+      }
     };
 
-    const prevSlide = () => {
-        if (currentSlide > 0) {
-            setCurrentSlide((prev) => prev - 1);
-        }
+    if (product_id) fetchProduct();
+  }, [product_id, products]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const baseUrl =
+          process.env.NEXT_PUBLIC_BASE_URL ||
+          (typeof window !== "undefined" ? window.location.origin : "");
+        const res = await fetch(`${baseUrl}/api/reviews/${product_id}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.success) setReviews(data.reviews || []);
+      } catch (err) {
+        console.error("Failed to fetch reviews:", err);
+      }
+    };
+    if (product_id) fetchReviews();
+  }, [product_id]);
+
+  if (productLoading) {
+    return <h1 className="text-center text-gray-500 text-xl">Loading product...</h1>;
+  }
+
+  if (notFound || !product) {
+    return <h1 className="text-center text-red-500 text-xl">Product Not Found</h1>;
+  }
+
+  const relatedProducts = products?.filter(
+    (p) => p.category === product.category && p._id !== product._id
+  ) || [];
+
+  const featureImage = product?.featureImage || "/placeholder.jpg";
+  const images = product?.images || [];
+
+  const handleAddToCart = async () => {
+    setLoading(true); setMessage("");
+    const cartItem = {
+      _id: product._id,
+      title: product.title,
+      featureImage: product.featureImage || product.images?.[0] || "/placeholder.jpg",
+      images: product.images || [],
+      imgSrc: product.imgSrc || product.featureImage || product.images?.[0] || "/placeholder.jpg",
+      price: product.price,
+      salePrice: product.salePrice ?? null,
+      description: product.description,
+      quantity: quantity
     };
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                if (products && products.length > 0) {
-                    const found = products.find((p) => p._id === product_id);
-                    if (found) {
-                        setProduct(found);
-                        return;
-                    }
-                }
-
-                const baseUrl =
-                    process.env.NEXT_PUBLIC_BASE_URL ||
-                    (typeof window !== "undefined" ? window.location.origin : "");
-
-                const res = await fetch(`${baseUrl}/api/products/${product_id}`, {
-                    cache: "no-store",
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    setProduct(data.data);
-                } else {
-                    setProduct(null);
-                }
-            } catch (err) {
-                console.error("Error fetching product details:", err);
-                setProduct(null);
-            }
-        };
-
-        if (product_id) fetchProduct();
-    }, [product_id, products]);
-
-
-    useEffect(() => {
-        const fetchReviews = async () => {
-            try {
-                const res = await fetch(`/api/reviews/${product_id}`);
-                const data = await res.json();
-                if (data.success) {
-                    setReviews(data.reviews);
-                }
-            } catch (err) {
-                console.error("Failed to fetch reviews:", err);
-            }
-        };
-        if (product_id) fetchReviews();
-    }, [product_id]);
-
-    if (!product) {
-        return (<h1 className="text-center text-red-500 text-xl"> Product Not Found</h1>
-        );
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cartItem),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Product added to cart!");
+        fetchCartItems();
+      } else {
+        toast.error(data.message || "You already added this product to the cart");
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      setMessage("Something went wrong!");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const relatedProducts = products.filter(
-        (p) => p.category === product.category && p._id !== product._id);
-
-    const featureImage = product?.featureImage || "/placeholder.jpg";
-    const images = product?.images || [];
-
-    const handleAddToCart = async () => {
-        setLoading(true); setMessage("");
-
-        const cartItem = {
-            _id: product._id,
-            title: product.title,
-            featureImage: product.featureImage || product.images?.[0] || "/placeholder.jpg",
-            images: product.images || [],
-            imgSrc: product.imgSrc || product.featureImage || product.images?.[0] || "/placeholder.jpg",
-            price: product.price,
-            salePrice: product.salePrice ?? null,
-            description: product.description,
-            quantity: quantity
-        };
-
-        try {
-            const res = await fetch("/api/cart", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(cartItem),
-            });
-
-            const data = await res.json();
-            if (data.success) {
-                toast.success(" Product added to cart!");
-                fetchCartItems();
-            } else {
-                toast.error("You already added this product to the cart");
-            }
-        } catch (error) {
-            console.error("Error adding to cart:", error);
-            setMessage("Something went wrong!");
-        } finally {
-            setLoading(false);
-        }
+  const handleBuyNow = () => {
+    const checkoutProduct = {
+      id: product._id,
+      title: product.title,
+      featureImage: product.featureImage || product.images?.[0] || "/placeholder.jpg",
+      images: product.images || [],
+      price: product.price,
+      salePrice: product.salePrice ?? null,
+      description: product.description,
+      quantity: quantity,
     };
+    localStorage.setItem("checkoutProduct", JSON.stringify(checkoutProduct));
+    router.push("/checkout");
+  };
 
-    const handleBuyNow = () => {
-        const checkoutProduct = {
-            id: product._id,
-            title: product.title,
-            featureImage: product.featureImage || product.images?.[0] || "/placeholder.jpg",
-            images: product.images || [],
-            price: product.price,
-            salePrice: product.salePrice ?? null,
-            description: product.description,
-            quantity: quantity,
-        };
+  const handleSubmitReview = async () => {
+    if (!newReview) return;
+    const user = getUserFromToken();
+    if (!user?.username) {
+      toast.error("You must be logged in to submit a review");
+      return;
+    }
+    if (!product_id) {
+      toast.error("Invalid product ID");
+      return;
+    }
+    setSubmittingReview(true);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: product_id,
+          name: user?.username || "Anonyson",
+          rating: newRating,
+          comment: newReview
+        })
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Server returned error:", errorText);
+        throw new Error(`Server error: ${res.status}`);
+      }
+      const data = await res.json();
+      if (data.success) {
+        setReviews(prev => [data.review, ...prev]);
+        toast.success("Review submitted!");
+        setNewReview("");
+        setNewRating(5);
+      } else {
+        toast.error(data.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Error submitting review:", err);
+      toast.error("Submission failed");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
-        localStorage.setItem("checkoutProduct", JSON.stringify(checkoutProduct));
-        router.push("/checkout");
-    };
-
-
-    const handleSubmitReview = async () => {
-        if (!newReview) return;
-
-        const user = getUserFromToken();
-
-        if (!user?.username) {
-            toast.error("You must be logged in to submit a review");
-            return;
-        }
-
-        if (!product_id) {
-            toast.error("Invalid product ID");
-            return;
-        }
-
-        setSubmittingReview(true);
-        try {
-            const res = await fetch("/api/reviews", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    productId: product_id,
-                    name: user?.username || "Anonyson",
-                    rating: newRating,
-                    comment: newReview
-                })
-            });
-            if (!res.ok) {
-                const errorText = await res.text();
-                console.error("Server returned error:", errorText);
-                throw new Error(`Server error: ${res.status}`);
-            }
-            const data = await res.json();
-
-            if (data.success) {
-                setReviews(prev => [data.review, ...prev]);
-                toast.success("Review submitted!");
-                setNewReview("");
-                setNewRating(5);
-            } else {
-                toast.error(data.message || "Something went wrong");
-            }
-        } catch (err) {
-            console.error("Error submitting review:", err);
-            toast.error("Submission failed");
-        } finally {
-            setSubmittingReview(false);
-        }
-    };
 
     return (
         <div className="max-w-7xl mx-auto px-12 py-10">
