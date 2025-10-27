@@ -56,35 +56,40 @@ export default function ProductDetailsPage() {
     };
 
     useEffect(() => {
-  const fetchProduct = async () => {
-    try {
-      if (products && products.length > 0) {
-        const found = products.find((p) => p._id === product_id);
-        if (found) {
-          setProduct(found);
-          return;
-        }
-      }
+        const fetchProduct = async () => {
+            try {
+                if (products && products.length > 0) {
+                    const found = products.find((p) => p._id === product_id);
+                    if (found) {
+                        setProduct(found);
+                        return;
+                    }
+                }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${product_id}`, {
-        cache: "no-store",
-      });
-      const data = await res.json();
-      if (data.success) {
-        setProduct(data.data);
-      } else {
-        setProduct(null);
-      }
-    } catch (err) {
-      console.error("Error fetching product details:", err);
-      setProduct(null);
-    }
-  };
+                const baseUrl =
+                    process.env.NEXT_PUBLIC_BASE_URL ||
+                    (typeof window !== "undefined" ? window.location.origin : "");
 
-  if (product_id) fetchProduct();
-}, [product_id, products]);
+                const res = await fetch(`${baseUrl}/api/products/${product_id}`, {
+                    cache: "no-store",
+                });
 
-    
+                const data = await res.json();
+                if (data.success) {
+                    setProduct(data.data);
+                } else {
+                    setProduct(null);
+                }
+            } catch (err) {
+                console.error("Error fetching product details:", err);
+                setProduct(null);
+            }
+        };
+
+        if (product_id) fetchProduct();
+    }, [product_id, products]);
+
+
     useEffect(() => {
         const fetchReviews = async () => {
             try {
