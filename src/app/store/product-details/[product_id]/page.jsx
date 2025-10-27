@@ -80,20 +80,19 @@ export default function ProductDetailsPage() {
         }
 
         const data = await res.json();
+      console.log("Product data:", data);
+
       
-        if (data.success) {
-          setProduct(data.product ?? data.data ?? null);
-          setNotFound(false);
-        } else {
-          setProduct(null);
-          setNotFound(true);
-        }
-      } catch (err) {
-        console.error("Error fetching product details:", err);
+      if (data?.success && data?.product) {
+        setProduct(data.product);
+      } else {
+        console.warn("No product data found:", data);
         setProduct(null);
-        setNotFound(true);
-      } finally {
-        setProductLoading(false);
+      }
+    } catch (err) {
+      console.error("Error fetching product:", err);
+      setError("Error fetching product");
+   
       }
     };
 
