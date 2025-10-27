@@ -1,3 +1,4 @@
+// utils/database.js
 import mongoose from "mongoose";
 
 const connectDB = async () => {
@@ -7,9 +8,7 @@ const connectDB = async () => {
       return;
     }
 
-    await mongoose.connect(
-      "mongodb+srv://aryansuthar222_db_user:vD6hjPFTrDFeuL9I@cluster0.pba8a0n.mongodb.net/Next_js_Ecommerce"
-    );
+    await mongoose.connect(process.env.MONGODB_URI);
 
     console.log("✅ MongoDB connected successfully.");
   } catch (err) {
