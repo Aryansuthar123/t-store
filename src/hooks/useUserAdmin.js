@@ -4,17 +4,17 @@ import axios from "axios";
 /**
  * Custom hook to fetch admin data using user email
  * @param {Object} param0 
- * @param {string} param0.email - User email
- * @returns {Object} { data, error, isLoading }
+ * @param {string} param0.email 
+ * @returns {Object} 
  */
 export function useUserAdmin({ email }) {
-  // fetcher function
+
   const fetcher = async (url) => {
     const res = await axios.get(url);
-    return res.data; // API se json return hona chahiye
+    return res.data;
   };
 
-  // SWR call (runs only if email exists)
+ 
   const { data, error } = useSWR(
     email ? `/api/admin?email=${email}` : null,
     fetcher

@@ -85,7 +85,7 @@ export default function Sidebar() {
               const res = await axios.post("/api/users/logout");
               if (res.data.success) {
                 toast.success(res.data.message || "Successfully logged out");
-                router.push("/login");
+                router.push("/admin-login");
               } else {
                 toast.error(res.data.message || "Logout failed");
               }

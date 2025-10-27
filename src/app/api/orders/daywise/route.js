@@ -15,10 +15,9 @@ export async function GET() {
     const counts = {};
 
     orders.forEach((o) => {
-      // Prefer createdAt, fallback to orderDate
+
       let dateValue = o.createdAt || o.orderDate;
 
-      // Validate
       const date = new Date(dateValue);
       if (isNaN(date.getTime())) {
         console.warn("Skipping invalid order:", o._id, dateValue);

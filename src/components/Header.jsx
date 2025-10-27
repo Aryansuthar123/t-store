@@ -5,7 +5,7 @@ import Container from "./Container";
 import { FiShoppingCart, FiUser } from "react-icons/fi";
 import Link from "next/link";
 import { useCart } from "../app/context/CartContext";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import jwtDecode from "jwt-decode";
 
