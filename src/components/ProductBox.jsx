@@ -21,8 +21,7 @@ export default function ProductBox({ product }) {
                     height={150}
                     src={imgSrc}
                     alt={product.title || "Product"}
-                    className={`${styles.productImage} w-full h-48 object-cover rounded-md`}
-                />
+                    className={`${styles.productImage} w-full h-48 object-cover rounded-md`} />
             </Link>
 
             <div className="mt-4">

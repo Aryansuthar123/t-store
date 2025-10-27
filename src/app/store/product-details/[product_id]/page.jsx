@@ -28,6 +28,7 @@ function getUserFromToken() {
 export default function ProductDetailsPage() {
     const { products } = useProductContext();
     const { product_id } = useParams();
+    const [product, setProduct] = useState(null);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
@@ -54,7 +55,36 @@ export default function ProductDetailsPage() {
         }
     };
 
-    const product = products.find((p) => p._id === product_id);
+    useEffect(() => {
+  const fetchProduct = async () => {
+    try {
+      if (products && products.length > 0) {
+        const found = products.find((p) => p._id === product_id);
+        if (found) {
+          setProduct(found);
+          return;
+        }
+      }
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/${product_id}`, {
+        cache: "no-store",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProduct(data.data);
+      } else {
+        setProduct(null);
+      }
+    } catch (err) {
+      console.error("Error fetching product details:", err);
+      setProduct(null);
+    }
+  };
+
+  if (product_id) fetchProduct();
+}, [product_id, products]);
+
+    
     useEffect(() => {
         const fetchReviews = async () => {
             try {
@@ -418,3 +448,10 @@ export default function ProductDetailsPage() {
         </div>
     );
 }
+
+
+
+
+
+
+
