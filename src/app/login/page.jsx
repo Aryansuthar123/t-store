@@ -18,7 +18,11 @@ export default function LoginPage() {
       const res = await fetch("/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ 
+          email, 
+          password,
+          adminLogin: false 
+        }),
       });
 
       const data = await res.json();
@@ -35,8 +39,6 @@ export default function LoginPage() {
       }
 
       toast.success("Login successful!");
-
-
       window.dispatchEvent(new Event("userLogin"));
 
       const params = new URLSearchParams(window.location.search);
@@ -45,9 +47,10 @@ export default function LoginPage() {
       if (redirect) {
         window.location.replace(redirect);
       } else if (data.isAdmin) {
-
+        
         window.location.replace("/admin");
       } else {
+      
         window.location.replace("/store");
       }
     } catch (error) {
@@ -72,7 +75,7 @@ export default function LoginPage() {
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value.trim().toLowerCase())}
-            className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-pink-500 text-black" />
+            className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-pink-500 text-black"/>
 
           <label htmlFor="password" className="block text-sm font-medium mb-1 text-gray-700">
             Password
@@ -88,7 +91,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"  >
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600">
               {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </button>
           </div>
@@ -97,7 +100,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className=" bg-pink-500 hover:bg-pink-600 text-white font-semibold py-1 px-3 !rounded-lg mb-4 transition-colors duration-200"  >
+              className="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-1 px-3 !rounded-lg mb-4 transition-colors duration-200">
               {loading ? "Logging in..." : "Login"}
             </button>
           </div>
