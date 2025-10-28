@@ -1,27 +1,38 @@
 import { NextResponse } from "next/server";
-// import jwt from "jsonwebtoken";
 
-export function middleware() {
-  // const token = req.cookies.get("token")?.value;
-  // const { pathname } = req.nextUrl;
+export function middleware(req) {
+  const { pathname } = req.nextUrl;
+  const token = req.cookies.get("token")?.value;
 
-  // // ❌ Skip middleware for login page
-  // if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-  //   if (!token) return NextResponse.redirect(new URL("/admin/login", req.url));
+  console.log("🧠 MIDDLEWARE TRIGGERED:", pathname, "TOKEN:", token ? "YES" : "NO");
 
-  //   try {
-  //     const secret = process.env.TOKEN_SECRET || "dev_secret_key";
-  //     const decoded = jwt.verify(token, secret);
-  //     if (!decoded.isAdmin) return NextResponse.redirect(new URL("/", req.url));
-      //return NextResponse.next();
-    // } catch (err) {
-    //   return NextResponse.redirect(new URL("/admin/login", req.url));
-    //}
-  
+  const publicAdminRoutes = [
+    "/admin/forgot-password",
+    "/admin/reset-password",
+    "/admin-login",
+  ];
 
+  // Allow public routes
+  if (publicAdminRoutes.some((route) => pathname.startsWith(route))) {
+    console.log("✅ PUBLIC ROUTE:", pathname);
+    return NextResponse.next();
+  }
+
+  // Protect only /admin pages
+  if (pathname.startsWith("/admin") && !token) {
+    console.log("🚫 NO TOKEN — redirecting to /admin-login");
+    return NextResponse.redirect(new URL("/admin-login", req.url));
+  }
+
+  console.log("✅ ALLOWED ROUTE:", pathname);
   return NextResponse.next();
 }
 
+// This matcher excludes login/forgot/reset pages properly
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    "/admin",
+    "/admin/",
+    "/admin/:path((?!login|forgot-password|reset-password).*)",
+  ],
 };

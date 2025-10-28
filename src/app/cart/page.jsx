@@ -65,10 +65,10 @@ export default function CartPage() {
     return <p className="text-center mt-10">Your cart is empty.</p>;
 
   return (
-    <div className="max-w-7xl px-8 mx-auto p-6 ">
+    <div className="max-w-7xl px-8 mx-auto p-6 pb-18">
       <h1 className="text-2xl font-bold px-4 mb-6">Your Cart</h1>
 
-      <ul className="space-y-6">
+      <ul className="space-y-6 ">
         {cartItems.map((item) => {
           const feature =
             item.featureImage && item.featureImage !== "undefined"
@@ -130,7 +130,7 @@ export default function CartPage() {
                     dangerouslySetInnerHTML={{ __html: item.description }}/>
                 )}
                
-                <div className="flex flex-wrap items-center gap-3 mt-4">
+                <div className="flex flex-wrap items-center gap-3 mt-4 ">
                   <button
                     onClick={() => updateQuantity(item._id, item.quantity - 1)}
                     className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">

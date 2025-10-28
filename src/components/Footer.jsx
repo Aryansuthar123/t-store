@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import { MapPin, Phone, Mail } from "lucide-react";
+
 import Link from "next/link";
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 
@@ -10,7 +12,7 @@ export default function Footer() {
         <div className="text-left">
           <h3 className="mb-4 text-lg font-semibold relative inline-block">
             <span className="text-pink-500 relative z-10">T-Store<b className="text-black">.</b></span>
-           
+
           </h3>
           <p className="text-sm text-gray-400">
             T-Store is an online electronics store offering the latest mobiles,
@@ -23,17 +25,16 @@ export default function Footer() {
           <div className="space-y-2">
             <Link
               href="/about-us"
-              className="text-white no-underline hover:no-underline hover:text-white" >
+              className="block text-white no-underline decoration-transparent hover:text-gray-300">
               About Us
             </Link>
-          </div>
-          <div>
             <Link
               href="/contact-us"
-              className="text-white no-underline hover:no-underline hover:text-white" >
+              className="block text-white no-underline decoration-transparent hover:text-gray-300">
               Contact Us
             </Link>
           </div>
+
         </div>
 
         <div>
@@ -56,35 +57,46 @@ export default function Footer() {
               href="https://www.facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white" >
+              className="text-white hover:text-gray-300" >
               <Facebook className="h-6 w-6" />
             </a>
             <a
               href="https://www.instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white" >
+              className="text-white hover:text-gray-300" >
               <Instagram className="h-6 w-6" />
             </a>
             <a
               href="https://www.youtube.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white">
+              className="text-white hover:text-gray-300" >
               <Youtube className="h-6 w-6" />
             </a>
             <a
               href="https://www.twitter.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white"  >
+              className="text-white hover:text-gray-3 00"  >
               <Twitter className="h-6 w-6" />
             </a>
           </div>
 
-          <p className="text-sm">Surat, India</p>
-          <p className="text-sm">+91 9500000095</p>
-          <p className="text-sm">t-store@gmail.com</p>
+
+
+          <p className="text-sm flex items-center gap-1">
+            <MapPin size={14} className="text-gray-100" />
+            &nbsp;Surat, India</p>
+          <p className="text-sm flex items-center gap-1">
+            <Phone size={14} className="text-gray-100" />
+            &nbsp;+91 9500000095
+          </p>
+
+          <p className="text-sm flex items-center gap-1">
+            <Mail size={14} className="text-gray-100" />
+            &nbsp;t-store@gmail.com
+          </p>
         </div>
       </div>
 

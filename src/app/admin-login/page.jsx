@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, adminLogin: true }), 
+        body: JSON.stringify({ email, password, adminLogin: true }),
       });
 
       const data = await res.json();
@@ -56,7 +56,8 @@ export default function AdminLoginPage() {
         <form onSubmit={handleLogin}>
           <label
             htmlFor="email"
-            className="block text-sm font-medium mb-1 text-gray-700"  >
+            className="block text-sm font-medium mb-1 text-gray-700"
+          >
             Email
           </label>
           <input
@@ -65,11 +66,13 @@ export default function AdminLoginPage() {
             placeholder="Enter admin email"
             value={email}
             onChange={(e) => setEmail(e.target.value.trim().toLowerCase())}
-            className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-pink-500 text-black"/>
+            className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-pink-500 text-black"
+          />
 
           <label
             htmlFor="password"
-            className="block text-sm font-medium mb-1 text-gray-700" >
+            className="block text-sm font-medium mb-1 text-gray-700"
+          >
             Password
           </label>
           <div className="relative mb-4">
@@ -79,29 +82,44 @@ export default function AdminLoginPage() {
               placeholder="Enter admin password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 text-black"/>
+              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 text-black"
+            />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600" >
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
+            >
               {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </button>
           </div>
 
-        <div> 
+          <div>
             <button
               type="submit"
               disabled={loading}
-              className=" bg-pink-500 hover:bg-pink-600 text-white font-semibold px-3 py-1 !rounded-lg mb-4 transition-colors duration-200" >
+              className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 rounded-lg mb-3 transition-colors duration-200"
+            >
               {loading ? "Logging in..." : "Login"}
-          </button>
-        </div>
+            </button>
+          </div>
         </form>
+
+
+        <div className="text-center mt-2">
+          <Link
+            href="/admin/forgot-password"
+            className="text-sm text-pink-500 hover:text-pink-600 font-medium"
+          >
+            Forgot Password?
+          </Link>
+        </div>
+
 
         <div className="text-center">
           <Link
             href="/login"
-            className="text-pink-500 hover:text-pink-600 text-sm font-medium">
+            className="text-pink-500 hover:text-pink-600 text-sm font-medium"
+          >
             Back to user login
           </Link>
         </div>
