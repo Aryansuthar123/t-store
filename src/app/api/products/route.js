@@ -7,11 +7,35 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import connectDB from "../../utils/database"; 
 
-
+import Order from "../../../models/orderModel";
+ 
 export async function GET() {
   await connectDB();
-  const products = await Product.find().sort({ createdAt: -1 });
-  return NextResponse.json({ success: true, products });
+
+  try {
+    const products = await Product.find().sort({ createdAt: -1 });
+
+    // Aggregate orders by product._id
+    const orderCounts = await Order.aggregate([
+      { $group: { _id: "$product._id", count: { $sum: 1 } } }
+    ]);
+
+    // Map product _id to order count
+    const orderMap = {};
+    orderCounts.forEach(o => {
+      if (o._id) orderMap[o._id.toString()] = o.count;
+    });
+
+    // Attach orders count to products
+    const productsWithOrders = products.map(p => ({
+      ...p.toObject(),
+      orders: orderMap[p._id.toString()] || 0
+    }));
+
+    return NextResponse.json({ success: true, products: productsWithOrders });
+  } catch (err) {
+    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+  }
 }
 
 
@@ -20,7 +44,6 @@ export async function POST(req) {
   try {
     const form = await req.formData();
 
-  
     const title            = form.get("title");
     const shortDescription = form.get("shortDescription");
     const description      = form.get("description");
@@ -40,7 +63,6 @@ export async function POST(req) {
       featureImageUrl = `/uploads/${filename}`;
     }
 
-    
     const galleryImages = form.getAll("images");
     const imageUrls     = [];
     for (const img of galleryImages) {
@@ -68,7 +90,6 @@ export async function POST(req) {
 
     return NextResponse.json({ success: true, product });
   } catch (err) {
-    console.error("createProduct error:", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 
 "use client";
 import Link from "next/link";
-import { InboxIcon, ShieldCheck,   ShoppingCart, FileText, LayoutDashboard, Boxes, LogOut, Layers2, Index } from "lucide-react";
+import { InboxIcon, ShieldCheck, ShoppingCart, FileText, LayoutDashboard, Boxes, LogOut, Layers2, Index } from "lucide-react";
 import { Inbox } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { toast } from 'react-hot-toast';
@@ -32,23 +32,23 @@ export default function Sidebar() {
       link: "/admin/categories",
       icon: <Layers2 className="h-5 w-6 text-gray-700 group-hover:text-black" />
     },
-     {
+    {
       name: "Orders",
       link: "/admin/orders",
-      icon: <ShoppingCart  className="h-5 w-6 text-gray-700 group-hover:text-black" />
+      icon: <ShoppingCart className="h-5 w-6 text-gray-700 group-hover:text-black" />
     },
-    {
-      name: "Admins",
-      link: "/admin/admins",
-      icon: <ShieldCheck className="h-5 w-6 text-gray-700 group-hover:text-black" />
-    },
+    // {
+    //   name: "Admins",
+    //   link: "/admin/admins",
+    //   icon: <ShieldCheck className="h-5 w-6 text-gray-700 group-hover:text-black" />
+    // },
     {
       name: "About-Us",
       icon: <FileText className="h-5 w-6 text-gray-700 group-hover:text-black" />,
       children: [
         { name: "Trending Now", link: "/admin/about/trending" },
         { name: "Top Section", link: "/admin/about/top-section" },
-        { name: "Top Stories", link: "/admin/about/TopStories"},
+        { name: "Top Stories", link: "/admin/about/TopStories" },
       ],
     },
 
@@ -124,15 +124,16 @@ function Tab({ item, pathname, openMenu, setOpenMenu }) {
           <ul className="ml-6 mt-2 flex flex-col gap-1">
             {item.children.map((child, i) => (
               <li key={i}>
-                <Link href={child.link}>
+                <Link href={child.link} className="no-underline">
                   <div
-                    className={`flex items-center  py-2 rounded-lg transition-all duration-300 ${pathname === child.link
-                        ? "bg-[#91a4ec] text-white"
-                        : "hover:bg-gray-100 text-gray-700"
+                    className={`flex items-center py-2 rounded-lg transition-all duration-300 ${pathname === child.link
+                      ? "bg-[#91a4ec] text-white"
+                      : "hover:bg-gray-100 text-gray-700"
                       }`} >
                     {child.name}
                   </div>
                 </Link>
+
               </li>
             ))}
           </ul>
@@ -144,13 +145,14 @@ function Tab({ item, pathname, openMenu, setOpenMenu }) {
 
   return (
     <li>
-      <Link href={item.link}>
-        <div
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-600 ${isSelected ? "bg-[#91a4ec] text-white" : "bg-white text-black"
-            }`} >
-          {item.icon} {item.name}
-        </div>
-      </Link>
+      <Link href={item.link} className="no-underline">
+  <div
+    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-600 ${isSelected ? "bg-[#91a4ec]  text-white" : "bg-white text-black"
+      }`} >
+    {item.icon} {item.name}
+  </div>
+</Link>
+
     </li>
   );
 }

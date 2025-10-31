@@ -11,11 +11,11 @@ export default function Layout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // ❌ Skip auth check for these public admin pages
+
   const publicAdminRoutes = ["/admin/forgot-password", "/admin/reset-password"];
 
   useEffect(() => {
-    // If current path is in public routes, skip admin check
+  
     if (publicAdminRoutes.some((route) => pathname.startsWith(route))) {
       setLoading(false);
       return;
@@ -27,10 +27,10 @@ export default function Layout({ children }) {
         if (res.data?.user?.isAdmin) {
           setIsAdmin(true);
         } else {
-          router.replace("/admin-login");
+           router.replace("/admin-login");
         }
       } catch (err) {
-        router.replace("/admin-login");
+       router.replace("/admin-login");
       } finally {
         setLoading(false);
       }
@@ -41,11 +41,11 @@ export default function Layout({ children }) {
 
   if (loading) return <p>Loading...</p>;
 
-  // ✅ If forgot/reset page — render directly (no layout wrapper)
+ 
   if (publicAdminRoutes.some((route) => pathname.startsWith(route))) {
     return <>{children}</>;
   }
 
-  // ✅ Normal admin pages use layout
+  
   return isAdmin ? <AdminLayout>{children}</AdminLayout> : null;
 }

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { deleteAdmin, toggleApproval } from "../../../../lib/adminService";
 import { useRouter } from "next/navigation";
+import { useUserAuth } from "../../../../hooks/useUserAuth";
 
 export default function ListView({ onCreate }) {
   const [admins, setAdmins] = useState([]);
@@ -27,7 +28,7 @@ export default function ListView({ onCreate }) {
       console.error(err);
     }
   };
-<ListView onCreate={() => setShowForm(true)} />
+  <ListView onCreate={() => setShowForm(true)} />
   useEffect(() => {
     fetchAdmins();
   }, []);
@@ -42,9 +43,10 @@ export default function ListView({ onCreate }) {
       toast.error(err?.message);
     }
   };
+  const { user: currentUser } = useUserAuth(); 
 
   return (
-    <div className="bg-white p-5 rounded-xl">
+    <div className="min-h-screen rounded-lg bg-gray-50 w-full  mt-2 p-3">
       <div className="flex justify-between items-center mb-3">
         <h1 className="font-semibold text-lg">Admins</h1>
         <button
@@ -59,50 +61,54 @@ export default function ListView({ onCreate }) {
             <th className="p-3 border">SN</th>
             <th className="p-3 border">Image</th>
             <th className="p-3 border">Name</th>
-            <th className="p-3 border text-center w-32">Actions</th>
+            <th className="p-3 border text-left w-32">Actions</th>
           </tr>
         </thead>
         <tbody>
           {admins.map((admin, index) => (
             <tr key={admin._id} className="text-center">
-              <td className="p-2 border">{index + 1}</td>
-              <td className="p-2 border">
+              <td className="p-2 border text-left">{index + 1}</td>
+              <td className="p-2 border items-end">
                 <img
                   src={admin.image || "/default-avatar.png"}
                   alt={admin.username}
                   className="w-12 h-12 object-cover rounded-lg mx-auto" />
               </td>
-              <td className="p-2 border">
+              <td className="p-2  text-left border">
                 <div>
                   <div>{admin.username}</div>
-                  <div className="text-gray-500 text-xs">{admin.email}</div>
+                  <div className="text-gray-500  text-left text-xs">{admin.email}</div>
                 </div>
               </td>
-              <td className="p-2 border">
+              <td className="p-2 border text-left">
                 <div className="flex justify-center gap-3">
-                  <Button className="bg-green-300 !rounded-lg text-white "
-                    color="primary"
+                  <Button
+                    className={`!rounded-lg text-white px-4 py-1 ${
+                      admin.isApproved ? "bg-green-400" : "bg-gray-400"
+                    }`}
+                    disabled={!currentUser?.isApproved} 
                     onClick={async () => {
+                      if (!currentUser?.isApproved) return;
                       const result = window.confirm(
-                        "Give admin panel access to this user?\nClick OK for Yes or Cancel for No."
+                        admin.isApproved
+                          ? `Remove approval from ${admin.username}?`
+                          : `Give approval to ${admin.username}?`
                       );
 
                       try {
-                        await toggleApproval(admin._id, result); 
-                        toast.success(
-                          result ? "Approval Granted" : "Approval Removed"
-                        );
-                        fetchAdmins(); 
+                        await toggleApproval(admin._id, result);
+                        toast.success(result ? "Approval Granted" : "Approval Removed");
+                        fetchAdmins();
                       } catch (err) {
                         toast.error(err.message);
                       }
-                    }} >
-                    Approve
+                    }}>
+                    {admin.isApproved ? "Approved" : "Approved"}
                   </Button>
 
 
                   <Button
-                   className="bg-gray-400 text-white hover:bg-gray-500  !rounded-lg"
+                    className="bg-gray-300 text-gray-700 hover:bg-gray-400  !rounded-lg"
                     onClick={() => router.push(`/admin/admins/${admin._id}`)}
                     color="default"
                     variant="flat" >
@@ -110,7 +116,7 @@ export default function ListView({ onCreate }) {
                   </Button>
 
                   <Button
-                   className="bg-red-400 text-white hover:bg-red-600 !rounded-lg"
+                    className="bg-red-400 text-white hover:bg-red-600 !rounded-lg"
                     color="danger"
                     variant="flat"
                     onClick={() => handleDelete(admin._id)}>

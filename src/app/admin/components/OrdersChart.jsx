@@ -74,12 +74,16 @@ export default function OrdersChart() {
   };
 
   return (
-    <section className="bg-white p-4 rounded-lg shadow w-full md:w-[400px] h-[250px]">
-      {chartData ? (
-        <Bar data={chartData} options={options} />
-      ) : (
-        <p className="text-center text-gray-500">Loading...</p>
-      )}
-    </section>
-  );
+   
+  <section className="bg-white rounded-lg shadow h-[250px] w-full box-border p-2">
+    {chartData?.labels ? (
+      <Bar data={chartData} options={options} />
+    ) : (
+      <p className="text-center text-gray-500">Loading chart...</p>
+    )}
+  </section>
+);
+
+
+
 }

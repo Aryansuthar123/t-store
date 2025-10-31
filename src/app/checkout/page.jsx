@@ -3,218 +3,235 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
-    const router = useRouter();
-    const [product, setProduct] = useState(null);
-    const [orderDate, setOrderDate] = useState("");
-    const [deliveryDate, setDeliveryDate] = useState("");
-    const [preview, setPreview] = useState(null);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
-    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
-    const [addressSaved, setAddressSaved] = useState(false);
-    const [address, setAddress] = useState({
-        fullName: "",
-        mobile: "",
-        pincode: "",
-        flat: "",
-        area: "",
-    });
+  const router = useRouter();
+  const [product, setProduct] = useState(null);
+  const [orderDate, setOrderDate] = useState("");
+  const [deliveryDate, setDeliveryDate] = useState("");
+  const [preview, setPreview] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [addressSaved, setAddressSaved] = useState(false);
+  const [address, setAddress] = useState({
+    fullName: "",
+    mobile: "",
+    pincode: "",
+    flat: "",
+    area: "",
+    email: "",
+  });
 
-    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-    const [cardNumber, setCardNumber] = useState("");
-    const [cardName, setCardName] = useState("");
-    const [cardExpiry, setCardExpiry] = useState("");
-    const [cardCvv, setCardCvv] = useState("");
-    const [paymentProcessing, setPaymentProcessing] = useState(false);
-    const [paymentError, setPaymentError] = useState(null);
-    const [loading, setLoading] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        try {
-            const stored = localStorage.getItem("checkoutProduct");
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                setProduct(parsed);
+  // Load product + saved address
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("checkoutProduct");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setProduct(parsed);
 
-                const today = new Date();
-                const delivery = new Date();
-                delivery.setDate(today.getDate() + 6);
+        const today = new Date();
+        const delivery = new Date();
+        delivery.setDate(today.getDate() + 6);
 
-                const options = { year: "numeric", month: "long", day: "numeric" };
-                setOrderDate(today.toLocaleDateString("en-IN", options));
-                setDeliveryDate(delivery.toLocaleDateString("en-IN", options));
-            }
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        setOrderDate(today.toLocaleDateString("en-IN", options));
+        setDeliveryDate(delivery.toLocaleDateString("en-IN", options));
+      }
 
-            const savedAddress = localStorage.getItem("userAddress");
-            if (savedAddress) {
-                const parsed = JSON.parse(savedAddress);
-                setAddress(parsed);
-                setAddressSaved(true);
-            }
-        } catch (err) {
-            console.error("Error loading data:", err);
-        }
-    }, []);
-
-    const luhnCheck = (num) => {
-        const s = num.replace(/\s+/g, "");
-        if (!/^\d+$/.test(s)) return false;
-        let sum = 0;
-        let shouldDouble = false;
-        for (let i = s.length - 1; i >= 0; i--) {
-            let d = parseInt(s.charAt(i), 10);
-            if (shouldDouble) {
-                d *= 2;
-                if (d > 9) d -= 9;
-            }
-            sum += d;
-            shouldDouble = !shouldDouble;
-        }
-        return sum % 10 === 0;
-    };
-
-    const detectCardBrand = (num) => {
-        if (/^4/.test(num)) return "Visa";
-        if (/^5[1-5]/.test(num)) return "Mastercard";
-        if (/^3[47]/.test(num)) return "American Express";
-        if (/^6/.test(num)) return "Discover";
-        return "Card";
-    };
-
-    const handleSaveAddress = () => {
-        if (
-            address.fullName &&
-            address.mobile &&
-            address.pincode &&
-            address.flat &&
-            address.area
-        ) {
-            localStorage.setItem("userAddress", JSON.stringify(address));
-            setAddressSaved(true);
-            setIsAddressModalOpen(false);
-        } else {
-            alert("Please fill all address fields.");
-        }
-    };
-
-    const openPaymentModal = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            router.push("/login?redirect=/checkout");
-            return;
-        }
-
-        if (!addressSaved) {
-            alert("Please add your delivery address before payment!");
-            return;
-        }
-        if (selectedPaymentMethod === "cod") {
-            setLoading(true);
-            try {
-                const totalAmount =
-                    (parseFloat(product?.salePrice ?? product?.price) || 0) *
-                    (product?.quantity || 1);
-                const orderData = {
-                    product,
-                    address,
-                    totalAmount,
-                    paymentMethod: "Cash on Delivery",
-                    paymentStatus: "Pending",
-                    orderDate,
-                    deliveryDate,
-                };
-
-                const orderRes = await fetch("/api/orders", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(orderData),
-                });
-
-                const orderResult = await orderRes.json();
-                if (orderResult.success && orderResult.order?._id) {
-                    localStorage.setItem("lastOrderId", orderResult.order._id);
-                    router.push("/order-success");
-                } else {
-                    throw new Error(orderResult.error || "Order save failed");
-                }
-            } catch (err) {
-                console.error("COD Order Error:", err);
-                alert("Something went wrong while placing the order.");
-            } finally {
-                setLoading(false);
-            }
-        } else {
-            setPaymentError(null);
-            setIsPaymentModalOpen(true);
-        }
-    };
-    const handleMockPaymentSubmit = async (e) => {
-        if (e && e.preventDefault) e.preventDefault();
-        setPaymentError(null);
-
-        const rawCard = cardNumber.replace(/\s+/g, "");
-        if (rawCard.length < 12 || rawCard.length > 19 || !/^\d+$/.test(rawCard)) {
-            setPaymentError("Please enter a valid card number.");
-            return;
-        }
-        if (!luhnCheck(rawCard)) {
-            setPaymentError("Invalid card number.");
-            return; }
-        if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
-            setPaymentError("Expiry must be in MM/YY format.");
-            return;}
-        if (!/^\d{3,4}$/.test(cardCvv)) {
-            setPaymentError("CVV must be 3 or 4 digits.");
-            return; }
-
-        setPaymentProcessing(true);
-        try {
-            const totalAmount =
-                (parseFloat(product?.salePrice ?? product?.price) || 0) *
-                (product?.quantity || 1);
-
-            const orderData = {
-                product,
-                address,
-                totalAmount,
-                paymentMethod: "Mock-Card",
-                paymentStatus: "Paid",
-                orderDate,
-                deliveryDate,
-                mockPayment: {
-                    cardLast4: rawCard.slice(-4),
-                    cardBrand: detectCardBrand(rawCard),
-                    simulatedTransactionId: "mock_txn_" + Date.now(),
-                },
-            };
-
-            const orderRes = await fetch("/api/orders", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(orderData),
-            });
-
-            const orderResult = await orderRes.json();
-
-            if (orderResult.success && orderResult.order?._id) {
-                localStorage.setItem("lastOrderId", orderResult.order._id);
-                setIsPaymentModalOpen(false);
-                router.push("/order-success");
-            } else {
-                throw new Error(orderResult.error || "Order save failed");
-            }
-        } catch (err) {
-            console.error("Mock payment/order error:", err);
-            setPaymentError("Something went wrong while placing the order.");
-        } finally {
-            setPaymentProcessing(false);
-        }
-    };
-    const featureImage = product?.featureImage ?? "/placeholder.jpg";
-    const images = Array.isArray(product?.images) ? product.images : [];
-
-    if (!product) {
-        return <p className="text-center mt-10">No product found for payment</p>;
+      const savedAddress = localStorage.getItem("userAddress");
+      const savedUser = localStorage.getItem("user");
+      if (savedAddress && savedUser) {
+        const parsed = JSON.parse(savedAddress);
+        const user = JSON.parse(savedUser);
+        setAddress({ ...parsed, email: user.email });
+        setAddressSaved(true);
+      }
+    } catch (err) {
+      console.error("Error loading data:", err);
     }
+  }, []);
+
+  // Mock card validation
+  const luhnCheck = (num) => {
+    const s = num.replace(/\s+/g, "");
+    if (!/^\d+$/.test(s)) return false;
+    let sum = 0;
+    let shouldDouble = false;
+    for (let i = s.length - 1; i >= 0; i--) {
+      let d = parseInt(s.charAt(i), 10);
+      if (shouldDouble) {
+        d *= 2;
+        if (d > 9) d -= 9;
+      }
+      sum += d;
+      shouldDouble = !shouldDouble;
+    }
+    return sum % 10 === 0;
+  };
+  const detectCardBrand = (num) => {
+    if (/^4/.test(num)) return "Visa";
+    if (/^5[1-5]/.test(num)) return "Mastercard";
+    if (/^3[47]/.test(num)) return "American Express";
+    if (/^6/.test(num)) return "Discover";
+    return "Card";
+  };
+
+  const handleSaveAddress = () => {
+    if (
+      address.fullName &&
+      address.mobile &&
+      address.pincode &&
+      address.flat &&
+      address.area &&
+      address.email
+    ) {
+      localStorage.setItem("userAddress", JSON.stringify(address));
+      setAddressSaved(true);
+      setIsAddressModalOpen(false);
+    } else {
+      alert("Please fill all address fields including email.");
+    }
+  };
+
+  const openPaymentModal = async () => {
+    const token = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
+    if (!token || !savedUser) {
+      router.push("/login?redirect=/checkout");
+      return;
+    }
+    const user = JSON.parse(savedUser);
+
+    if (!addressSaved) {
+      alert("Please add your delivery address before payment!");
+      return;
+    }
+
+    const totalAmount =
+      (parseFloat(product?.salePrice ?? product?.price) || 0) *
+      (product?.quantity || 1);
+
+    // For COD
+    if (selectedPaymentMethod === "cod") {
+      setLoading(true);
+      try {
+        const orderData = {
+          product,
+          address: { ...address, email: user.email }, // <-- save email
+          totalAmount,
+          paymentMethod: "Cash on Delivery",
+          paymentStatus: "Pending",
+          orderDate,
+          deliveryDate,
+          userEmail: user.email,
+        };
+
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        });
+        const result = await res.json();
+        if (result.success && result.order?._id) {
+          localStorage.setItem("lastOrderId", result.order._id);
+          router.push("/order-success");
+        } else {
+          throw new Error(result.error || "Order save failed");
+        }
+      } catch (err) {
+        console.error("COD Order Error:", err);
+        alert("Something went wrong while placing the order.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setPaymentError(null);
+      setIsPaymentModalOpen(true);
+    }
+  };
+
+  const handleMockPaymentSubmit = async (e) => {
+    e.preventDefault();
+    setPaymentError(null);
+    const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+    const rawCard = cardNumber.replace(/\s+/g, "");
+    if (rawCard.length < 12 || rawCard.length > 19 || !/^\d+$/.test(rawCard)) {
+      setPaymentError("Please enter a valid card number.");
+      return;
+    }
+    if (!luhnCheck(rawCard)) {
+      setPaymentError("Invalid card number.");
+      return;
+    }
+    if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+      setPaymentError("Expiry must be in MM/YY format.");
+      return;
+    }
+    if (!/^\d{3,4}$/.test(cardCvv)) {
+      setPaymentError("CVV must be 3 or 4 digits.");
+      return;
+    }
+
+    setPaymentProcessing(true);
+    try {
+      const totalAmount =
+        (parseFloat(product?.salePrice ?? product?.price) || 0) *
+        (product?.quantity || 1);
+
+      const orderData = {
+        product,
+        address: { ...address, email: savedUser.email },
+        totalAmount,
+        paymentMethod: "Mock-Card",
+        paymentStatus: "Paid",
+        orderDate,
+        deliveryDate,
+        userEmail: savedUser.email,
+        mockPayment: {
+          cardLast4: rawCard.slice(-4),
+          cardBrand: detectCardBrand(rawCard),
+          simulatedTransactionId: "mock_txn_" + Date.now(),
+        },
+      };
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+      const result = await res.json();
+      if (result.success && result.order?._id) {
+        localStorage.setItem("lastOrderId", result.order._id);
+        setIsPaymentModalOpen(false);
+        router.push("/order-success");
+      } else {
+        throw new Error(result.error || "Order save failed");
+      }
+    } catch (err) {
+      console.error("Mock payment/order error:", err);
+      setPaymentError("Something went wrong while placing the order.");
+    } finally {
+      setPaymentProcessing(false);
+    }
+  };
+
+  if (!product) return <p className="text-center mt-10">No product found for checkout.</p>;
+
+  const featureImage = product?.featureImage ?? "/placeholder.jpg";
+  const images = Array.isArray(product?.images) ? product.images : [];
+
+  
+
+   
     return (
         <div className="max-w-6xl px-2 mx-auto p-8">
             <h1 className="text-left font-bold text-black text-2xl mb-4">

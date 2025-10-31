@@ -1,22 +1,20 @@
 "use client";
-import { Button } from "@nextui-org/react";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { deleteCategory, updateCategory } from "../../../../lib/categoryService";
-
-import { useRouter } from "next/navigation";
-
+import { deleteCategory } from "../../../../lib/categoryService";
 
 export default function ListView({ onCreate, onEdit }) {
   const [categories, setCategories] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const router = useRouter();
 
   const fetchCategories = async () => {
-    const res = await fetch("/api/categories");
-    const data = await res.json();
-    if (data.success) setCategories(data.categories);
+    try {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      if (data.success) setCategories(data.categories);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -24,66 +22,97 @@ export default function ListView({ onCreate, onEdit }) {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure?")) return;
+    if (!confirm("Are you sure you want to delete this category?")) return;
 
     try {
       await deleteCategory(id);
       toast.success("Deleted successfully");
       fetchCategories();
     } catch (err) {
-      toast.error(err?.message);
+      toast.error(err?.message || "Failed to delete category");
     }
   };
 
   return (
-    <div className="flex flex-col flex-1 md:pr-5 md:px-0 px-5  bg-white p-2 rounded-xl">
-      <div className="flex justify-between   items-center mb-3">
-        <h1 className="font-semibold text-lg">Categories</h1>
-        <button
-          onClick={onCreate}
-          className="bg-pink-500 text-white px-3 py-1 rounded hover:bg-pink-600" >
-          Create
-        </button>
-      </div>
+    <div className="min-h-screen rounded-lg bg-gray-50 w-full ml-1 mt-1 p-2">
+      <div className="bg-white rounded-xl shadow-md p-3">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
+          <button
+            onClick={onCreate}
+            className="bg-pink-600 text-white px-3 py-1 rounded hover:bg-pink-700"
+          >
+            Create
+          </button>
+        </div>
 
-      <table className="w-full border border-gray-200 rounded-lg overflow-hidden text-sm">
-        <thead className="bg-gray-100 text-gray-700">
-          <tr>
-            <th className="p-3 border w-12">SN</th>
-            <th className="p-3 border w-24">Image</th>
-            <th className="p-3 border  w-56">Name</th>
-            <th className="p-3 border text-center w-32">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {categories.map((cat, index) => (
-            <tr key={cat._id} className="text-center hover:bg-gray-50">
-              <td className="p-2 border">{index + 1}</td>
-              <td className="p-2 border">
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-10 h-10 object-cover rounded mx-auto"  />
-              </td>
-              <td className="p-2 border font-medium">{cat.name}</td>
-              <td className="p-2 flex justify-center border-r-lg gap-2 text-gray-600">
-                <Button
-                  onClick={() => handleEdit(cat._id)}
-                  isIconOnly
-                  className="p-2 bg-gray-200 rounded hover:bg-gray-300" >
-                  <Pencil size={16} />
-                </Button>
-                <Button
-                  onClick={() => handleDelete(cat._id)}
-                  isIconOnly
-                  className="p-2 bg-red-500 text-white rounded hover:bg-red-600">
-                  <Trash2 size={16} />
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div className="overflow-x-auto">
+          <table className="w-full table-auto border-collapse border border-gray-300 text-sm">
+            <thead className="bg-gray-100 text-gray-700">
+              <tr>
+                <th className="border border-gray-300 px-3 py-2 text-center w-12">
+                  SN
+                </th>
+                <th className="border border-gray-300 px-3 py-2 text-center w-24">
+                  Image
+                </th>
+                <th className="border border-gray-300 px-3 py-2 text-left">
+                  Name
+                </th>
+                <th className="border border-gray-300 px-3 py-2 text-center w-32">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.map((cat, index) => (
+                <tr key={cat._id} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 px-3 py-2 text-center">
+                    {index + 1}
+                  </td>
+                  <td className="border border-gray-300 px-3 py-2 text-center">
+                    <img
+                      src={cat.image || "/default-avatar.png"}
+                      alt={cat.name}
+                      className="w-10 h-10 object-cover rounded mx-auto"
+                    />
+                  </td>
+                  <td className="border border-gray-300 px-3 py-2 font-medium text-gray-800">
+                    {cat.name}
+                  </td>
+                  <td className="border border-gray-300 px-3 py-2 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => onEdit(cat._id)}
+                        className="p-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(cat._id)}
+                        className="p-2 bg-red-600 text-white rounded hover:bg-red-700"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
+              {categories.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="text-center text-gray-500 py-6 border border-gray-300"
+                  >
+                    No categories found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import connectDB from "../../utils/database";
 import Order from "../../../models/orderModel";
 import { NextResponse } from "next/server";
+import Product from "../../../models/Product";
 
 export async function POST(request) {
   try {
@@ -20,6 +21,7 @@ export async function POST(request) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
+
 
 export async function GET() {
   try {

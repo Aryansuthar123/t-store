@@ -86,7 +86,7 @@ export default function Page() {
             className="text-xl font-semibold flex flex-col gap-1 p-1 px-1 py-1">
             <div className="flex justify-between w-full">
                 <h1 className="font-semibold">{id ? "Edit Product" : "Create new Product"}</h1>
-                <Button isLoading={isLoading} isDisabled={isLoading} type="submit">{id ? "Update" : "Create"}</Button>
+                <Button className="bg-pink-500 !rounded-lg px-3 font-normal  text-white py-1 hover:bg-pink-400" isLoading={isLoading} isDisabled={isLoading} type="submit">{id ? "Update" : "Create"}</Button>
             </div>
             <div className="flex flex-col md:flex-row gap-3">
                 <BasicDetails data={data} handleData={handleData} className="flex-1 max-w-md" />
