@@ -2,9 +2,9 @@ import connectDB from "../../../utils/database";
 import User from "../../../../models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
-import nodemailer from "nodemailer";
+
 import crypto from "crypto";
-import type { Transporter } from "nodemailer";
+import nodemailer, { Transporter } from "nodemailer";
 
 connectDB();
 
@@ -41,8 +41,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       isVerified: false,
     });
     await newUser.save();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-   const transporter = nodemailer.createTransport({
+
+const transporter: Transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
