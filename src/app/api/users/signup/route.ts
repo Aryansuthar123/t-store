@@ -40,7 +40,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       isVerified: false,
     });
     await newUser.save();
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
    const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
