@@ -12,13 +12,19 @@ export function middleware(req) {
     "/admin-login",
   ];
 
-  // Allow public routes
+  // ✅ Allow verification and API routes without blocking
+  if (pathname.startsWith("/api/users/verify-email")) {
+    console.log("✅ SKIPPING VERIFY EMAIL API");
+    return NextResponse.next();
+  }
+
+  // ✅ Allow public admin routes
   if (publicAdminRoutes.some((route) => pathname.startsWith(route))) {
     console.log("✅ PUBLIC ROUTE:", pathname);
     return NextResponse.next();
   }
 
-  // Protect only /admin pages
+  // 🚫 Protect only /admin pages
   if (pathname.startsWith("/admin") && !token) {
     console.log("🚫 NO TOKEN — redirecting to /admin-login");
     return NextResponse.redirect(new URL("/admin-login", req.url));
@@ -28,7 +34,7 @@ export function middleware(req) {
   return NextResponse.next();
 }
 
-// This matcher excludes login/forgot/reset pages properly
+// ✅ Matcher: apply middleware only to admin routes
 export const config = {
   matcher: [
     "/admin",

@@ -2,7 +2,8 @@
     import bcryptjs from "bcryptjs";
 
     const userSchema  = new mongoose.Schema({
-        username: { type: String, required: [true, "Please provide a username"], unique: true },
+       username: { type: String, required: [true, "Please provide a username"] },
+
         email: { type: String, required: [true, "Please provide a Email"], unique: true },
         password: { type: String, required: [true, "Please provide a Password"] },
         image:    { type: String },   
