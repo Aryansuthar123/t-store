@@ -6,7 +6,7 @@ export default function page() {
   return (
     <main className="flex w-full flex-col gap-4 p-1">
       <div
-        className="bg-amber-50 rounded-lg px-2"
+        className="bg-white rounded-lg px-2"
         style={{ fontSize: "30px", fontWeight: "bold" }}>
         Dashboard
       </div>
