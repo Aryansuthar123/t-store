@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     const user = await User.findOne({
       verifyToken: token,
-      verifyTokenExpiry: { $gt: Date.now() },
+      verifyTokenExpiry: { $gt:  new Date() },
     });
 
     if (!user) {
