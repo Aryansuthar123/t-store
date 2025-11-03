@@ -1,10 +1,8 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// src/app/verify-email/page.tsx
+"use client"; // must be first line
 
-
-import VerifyEmailClient from "../verify-email/verify-email-client";
+import VerifyEmailClient from "./verify-email-client";
 
 export default function VerifyEmailPage() {
-  
   return <VerifyEmailClient />;
 }

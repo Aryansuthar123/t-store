@@ -58,7 +58,7 @@ export default function SignupPage() {
         {loading ? "Processing..." : "Signup"}
       </h1>
 
-      {/* Username */}
+     
       <div className="w-80 mb-4 flex flex-col">
         <label htmlFor="username" className="mb-1 font-semibold">
           Username
@@ -73,7 +73,7 @@ export default function SignupPage() {
         />
       </div>
 
-      {/* Email */}
+    
       <div className="w-80 mb-4 flex flex-col">
         <label htmlFor="email" className="mb-1 font-semibold">
           Email
@@ -88,8 +88,7 @@ export default function SignupPage() {
             user.email && !validateEmail(user.email)
               ? "border-red-500"
               : "border-gray-300"
-          }`}
-        />
+          }`}/>
         {user.email && !validateEmail(user.email) && (
           <p className="text-red-500 text-sm mt-1">
             Email must include @gmail.com
@@ -97,7 +96,7 @@ export default function SignupPage() {
         )}
       </div>
 
-      {/* Password */}
+  
       <div className="w-80 mb-4 flex flex-col relative">
         <label htmlFor="password" className="mb-1 font-semibold">
           Password
@@ -108,18 +107,16 @@ export default function SignupPage() {
           value={user.password}
           onChange={(e) => setUser({ ...user, password: e.target.value })}
           placeholder="Password"
-          className="p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-600 text-black"
-        />
+          className="p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-600 text-black"/>
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-2 top-[32px] text-gray-500"
-        >
+          className="absolute right-2 top-[32px] text-gray-500">
           {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
         </button>
       </div>
 
-      {/* Signup Button */}
+      
       <div className="px-20">
         <button
           onClick={onSignup}
@@ -128,8 +125,7 @@ export default function SignupPage() {
             buttonDisabled
               ? "bg-pink-300 cursor-not-allowed"
               : "bg-pink-500 hover:bg-pink-600"
-          }`}
-        >
+          }`}>
           {loading ? "Processing..." : "Signup"}
         </button>
       </div>
