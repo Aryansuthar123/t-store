@@ -17,15 +17,14 @@ export async function POST(req) {
     if (!user.otpVerified)
       return NextResponse.json({ success: false, message: "OTP not verified" }, { status: 403 });
 
-    // ✅ Assign plain password
+   
     user.password = password;
 
-    // Clear OTP info
     user.otpVerified = false;
     user.resetOTP = undefined;
     user.otpExpiry = undefined;
 
-    await user.save();  // pre-save hook will hash the password
+    await user.save(); 
 
     return NextResponse.json({ success: true, message: "Password updated successfully!" });
   } catch (error) {

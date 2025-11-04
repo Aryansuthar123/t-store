@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import Product from "@/models/Product";
 import connectDB from "@/app/utils/database";
@@ -6,26 +5,29 @@ import { writeFile } from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
-
+// GET PRODUCT BY ID
 export async function GET(_, { params }) {
-  await connectDB();
-  console.log("params =>", params);
-  const { id } = params;
-  const product = await Product.findById(id);
-  if (!product) {
-    return NextResponse.json(
-      { success: false, message: "Not found" },
-      { status: 404 }
-    );
+  try {
+    await connectDB();
+    const { id } = params;
+    const product = await Product.findById(id);
+    if (!product) {
+      return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, product });
+  } catch (err) {
+    console.error("GET /api/products/[id] error:", err);
+    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
-  return NextResponse.json({ success: true, product });
 }
 
+// UPDATE PRODUCT BY ID (WITH IMAGE UPLOAD)
 export async function PUT(req, { params }) {
-  await connectDB();
   try {
-    const formData = await req.formData();
+    await connectDB();
+    const { id } = params;
 
+    const formData = await req.formData();
 
     const title = formData.get("title");
     const shortDescription = formData.get("shortDescription");
@@ -34,10 +36,8 @@ export async function PUT(req, { params }) {
     const stock = formData.get("stock");
     const price = formData.get("price");
     const salePriceRaw = formData.get("salePrice");
-    
-    
 
-
+    // FEATURE IMAGE
     let featureImageUrl = null;
     const featureImage = formData.get("featureImage");
     if (featureImage && featureImage.size > 0) {
@@ -49,6 +49,7 @@ export async function PUT(req, { params }) {
       featureImageUrl = `/uploads/${fileName}`;
     }
 
+    // MULTIPLE IMAGES
     const images = [];
     for (const file of formData.getAll("images")) {
       if (file.size > 0) {
@@ -61,7 +62,7 @@ export async function PUT(req, { params }) {
       }
     }
 
-
+    // BUILD UPDATE DATA
     const updateData = {
       title,
       shortDescription,
@@ -76,8 +77,8 @@ export async function PUT(req, { params }) {
     if (featureImageUrl) updateData.featureImage = featureImageUrl;
     if (images.length > 0) updateData.images = images;
 
-
-    const updated = await Product.findByIdAndUpdate(params.id, updateData, {
+    // UPDATE PRODUCT
+    const updated = await Product.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
     });
@@ -92,16 +93,19 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
+
+// DELETE PRODUCT BY ID
 export async function DELETE(_, { params }) {
-  await connectDB();
   try {
+    await connectDB();
     const { id } = params;
-    await Product.findByIdAndDelete(id);
-    return NextResponse.json({ success: true });
+    const deleted = await Product.findByIdAndDelete(id);
+    if (!deleted) {
+      return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, message: "Product deleted successfully" });
   } catch (err) {
-    return NextResponse.json(
-      { success: false, message: err.message },
-      { status: 500 }
-    );
+    console.error("DELETE /api/products/[id] error:", err);
+    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }

@@ -13,20 +13,18 @@ export async function POST(req) {
       return NextResponse.json({ success: false, message: "User not found" });
     }
 
-    // OTP match check
+    
     if (!user.resetOTP || user.resetOTP !== otp) {
       return NextResponse.json({ success: false, message: "Invalid OTP" });
     }
 
-    // OTP expiry check
     if (user.otpExpiry < Date.now()) {
       return NextResponse.json({ success: false, message: "OTP expired" });
     }
 
-    // ✅ OTP is correct and valid
-    user.otpVerified = true;     // Mark OTP verified
-    user.resetOTP = undefined;   // Clear OTP
-    user.otpExpiry = undefined;  // Clear expiry
+    user.otpVerified = true;     
+    user.resetOTP = undefined;   
+    user.otpExpiry = undefined;  
     await user.save();
 
     return NextResponse.json({ success: true, message: "OTP verified successfully!" });

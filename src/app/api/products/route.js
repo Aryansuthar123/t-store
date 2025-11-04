@@ -15,18 +15,17 @@ export async function GET() {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
 
-    // Aggregate orders by product._id
+   
     const orderCounts = await Order.aggregate([
       { $group: { _id: "$product._id", count: { $sum: 1 } } }
     ]);
 
-    // Map product _id to order count
+    
     const orderMap = {};
     orderCounts.forEach(o => {
       if (o._id) orderMap[o._id.toString()] = o.count;
     });
 
-    // Attach orders count to products
     const productsWithOrders = products.map(p => ({
       ...p.toObject(),
       orders: orderMap[p._id.toString()] || 0
