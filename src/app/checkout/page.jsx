@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -18,7 +19,6 @@ export default function CheckoutPage() {
     pincode: "",
     flat: "",
     area: "",
-   
   });
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -30,8 +30,20 @@ export default function CheckoutPage() {
   const [paymentError, setPaymentError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
+  // ✅ LOGIN CHECK FIX (Vercel-safe)
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+
+    // If not logged in, redirect to login page with redirect param
+    if (!token || !user) {
+      router.push("/login?redirect=/checkout");
+      return;
+    }
+
+    // If logged in, then load product & address
     try {
       const stored = localStorage.getItem("checkoutProduct");
       if (stored) {
@@ -58,9 +70,9 @@ export default function CheckoutPage() {
     } catch (err) {
       console.error("Error loading data:", err);
     }
-  }, []);
+  }, [router]);
 
- 
+  // ✅ Luhn check function
   const luhnCheck = (num) => {
     const s = num.replace(/\s+/g, "");
     if (!/^\d+$/.test(s)) return false;
@@ -77,6 +89,7 @@ export default function CheckoutPage() {
     }
     return sum % 10 === 0;
   };
+
   const detectCardBrand = (num) => {
     if (/^4/.test(num)) return "Visa";
     if (/^5[1-5]/.test(num)) return "Mastercard";
@@ -91,14 +104,13 @@ export default function CheckoutPage() {
       address.mobile &&
       address.pincode &&
       address.flat &&
-      address.area 
-    
+      address.area
     ) {
       localStorage.setItem("userAddress", JSON.stringify(address));
       setAddressSaved(true);
       setIsAddressModalOpen(false);
     } else {
-      alert("Please fill all address fields including email.");
+      alert("Please fill all address fields.");
     }
   };
 
@@ -125,7 +137,7 @@ export default function CheckoutPage() {
       try {
         const orderData = {
           product,
-          address: { ...address, email: user.email }, 
+          address: { ...address, email: user.email },
           totalAmount,
           paymentMethod: "Cash on Delivery",
           paymentStatus: "Pending",
@@ -224,12 +236,11 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!product) return <p className="text-center mt-10">No product found for checkout.</p>;
+  if (!product)
+    return <p className="text-center mt-10">No product found for checkout.</p>;
 
   const featureImage = product?.featureImage ?? "/placeholder.jpg";
   const images = Array.isArray(product?.images) ? product.images : [];
-
-  
 
    
     return (
