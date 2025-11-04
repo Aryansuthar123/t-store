@@ -11,7 +11,6 @@ export default function CheckoutPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [addressSaved, setAddressSaved] = useState(false);
-
   const [address, setAddress] = useState({
     fullName: "",
     mobile: "",
@@ -29,10 +28,12 @@ export default function CheckoutPage() {
   const [paymentError, setPaymentError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Load product + saved address (no redirect here — we allow opening checkout without login)
+  // ✅ Load checkout data safely (works on Vercel)
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     try {
-      const stored = localStorage.getItem("checkoutProduct");
+      const stored = window.localStorage.getItem("checkoutProduct");
       if (stored) {
         const parsed = JSON.parse(stored);
         setProduct(parsed);
@@ -46,21 +47,21 @@ export default function CheckoutPage() {
         setDeliveryDate(delivery.toLocaleDateString("en-IN", options));
       }
 
-      const savedAddress = localStorage.getItem("userAddress");
-      const savedUser = localStorage.getItem("user");
+      const savedAddress = window.localStorage.getItem("userAddress");
+      const savedUser = window.localStorage.getItem("user");
+
       if (savedAddress && savedUser) {
         const parsed = JSON.parse(savedAddress);
         const user = JSON.parse(savedUser);
-        // keep email in address object only for display/order usage
         setAddress({ ...parsed, email: user.email });
         setAddressSaved(true);
       }
     } catch (err) {
-      console.error("Error loading data:", err);
+      console.error("Error loading checkout data:", err);
     }
   }, []);
 
-  // Mock card validation
+  // ✅ Luhn card validation (unchanged)
   const luhnCheck = (num) => {
     const s = num.replace(/\s+/g, "");
     if (!/^\d+$/.test(s)) return false;
@@ -93,7 +94,7 @@ export default function CheckoutPage() {
       address.flat &&
       address.area
     ) {
-      localStorage.setItem("userAddress", JSON.stringify(address));
+      window.localStorage.setItem("userAddress", JSON.stringify(address));
       setAddressSaved(true);
       setIsAddressModalOpen(false);
     } else {
@@ -101,83 +102,81 @@ export default function CheckoutPage() {
     }
   };
 
-  // IMPORTANT CHANGE: On clicking Pay Now (openPaymentModal) we first check login.
-  // If not logged in => save checkoutProduct then redirect to login with redirect=/checkout
-  // If logged in => continue order flow
+  // ✅ Main Buy Now (Pay Now) button logic – Vercel-safe
   const openPaymentModal = async () => {
-    const token = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
+    if (typeof window === "undefined") return;
 
-    // If user not logged in -> save product and redirect to login so after login they return
-    if (!token || !savedUser) {
-      // Save the product so it can be restored after login
-      try {
+    try {
+      const token = window.localStorage.getItem("token");
+      const savedUser = window.localStorage.getItem("user");
+
+      // ❌ Not logged in → redirect to login with redirect param
+      if (!token || !savedUser) {
         if (product) {
-          localStorage.setItem("checkoutProduct", JSON.stringify(product));
+          window.localStorage.setItem("checkoutProduct", JSON.stringify(product));
         }
-      } catch (err) {
-        console.error("Could not save checkoutProduct:", err);
+        window.location.href = "/login?redirect=/checkout";
+        return;
       }
 
-      router.push("/login?redirect=/checkout");
-      return;
-    }
+      // ✅ Logged in → continue
+      const user = JSON.parse(savedUser);
 
-    // User is logged in -> proceed
-    const user = JSON.parse(savedUser);
-
-    if (!addressSaved) {
-      alert("Please add your delivery address before payment!");
-      return;
-    }
-
-    const totalAmount =
-      (parseFloat(product?.salePrice ?? product?.price) || 0) *
-      (product?.quantity || 1);
-
-    // For COD
-    if (selectedPaymentMethod === "cod") {
-      setLoading(true);
-      try {
-        const orderData = {
-          product,
-          address: { ...address, email: user.email }, // <-- save email with order
-          totalAmount,
-          paymentMethod: "Cash on Delivery",
-          paymentStatus: "Pending",
-          orderDate,
-          deliveryDate,
-          userEmail: user.email,
-        };
-
-        const res = await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(orderData),
-        });
-        const result = await res.json();
-        if (result.success && result.order?._id) {
-          localStorage.setItem("lastOrderId", result.order._id);
-          router.push("/order-success");
-        } else {
-          throw new Error(result.error || "Order save failed");
-        }
-      } catch (err) {
-        console.error("COD Order Error:", err);
-        alert("Something went wrong while placing the order.");
-      } finally {
-        setLoading(false);
+      if (!addressSaved) {
+        alert("Please add your delivery address before payment!");
+        return;
       }
-    } else {
-      setPaymentError(null);
-      setIsPaymentModalOpen(true);
+
+      const totalAmount =
+        (parseFloat(product?.salePrice ?? product?.price) || 0) *
+        (product?.quantity || 1);
+
+      if (selectedPaymentMethod === "cod") {
+        setLoading(true);
+        try {
+          const orderData = {
+            product,
+            address: { ...address, email: user.email },
+            totalAmount,
+            paymentMethod: "Cash on Delivery",
+            paymentStatus: "Pending",
+            orderDate,
+            deliveryDate,
+            userEmail: user.email,
+          };
+
+          const res = await fetch("/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderData),
+          });
+          const result = await res.json();
+          if (result.success && result.order?._id) {
+            window.localStorage.setItem("lastOrderId", result.order._id);
+            router.push("/order-success");
+          } else {
+            throw new Error(result.error || "Order save failed");
+          }
+        } catch (err) {
+          console.error("COD Order Error:", err);
+          alert("Something went wrong while placing the order.");
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setPaymentError(null);
+        setIsPaymentModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Buy Now Error:", error);
+      alert("Something went wrong, please try again.");
     }
   };
 
   const handleMockPaymentSubmit = async (e) => {
     e.preventDefault();
     setPaymentError(null);
-    const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
+    const savedUser = JSON.parse(window.localStorage.getItem("user") || "{}");
 
     const rawCard = cardNumber.replace(/\s+/g, "");
     if (rawCard.length < 12 || rawCard.length > 19 || !/^\d+$/.test(rawCard)) {
@@ -226,7 +225,7 @@ export default function CheckoutPage() {
       });
       const result = await res.json();
       if (result.success && result.order?._id) {
-        localStorage.setItem("lastOrderId", result.order._id);
+        window.localStorage.setItem("lastOrderId", result.order._id);
         setIsPaymentModalOpen(false);
         router.push("/order-success");
       } else {
@@ -240,7 +239,8 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!product) return <p className="text-center mt-10">No product found for checkout.</p>;
+  if (!product)
+    return <p className="text-center mt-10">No product found for checkout.</p>;
 
   const featureImage = product?.featureImage ?? "/placeholder.jpg";
   const images = Array.isArray(product?.images) ? product.images : [];
