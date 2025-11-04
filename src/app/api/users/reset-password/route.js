@@ -1,39 +1,35 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import ConnectDB from "../../../utils/database";
 import User from "../../../../models/userModel";
 
 export async function POST(req) {
   try {
     await ConnectDB();
+
     const { email, password } = await req.json();
+    if (!email || !password) {
+      return NextResponse.json({ success: false, message: "Email and password required" }, { status: 400 });
+    }
 
     const user = await User.findOne({ email });
-    if (!user)
-      return NextResponse.json({ success: false, message: "User not found" });
+    if (!user) return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
 
     if (!user.otpVerified)
-      return NextResponse.json({ success: false, message: "OTP not verified" });
+      return NextResponse.json({ success: false, message: "OTP not verified" }, { status: 403 });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
+    // ✅ Assign plain password
+    user.password = password;
 
-    // ✅ Clear OTP info after successful password reset
+    // Clear OTP info
+    user.otpVerified = false;
     user.resetOTP = undefined;
     user.otpExpiry = undefined;
-    user.otpVerified = false;
 
-    await user.save();
+    await user.save();  // pre-save hook will hash the password
 
-    return NextResponse.json({
-      success: true,
-      message: "Password updated successfully!",
-    });
+    return NextResponse.json({ success: true, message: "Password updated successfully!" });
   } catch (error) {
     console.error("Error resetting password:", error);
-    return NextResponse.json(
-      { success: false, message: "Error resetting password" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: "Internal Server Error" }, { status: 500 });
   }
 }
