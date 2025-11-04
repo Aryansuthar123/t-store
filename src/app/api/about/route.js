@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server";
 import ConnectDB from "../../utils/database";
 import About from "../../../models/aboutModel";
-import path from "path";
-import { promises as fsPromises } from "fs";
+import { v2 as cloudinary } from "cloudinary";
+import { v4 as uuidv4 } from "uuid";
+
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function GET() {
   await ConnectDB();
@@ -11,41 +18,46 @@ export async function GET() {
 }
 
 export async function POST(req) {
-  await ConnectDB();
-  const formData = await req.formData();
+  try {
+    await ConnectDB();
+    const formData = await req.formData();
 
-  const title = formData.get("title");
-  const description = formData.get("description");
-  const category = formData.get("category") || "Trending";
-  const imageFile = formData.get("image");
+    const title = formData.get("title");
+    const description = formData.get("description");
+    const category = formData.get("category") || "Trending";
+    const imageFile = formData.get("image");
 
-  let imagePath = "";
+    let imagePath = "";
 
-  
-  if (imageFile && typeof imageFile === "object" && imageFile.name) {
-    const buffer = Buffer.from(await imageFile.arrayBuffer());
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    if (imageFile && typeof imageFile === "object" && imageFile.name) {
+      const bytes = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const base64 = `data:${imageFile.type};base64,${buffer.toString("base64")}`;
 
-    await fsPromises.mkdir(uploadDir, { recursive: true });
+      const uploadRes = await cloudinary.uploader.upload(base64, {
+        folder: "about",
+        public_id: uuidv4(),
+      });
 
-    const filePath = path.join(uploadDir, imageFile.name);
-    await fsPromises.writeFile(filePath, buffer);
+      imagePath = uploadRes.secure_url;
+    } else if (typeof imageFile === "string") {
+      imagePath = imageFile;
+    }
 
-    imagePath = `/uploads/${imageFile.name}`;
-  } else if (typeof imageFile === "string") {
-    imagePath = imageFile;
+    const newAbout = new About({
+      title,
+      description,
+      image: imagePath,
+      category,
+    });
+
+    await newAbout.save();
+
+    return NextResponse.json({ success: true, data: newAbout });
+  } catch (error) {
+    console.error("❌ About upload error:", error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
-
-  const newAbout = new About({
-    title,
-    description,
-    image: imagePath,
-    category,
-  });
-
-  await newAbout.save();
-
-  return NextResponse.json({ success: true, data: newAbout });
 }
 
 export async function PUT(req) {
@@ -57,10 +69,28 @@ export async function PUT(req) {
   const title = formData.get("title");
   const description = formData.get("description");
   const category = formData.get("category");
-  const image = formData.get("image");
+  const imageFile = formData.get("image");
+
+  let imagePath = "";
+
+ 
+  if (imageFile && typeof imageFile === "object" && imageFile.name) {
+    const bytes = await imageFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64 = `data:${imageFile.type};base64,${buffer.toString("base64")}`;
+
+    const uploadRes = await cloudinary.uploader.upload(base64, {
+      folder: "about",
+      public_id: uuidv4(),
+    });
+
+    imagePath = uploadRes.secure_url;
+  } else if (typeof imageFile === "string") {
+    imagePath = imageFile;
+  }
 
   const updateData = { title, description, category };
-  if (image) updateData.image = image;
+  if (imagePath) updateData.image = imagePath;
 
   await About.findByIdAndUpdate(id, updateData);
   return NextResponse.json({ success: true });
