@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -8,8 +7,11 @@ export default function CheckoutPage() {
   const [product, setProduct] = useState(null);
   const [orderDate, setOrderDate] = useState("");
   const [deliveryDate, setDeliveryDate] = useState("");
+  const [preview, setPreview] = useState(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [addressSaved, setAddressSaved] = useState(false);
+
   const [address, setAddress] = useState({
     fullName: "",
     mobile: "",
@@ -17,122 +19,48 @@ export default function CheckoutPage() {
     flat: "",
     area: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [paymentError, setPaymentError] = useState(null);
+
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // ✅ Load product and address when page opens
+  // Load product + saved address (no redirect here — we allow opening checkout without login)
   useEffect(() => {
-    const storedProduct = localStorage.getItem("checkoutProduct");
-    if (storedProduct) {
-      const parsed = JSON.parse(storedProduct);
-      setProduct(parsed);
+    try {
+      const stored = localStorage.getItem("checkoutProduct");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setProduct(parsed);
 
-      const today = new Date();
-      const delivery = new Date();
-      delivery.setDate(today.getDate() + 6);
+        const today = new Date();
+        const delivery = new Date();
+        delivery.setDate(today.getDate() + 6);
 
-      const options = { year: "numeric", month: "long", day: "numeric" };
-      setOrderDate(today.toLocaleDateString("en-IN", options));
-      setDeliveryDate(delivery.toLocaleDateString("en-IN", options));
-    }
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        setOrderDate(today.toLocaleDateString("en-IN", options));
+        setDeliveryDate(delivery.toLocaleDateString("en-IN", options));
+      }
 
-    const savedAddress = localStorage.getItem("userAddress");
-    const savedUser = localStorage.getItem("user");
-    if (savedAddress && savedUser) {
-      const parsed = JSON.parse(savedAddress);
-      const user = JSON.parse(savedUser);
-      setAddress({ ...parsed, email: user.email });
-      setAddressSaved(true);
+      const savedAddress = localStorage.getItem("userAddress");
+      const savedUser = localStorage.getItem("user");
+      if (savedAddress && savedUser) {
+        const parsed = JSON.parse(savedAddress);
+        const user = JSON.parse(savedUser);
+        // keep email in address object only for display/order usage
+        setAddress({ ...parsed, email: user.email });
+        setAddressSaved(true);
+      }
+    } catch (err) {
+      console.error("Error loading data:", err);
     }
   }, []);
 
-  // ✅ Save address function
-  const handleSaveAddress = () => {
-    if (
-      address.fullName &&
-      address.mobile &&
-      address.pincode &&
-      address.flat &&
-      address.area
-    ) {
-      localStorage.setItem("userAddress", JSON.stringify(address));
-      setAddressSaved(true);
-      alert("Address saved successfully!");
-    } else {
-      alert("Please fill all address fields.");
-    }
-  };
-
-  // ✅ Payment/Buy Now click handler
-  const handleBuyNow = async () => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
-
-    // 🔒 Check if user logged in
-    if (!token || !user) {
-      // Not logged in → Save product and redirect to login
-      localStorage.setItem("checkoutProduct", JSON.stringify(product));
-      router.push("/login?redirect=/checkout");
-      return;
-    }
-
-    // If logged in → proceed to order
-    const userData = JSON.parse(user);
-
-    if (!addressSaved) {
-      alert("Please add your delivery address before payment!");
-      return;
-    }
-
-    const totalAmount =
-      (parseFloat(product?.salePrice ?? product?.price) || 0) *
-      (product?.quantity || 1);
-
-    if (selectedPaymentMethod === "cod") {
-      setLoading(true);
-      try {
-        const orderData = {
-          product,
-          address: { ...address, email: userData.email },
-          totalAmount,
-          paymentMethod: "Cash on Delivery",
-          paymentStatus: "Pending",
-          orderDate,
-          deliveryDate,
-          userEmail: userData.email,
-        };
-
-        const res = await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(orderData),
-        });
-
-        const result = await res.json();
-        if (result.success && result.order?._id) {
-          localStorage.setItem("lastOrderId", result.order._id);
-          router.push("/order-success");
-        } else {
-          throw new Error(result.error || "Order save failed");
-        }
-      } catch (err) {
-        console.error("Order Error:", err);
-        alert("Something went wrong while placing the order.");
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setIsPaymentModalOpen(true);
-    }
-  };
-
-  // ✅ Card validation and payment submit
+  // Mock card validation
   const luhnCheck = (num) => {
     const s = num.replace(/\s+/g, "");
     if (!/^\d+$/.test(s)) return false;
@@ -149,7 +77,6 @@ export default function CheckoutPage() {
     }
     return sum % 10 === 0;
   };
-
   const detectCardBrand = (num) => {
     if (/^4/.test(num)) return "Visa";
     if (/^5[1-5]/.test(num)) return "Mastercard";
@@ -158,19 +85,111 @@ export default function CheckoutPage() {
     return "Card";
   };
 
+  const handleSaveAddress = () => {
+    if (
+      address.fullName &&
+      address.mobile &&
+      address.pincode &&
+      address.flat &&
+      address.area
+    ) {
+      localStorage.setItem("userAddress", JSON.stringify(address));
+      setAddressSaved(true);
+      setIsAddressModalOpen(false);
+    } else {
+      alert("Please fill all address fields.");
+    }
+  };
+
+  // IMPORTANT CHANGE: On clicking Pay Now (openPaymentModal) we first check login.
+  // If not logged in => save checkoutProduct then redirect to login with redirect=/checkout
+  // If logged in => continue order flow
+  const openPaymentModal = async () => {
+    const token = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
+
+    // If user not logged in -> save product and redirect to login so after login they return
+    if (!token || !savedUser) {
+      // Save the product so it can be restored after login
+      try {
+        if (product) {
+          localStorage.setItem("checkoutProduct", JSON.stringify(product));
+        }
+      } catch (err) {
+        console.error("Could not save checkoutProduct:", err);
+      }
+
+      router.push("/login?redirect=/checkout");
+      return;
+    }
+
+    // User is logged in -> proceed
+    const user = JSON.parse(savedUser);
+
+    if (!addressSaved) {
+      alert("Please add your delivery address before payment!");
+      return;
+    }
+
+    const totalAmount =
+      (parseFloat(product?.salePrice ?? product?.price) || 0) *
+      (product?.quantity || 1);
+
+    // For COD
+    if (selectedPaymentMethod === "cod") {
+      setLoading(true);
+      try {
+        const orderData = {
+          product,
+          address: { ...address, email: user.email }, // <-- save email with order
+          totalAmount,
+          paymentMethod: "Cash on Delivery",
+          paymentStatus: "Pending",
+          orderDate,
+          deliveryDate,
+          userEmail: user.email,
+        };
+
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        });
+        const result = await res.json();
+        if (result.success && result.order?._id) {
+          localStorage.setItem("lastOrderId", result.order._id);
+          router.push("/order-success");
+        } else {
+          throw new Error(result.error || "Order save failed");
+        }
+      } catch (err) {
+        console.error("COD Order Error:", err);
+        alert("Something went wrong while placing the order.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setPaymentError(null);
+      setIsPaymentModalOpen(true);
+    }
+  };
+
   const handleMockPaymentSubmit = async (e) => {
     e.preventDefault();
     setPaymentError(null);
+    const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
     const rawCard = cardNumber.replace(/\s+/g, "");
-
+    if (rawCard.length < 12 || rawCard.length > 19 || !/^\d+$/.test(rawCard)) {
+      setPaymentError("Please enter a valid card number.");
+      return;
+    }
     if (!luhnCheck(rawCard)) {
       setPaymentError("Invalid card number.");
       return;
     }
     if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
-      setPaymentError("Expiry must be MM/YY format.");
+      setPaymentError("Expiry must be in MM/YY format.");
       return;
     }
     if (!/^\d{3,4}$/.test(cardCvv)) {
@@ -186,13 +205,13 @@ export default function CheckoutPage() {
 
       const orderData = {
         product,
-        address: { ...address, email: user.email },
+        address: { ...address, email: savedUser.email },
         totalAmount,
         paymentMethod: "Mock-Card",
         paymentStatus: "Paid",
         orderDate,
         deliveryDate,
-        userEmail: user.email,
+        userEmail: savedUser.email,
         mockPayment: {
           cardLast4: rawCard.slice(-4),
           cardBrand: detectCardBrand(rawCard),
@@ -205,7 +224,6 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData),
       });
-
       const result = await res.json();
       if (result.success && result.order?._id) {
         localStorage.setItem("lastOrderId", result.order._id);
@@ -222,175 +240,305 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!product)
-    return <p className="text-center mt-10">No product found for checkout.</p>;
+  if (!product) return <p className="text-center mt-10">No product found for checkout.</p>;
 
   const featureImage = product?.featureImage ?? "/placeholder.jpg";
   const images = Array.isArray(product?.images) ? product.images : [];
 
-  // ✅ Page UI
   return (
-    <div className="max-w-6xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Checkout</h1>
+    <div className="max-w-6xl px-2 mx-auto p-8">
+      <h1 className="text-left font-bold text-black text-2xl mb-4">
+        Checkout<b className="text-pink-500">.</b>
+      </h1>
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="md:w-1/2 flex flex-col gap-4">
+          <div className="border p-4 rounded bg-gray-100">
+            <h2 className="text-xl font-semibold mb-2">Delivery Address</h2>
+            {addressSaved ? (
+              <>
+                <p><b>Name:</b> {address.fullName}</p>
+                <p><b>Mobile:</b> {address.mobile}</p>
+                <p><b>Address:</b> {address.flat}, {address.area}</p>
+                <p><b>Pincode:</b> {address.pincode}</p>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Product Info */}
-        <div className="border rounded-lg p-4">
-          <img
-            src={featureImage}
-            alt={product?.name}
-            className="w-full h-60 object-cover rounded-lg mb-4"
-          />
-          <h2 className="text-xl font-semibold">{product?.name}</h2>
-          <p className="text-gray-700">
-            ₹
-            {product?.salePrice
-              ? product.salePrice
-              : product?.price?.toFixed(2)}
-          </p>
-          <p>Quantity: {product?.quantity || 1}</p>
-          <p>Order Date: {orderDate}</p>
-          <p>Expected Delivery: {deliveryDate}</p>
+                <div className="flex gap-4 mt-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddressModalOpen(true)}
+                    className="text-blue-600 underline">
+                    Edit Address  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAddress({
+                        fullName: "",
+                        mobile: "",
+                        pincode: "",
+                        flat: "",
+                        area: "",
+                      });
+                      setAddressSaved(false);
+                      setIsAddressModalOpen(true);
+                    }}
+                    className="text-green-600 underline" >
+                    Add New Address </button>
+                </div>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsAddressModalOpen(true)}
+                className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-600">  Add Delivery Address  </button>
+            )}
+          </div>
+          <div className="border p-3 rounded-lg">
+            <h2 className="text-2xl font-semibold mb-4">Choose Payment Method</h2>
+            <div className="flex flex-col gap-3">
+              <label className="flex items-center gap-4">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="card"
+                  checked={selectedPaymentMethod === "card"}
+                  onChange={() => setSelectedPaymentMethod("card")} />
+                {" "} Card / Wallet (Mock)
+              </label>
+              <label className="flex items-center gap-4">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="netbanking"
+                  checked={selectedPaymentMethod === "netbanking"}
+                  onChange={() => setSelectedPaymentMethod("netbanking")}
+                  className="mr-3"  />
+                {" "}  Netbanking (Mock)
+              </label>
+              <label className="flex items-center gap-4">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="cod"
+                  checked={selectedPaymentMethod === "cod"}
+                  onChange={() => setSelectedPaymentMethod("cod")}  />
+                {" "} Cash on Delivery (COD)
+              </label>
+            </div>
+            <div className="py-3">
+              <button
+                type="button"
+                onClick={openPaymentModal}
+                disabled={loading}
+                className="mt-6 bg-amber-500 text-white px-3 py-1 !rounded-lg hover:bg-amber-600 disabled:opacity-60"  >
+                {loading ? "Processing..." : "Pay Now"}
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Address and Payment */}
-        <div className="border rounded-lg p-4 space-y-4">
-          <h2 className="text-xl font-semibold mb-2">Delivery Address</h2>
-
-          <input
-            type="text"
-            placeholder="Full Name"
-            className="border p-2 w-full rounded"
-            value={address.fullName}
-            onChange={(e) =>
-              setAddress({ ...address, fullName: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Mobile"
-            className="border p-2 w-full rounded"
-            value={address.mobile}
-            onChange={(e) =>
-              setAddress({ ...address, mobile: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Pincode"
-            className="border p-2 w-full rounded"
-            value={address.pincode}
-            onChange={(e) =>
-              setAddress({ ...address, pincode: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Flat, House no."
-            className="border p-2 w-full rounded"
-            value={address.flat}
-            onChange={(e) => setAddress({ ...address, flat: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="Area, Colony"
-            className="border p-2 w-full rounded"
-            value={address.area}
-            onChange={(e) => setAddress({ ...address, area: e.target.value })}
-          />
-
-          <button
-            onClick={handleSaveAddress}
-            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-          >
-            Save Address
-          </button>
-
-          <h2 className="text-xl font-semibold mt-4">Payment Method</h2>
-          <div className="flex gap-4">
-            <label>
-              <input
-                type="radio"
-                name="payment"
-                value="cod"
-                checked={selectedPaymentMethod === "cod"}
-                onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-              />{" "}
-              Cash on Delivery
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="payment"
-                value="card"
-                checked={selectedPaymentMethod === "card"}
-                onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-              />{" "}
-              Card
-            </label>
+        <div className="md:w-1/2 flex flex-col bg-gray-100 text-left border p-4 rounded-lg">
+          <div className="flex gap-4 items-start">
+            <div className="flex flex-col gap-2">
+              {[featureImage, ...images].filter(Boolean).map((img, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setPreview(img)}
+                  className="p-0" >
+                  <img
+                    src={img}
+                    alt={`thumbnail ${i + 1}`}
+                    width={80}
+                    height={80}
+                    className={`object-cover rounded border hover:scale-105 transition ${(preview || featureImage) === img ? "ring-2 ring-blue-500" : ""
+                      }`} />
+                </button>
+              ))}
+            </div>
+            <div style={{ width: 300, height: 300 }} className="relative">
+              <img
+                src={preview || featureImage}
+                alt={product.title || "Product image"}
+                style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                className="rounded-lg shadow-md" />
+            </div>
           </div>
+          <div className="mt-6 text-left">
+            <h2 className="text-xl font-semibold">{product.title}</h2>
 
-          <button
-            onClick={handleBuyNow}
-            disabled={loading}
-            className="bg-blue-600 text-white w-full py-3 rounded-md hover:bg-blue-700 mt-4"
-          >
-            {loading ? "Placing Order..." : "Buy Now"}
-          </button>
+            {product.description && (
+              <div
+                className="text-gray-700 mt-2"
+                dangerouslySetInnerHTML={{ __html: product.description }} />
+            )}
+            <p>Price: ₹{product.salePrice ?? product.price}</p>
+            <p>Quantity: {product.quantity}</p>
+            <p className="font-bold mt-2">
+              Total: ₹
+              {(parseFloat(product.salePrice ?? product.price) || 0) *
+                (product.quantity || 1)}
+            </p>
+            <p className="mt-2 text-gray-700">  Order Date: <b>{orderDate}</b> </p>
+            <p className="text-gray-700">  Estimated Delivery: <b>{deliveryDate}</b></p>
+          </div>
         </div>
       </div>
 
-      {/* Payment Modal */}
+      {isAddressModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-md w-[90%] md:w-[500px] relative">
+            <button
+              type="button"
+              className="absolute top-3 right-4 text-2xl font-bold"
+              onClick={() => setIsAddressModalOpen(false)} >
+              ×
+            </button>
+            <h2 className="text-xl font-semibold mb-4">Enter Delivery Address</h2>
+            <div className="flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="Full Name"
+                className="border p-2 rounded"
+                value={address.fullName}
+                onChange={(e) => setAddress({ ...address, fullName: e.target.value })} />
+              <input
+                type="text"
+                placeholder="Mobile Number"
+                className="border p-2 rounded"
+                value={address.mobile}
+                onChange={(e) => setAddress({ ...address, mobile: e.target.value })} />
+              <input
+                type="text"
+                placeholder="Pincode"
+                className="border p-2 rounded"
+                value={address.pincode}
+                onChange={(e) => setAddress({ ...address, pincode: e.target.value })} />
+              <input
+                type="text"
+                placeholder="Flat, House no., Building"
+                className="border p-2 rounded"
+                value={address.flat}
+                onChange={(e) => setAddress({ ...address, flat: e.target.value })} />
+              <input
+                type="text"
+                placeholder="Area, Street, Sector, Village"
+                className="border p-2 rounded"
+                value={address.area}
+                onChange={(e) => setAddress({ ...address, area: e.target.value })} />
+              <button
+                type="button"
+                onClick={handleSaveAddress}
+                className="bg-pink-500 text-white py-2 rounded hover:bg-pink-600"  >
+                Save Address
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isPaymentModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-semibold mb-4">Mock Payment</h2>
-            <form onSubmit={handleMockPaymentSubmit} className="space-y-3">
-              <input
-                type="text"
-                placeholder="Card Number"
-                className="border p-2 w-full rounded"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Name on Card"
-                className="border p-2 w-full rounded"
-                value={cardName}
-                onChange={(e) => setCardName(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="MM/YY"
-                className="border p-2 w-full rounded"
-                value={cardExpiry}
-                onChange={(e) => setCardExpiry(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="CVV"
-                className="border p-2 w-full rounded"
-                value={cardCvv}
-                onChange={(e) => setCardCvv(e.target.value)}
-              />
-              {paymentError && (
-                <p className="text-red-600 text-sm">{paymentError}</p>
-              )}
-              <div className="flex justify-between mt-4">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-xl w-[95%] max-w-[480px] relative overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-pink-500 rounded flex items-center justify-center text-white font-bold">
+                  ₹
+                </div>
+                <div>
+                  <div className="text-sm text-gray-600">Secure Payment</div>
+                  <div className="font-semibold">
+                    Pay ₹
+                    {(parseFloat(product.salePrice ?? product.price) || 0) *
+                      (product.quantity || 1)}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="text-xl px-3 "
+                onClick={() => setIsPaymentModalOpen(false)} >
+                ×
+              </button>
+            </div>
+            <form className="p-4" onSubmit={handleMockPaymentSubmit}>
+              <div className="mb-3">
+                <label className="text-sm text-gray-600 block">Card Number</label>
+                <input
+                  inputMode="numeric"
+                  value={cardNumber}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/[^\d]/g, "");
+                    if (v.length > 19) v = v.slice(0, 19);
+                    const groups = v.match(/.{1,4}/g);
+                    setCardNumber(groups ? groups.join(" ") : v);
+                  }}
+                  placeholder="4111 1111 1111 1111"
+                  className="w-full border p-2 rounded mt-1" />
+              </div>
+              <div className="flex gap-2 mb-3">
+                <div className="flex-1">
+                  <label className="text-sm text-gray-600 block">Expiry (MM/YY)</label>
+                  <input
+                    value={cardExpiry}
+                    onChange={(e) => {
+                      let v = e.target.value.replace(/[^\d]/g, "");
+                      if (v.length > 4) v = v.slice(0, 4);
+                      if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2);
+                      setCardExpiry(v);
+                    }}
+                    placeholder="MM/YY"
+                    className="w-full border p-2 rounded mt-1" />
+                </div>
+                <div className="w-32">
+                  <label className="text-sm text-gray-600 block">CVV</label>
+                  <input
+                    inputMode="numeric"
+                    value={cardCvv}
+                    onChange={(e) => {
+                      let v = e.target.value.replace(/[^\d]/g, "");
+                      if (v.length > 4) v = v.slice(0, 4);
+                      setCardCvv(v);
+                    }}
+                    placeholder="123"
+                    className="w-full border p-2 rounded mt-1"
+                    aria-label="CVV" />
+                </div>
+              </div>
+              <div className="mb-3">
+                <label className="text-sm text-gray-600 block">Name on Card</label>
+                <input
+                  value={cardName}
+                  onChange={(e) => setCardName(e.target.value)}
+                  placeholder="Full name"
+                  className="w-full border p-2 rounded mt-1"
+                  aria-label="Name on card" />
+              </div>
+
+              {paymentError && <div className="text-red-600 mb-2">{paymentError}</div>}
+
+              <div className="flex items-center justify-between gap-3">
                 <button
                   type="button"
-                  onClick={() => setIsPaymentModalOpen(false)}
-                  className="bg-gray-300 px-4 py-2 rounded"
-                >
-                  Cancel
+                  onClick={() => {
+                    setCardNumber("4111 1111 1111 1111");
+                    setCardExpiry("12/30");
+                    setCardCvv("123");
+                    setCardName(address.fullName || "Test User");
+                    setPaymentError(null);
+                  }}
+                  className="text-sm px-3 py-2 border rounded"
+                  aria-label="Use test card"> Use Test Card
                 </button>
+
                 <button
                   type="submit"
                   disabled={paymentProcessing}
-                  className="bg-blue-600 text-white px-4 py-2 rounded"
-                >
-                  {paymentProcessing ? "Processing..." : "Pay Now"}
+                  className="ml-auto bg-pink-500 text-white px-3 py-1 rounded hover:bg-pink-600 disabled:opacity-60"
+                  aria-label="Confirm payment"  >
+                  {paymentProcessing
+                    ? "Processing..."
+                    : "Pay ₹" +
+                    ((parseFloat(product.salePrice ?? product.price) || 0) *
+                      (product.quantity || 1))}
                 </button>
               </div>
             </form>
