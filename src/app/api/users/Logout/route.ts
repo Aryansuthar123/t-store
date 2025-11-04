@@ -7,16 +7,16 @@ export async function POST() {
       message: "Logged out successfully",
     });
 
-
+    // 👇 Make sure cookie name matches login API
     response.cookies.set("token", "", {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       path: "/",
       expires: new Date(0),
     });
 
     return response;
-  } catch (error: unknown) {
+  } catch (error) {
     const message =
       error instanceof Error ? error.message : "Something went wrong";
 
@@ -25,5 +25,4 @@ export async function POST() {
       { status: 500 }
     );
   }
-
 }
