@@ -1,62 +1,42 @@
-import connectDB from "../../../utils/database";
-import User from "../../../../models/userModel";
 import { NextResponse } from "next/server";
-import crypto from "crypto";
 import nodemailer from "nodemailer";
+import ConnectDB from "../../../utils/database";
+import User from "../../../../models/userModel";
 
 export async function POST(req) {
   try {
-    await connectDB();
+    await ConnectDB();
     const { email } = await req.json();
 
-    if (!email) {
-      return NextResponse.json({ success: false, message: "Email is required" });
+    const user = await User.findOne({ email });
+    if (!user) {
+      return NextResponse.json({ success: false, message: "User not found" });
     }
 
-    const admin = await User.findOne({ email, isAdmin: true });
-    if (!admin) {
-      return NextResponse.json({ success: false, message: "Admin not found" });
-    }
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetOTP = otp;
+    user.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 mins
+    await user.save();
 
-    // ✅ Generate token
-    const token = crypto.randomBytes(32).toString("hex");
-    admin.forgotPasswordToken = token;
-    admin.forgotPasswordTokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
-    await admin.save();
-
-    // ✅ Ethereal test account
-    let testAccount = await nodemailer.createTestAccount();
+    // Send OTP Email
     const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
+      service: "gmail",
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
     });
 
-    const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/admin/reset-password/${token}?email=${email}`;
-
-    let info = await transporter.sendMail({
-      from: '"T-Store Admin" <no-reply@tstore.com>',
-      to: admin.email,
-      subject: "Admin Password Reset",
-      html: `
-        <p>Hello ${admin.username || "Admin"},</p>
-        <p>Click below to reset your password:</p>
-        <a href="${resetLink}" target="_blank">${resetLink}</a>
-        <p>This link will expire in 15 minutes.</p>
-      `,
+    await transporter.sendMail({
+      from: `"T-Store Admin" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your OTP for Password Reset",
+      text: `Your OTP is ${otp}. It expires in 10 minutes.`,
     });
 
-    console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+    console.log("✅ OTP sent to:", email);
 
-    return NextResponse.json({
-      success: true,
-      message: "Reset link sent successfully (check console preview URL)",
-    });
+    return NextResponse.json({ success: true, message: "OTP sent successfully!" });
   } catch (error) {
-    console.error("Forgot Password Error:", error);
-    return NextResponse.json({ success: false, message: "Something went wrong" });
+    console.error("🔥 Error sending OTP:", error);
+    return NextResponse.json({ success: false, message: "Error sending OTP" }, { status: 500 });
   }
 }

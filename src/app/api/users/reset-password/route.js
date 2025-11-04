@@ -1,36 +1,39 @@
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import ConnectDB from "../../../utils/database";
 import User from "../../../../models/userModel";
-import connectDB from "../../../utils/database";
-import bcryptjs from "bcryptjs";
 
 export async function POST(req) {
   try {
-    await connectDB();
-    const { email, token, newPassword } = await req.json();
+    await ConnectDB();
+    const { email, password } = await req.json();
 
-    if (!email || !token || !newPassword) {
-      return NextResponse.json({ success: false, message: "Missing fields" });
-    }
+    const user = await User.findOne({ email });
+    if (!user)
+      return NextResponse.json({ success: false, message: "User not found" });
 
-    const admin = await User.findOne({
-      email,
-      forgotPasswordToken: token,
-      forgotPasswordTokenExpiry: { $gt: Date.now() },
-      isAdmin: true,
+    if (!user.otpVerified)
+      return NextResponse.json({ success: false, message: "OTP not verified" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+
+    // ✅ Clear OTP info after successful password reset
+    user.resetOTP = undefined;
+    user.otpExpiry = undefined;
+    user.otpVerified = false;
+
+    await user.save();
+
+    return NextResponse.json({
+      success: true,
+      message: "Password updated successfully!",
     });
-
-    if (!admin) {
-      return NextResponse.json({ success: false, message: "Invalid or expired token" });
-    }
-
-    admin.password = await bcryptjs.hash(newPassword, 10);
-    admin.forgotPasswordToken = undefined;
-    admin.forgotPasswordTokenExpiry = undefined;
-    await admin.save();
-
-    return NextResponse.json({ success: true, message: "Password reset successfully" });
   } catch (error) {
-    console.error("Reset Password Error:", error);
-    return NextResponse.json({ success: false, message: "Something went wrong" });
+    console.error("Error resetting password:", error);
+    return NextResponse.json(
+      { success: false, message: "Error resetting password" },
+      { status: 500 }
+    );
   }
 }

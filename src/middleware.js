@@ -1,3 +1,4 @@
+// middleware.js
 import { NextResponse } from "next/server";
 
 export function middleware(req) {
@@ -6,19 +7,15 @@ export function middleware(req) {
 
   console.log("🧠 MIDDLEWARE TRIGGERED:", pathname, "TOKEN:", token ? "YES" : "NO");
 
-  const publicAdminRoutes = [
-    "/admin/forgot-password",
-    "/admin/reset-password",
-    "/admin-login",
-  ];
+  // ✅ Public routes (login, forgot-password, verify-otp, reset-password)
+ const publicAdminRoutes = [
+  "/admin-login",
+  "/admin/forgot-password",
+  "/admin/verify-otp",
+  "/admin/reset-password",
+];
 
-  // ✅ Allow verification and API routes without blocking
-  if (pathname.startsWith("/api/users/verify-email")) {
-    console.log("✅ SKIPPING VERIFY EMAIL API");
-    return NextResponse.next();
-  }
 
-  // ✅ Allow public admin routes
   if (publicAdminRoutes.some((route) => pathname.startsWith(route))) {
     console.log("✅ PUBLIC ROUTE:", pathname);
     return NextResponse.next();
@@ -30,15 +27,9 @@ export function middleware(req) {
     return NextResponse.redirect(new URL("/admin-login", req.url));
   }
 
-  console.log("✅ ALLOWED ROUTE:", pathname);
   return NextResponse.next();
 }
 
-// ✅ Matcher: apply middleware only to admin routes
 export const config = {
-  matcher: [
-    "/admin",
-    "/admin/",
-    "/admin/:path((?!login|forgot-password|reset-password).*)",
-  ],
+  matcher: ["/admin/:path*"],
 };

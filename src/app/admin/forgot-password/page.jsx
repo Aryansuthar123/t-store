@@ -1,52 +1,56 @@
 "use client";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const res = await fetch("/api/users/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      setLoading(false);
+    const res = await fetch("/api/users/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
 
-      if (!data.success) {
-        toast.error(data.message);
-        return;
-      }
+    const data = await res.json();
+    setLoading(false);
 
-      toast.success(data.message);
-      setEmail("");
-    } catch (err) {
-      setLoading(false);
-      toast.error("Something went wrong");
-      console.error(err);
+    if (res.ok) {
+      alert("OTP sent to your email!");
+      router.push(`/verify-otp?email=${email}`);
+    } else {
+      alert(data.message || "Failed to send OTP");
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-semibold mb-4">Admin Forgot Password</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-xl shadow-md w-96"
+      >
+        <h2 className="text-2xl font-semibold mb-4 text-center">
+          Forgot Password
+        </h2>
         <input
           type="email"
-          placeholder="Enter admin email"
+          className="border p-2 w-full mb-4 rounded"
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-4 border rounded"
           required
         />
-        <button type="submit" className="w-full bg-pink-500 text-white py-2 rounded">
-          {loading ? "Sending..." : "Send Reset Link"}
+        <button
+          type="submit"
+          className="bg-blue-600 text-white w-full py-2 rounded"
+          disabled={loading}
+        >
+          {loading ? "Sending..." : "Send OTP"}
         </button>
       </form>
     </div>
