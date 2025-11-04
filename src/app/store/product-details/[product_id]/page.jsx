@@ -156,7 +156,7 @@ export default function ProductDetailsPage() {
     router.push("/checkout");
   };
 
-  
+
   const handleSubmitReview = async () => {
     if (!newReview) return;
 
@@ -271,11 +271,20 @@ export default function ProductDetailsPage() {
               {loading ? "Adding..." : "Add to Cart"}
             </button>
 
-            <button
-              onClick={handleBuyNow}
-              className="bg-orange-400 text-white px-3 py-1 !rounded-lg hover:bg-amber-600">
-              Buy Now
-            </button>
+
+            {product.stock ? (
+              <button
+                onClick={handleBuyNow}
+                className="bg-orange-400 text-white px-3 py-1 !rounded-lg hover:bg-amber-600">
+                Buy Now
+              </button>
+            ) : (
+              <button
+                disabled
+                className="bg-gray-400 text-white px-3 py-1 !rounded-lg cursor-not-allowed">
+                Not Available
+              </button>
+            )}
           </div>
         </div>
 
@@ -363,7 +372,7 @@ export default function ProductDetailsPage() {
           rows={3}
           placeholder="Share your thoughts about the product..."
           value={newReview}
-          onChange={(e) => setNewReview(e.target.value)}/>
+          onChange={(e) => setNewReview(e.target.value)} />
 
         <button
           onClick={handleSubmitReview}
@@ -383,12 +392,12 @@ export default function ProductDetailsPage() {
                   <img
                     src={related.featureImage || related.images?.[0] || "/placeholder.jpg"}
                     alt={related.title}
-                    className="w-full h-48 object-contain mb-3"/>
+                    className="w-full h-48 object-contain mb-3" />
                   <h3 className="font-semibold text-lg mb-2 line-clamp-1">{related.title}</h3>
 
                   <div
                     className="text-gray-600 text-sm mb-3 line-clamp-2"
-                    dangerouslySetInnerHTML={{ __html: related.description || "No description available." }}/>
+                    dangerouslySetInnerHTML={{ __html: related.description || "No description available." }} />
                   {related.salePrice ? (
                     <p className="text-lg text-gray-700 mt-auto">
                       <span className="line-through mr-2">₹{related.price}</span>
