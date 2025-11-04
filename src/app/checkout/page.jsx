@@ -102,76 +102,78 @@ export default function CheckoutPage() {
     }
   };
 
-  // ✅ Main Buy Now (Pay Now) button logic – Vercel-safe
-  const openPaymentModal = async () => {
-    if (typeof window === "undefined") return;
+ const openPaymentModal = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("decodedUser"); // ✅ correct key name
 
-    try {
-      const token = window.localStorage.getItem("token");
-      const savedUser = window.localStorage.getItem("user");
+    // Debug logs (optional)
+    console.log("token:", token);
+    console.log("decodedUser:", savedUser);
 
-      // ❌ Not logged in → redirect to login with redirect param
-      if (!token || !savedUser) {
-        if (product) {
-          window.localStorage.setItem("checkoutProduct", JSON.stringify(product));
-        }
-        window.location.href = "/login?redirect=/checkout";
-        return;
+    if (!token || !savedUser) {
+      // Save product before redirecting
+      if (product) {
+        localStorage.setItem("checkoutProduct", JSON.stringify(product));
       }
-
-      // ✅ Logged in → continue
-      const user = JSON.parse(savedUser);
-
-      if (!addressSaved) {
-        alert("Please add your delivery address before payment!");
-        return;
-      }
-
-      const totalAmount =
-        (parseFloat(product?.salePrice ?? product?.price) || 0) *
-        (product?.quantity || 1);
-
-      if (selectedPaymentMethod === "cod") {
-        setLoading(true);
-        try {
-          const orderData = {
-            product,
-            address: { ...address, email: user.email },
-            totalAmount,
-            paymentMethod: "Cash on Delivery",
-            paymentStatus: "Pending",
-            orderDate,
-            deliveryDate,
-            userEmail: user.email,
-          };
-
-          const res = await fetch("/api/orders", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(orderData),
-          });
-          const result = await res.json();
-          if (result.success && result.order?._id) {
-            window.localStorage.setItem("lastOrderId", result.order._id);
-            router.push("/order-success");
-          } else {
-            throw new Error(result.error || "Order save failed");
-          }
-        } catch (err) {
-          console.error("COD Order Error:", err);
-          alert("Something went wrong while placing the order.");
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setPaymentError(null);
-        setIsPaymentModalOpen(true);
-      }
-    } catch (error) {
-      console.error("Buy Now Error:", error);
-      alert("Something went wrong, please try again.");
+      router.push("/login?redirect=/checkout");
+      return;
     }
-  };
+
+    const user = JSON.parse(savedUser);
+
+    if (!addressSaved) {
+      alert("Please add your delivery address before payment!");
+      return;
+    }
+
+    const totalAmount =
+      (parseFloat(product?.salePrice ?? product?.price) || 0) *
+      (product?.quantity || 1);
+
+    if (selectedPaymentMethod === "cod") {
+      setLoading(true);
+      try {
+        const orderData = {
+          product,
+          address: { ...address, email: user.email },
+          totalAmount,
+          paymentMethod: "Cash on Delivery",
+          paymentStatus: "Pending",
+          orderDate,
+          deliveryDate,
+          userEmail: user.email,
+        };
+
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+        });
+
+        const result = await res.json();
+        if (result.success && result.order?._id) {
+          localStorage.setItem("lastOrderId", result.order._id);
+          router.push("/order-success");
+        } else {
+          throw new Error(result.error || "Order save failed");
+        }
+      } catch (err) {
+        console.error("COD Order Error:", err);
+        alert("Something went wrong while placing the order.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setPaymentError(null);
+      setIsPaymentModalOpen(true);
+    }
+  } catch (error) {
+    console.error("❌ openPaymentModal Error:", error);
+    alert("Something went wrong, please try again.");
+  }
+};
+
 
   const handleMockPaymentSubmit = async (e) => {
     e.preventDefault();
