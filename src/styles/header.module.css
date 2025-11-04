@@ -1,53 +1,81 @@
-.header { 
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 120px;
-    padding: 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 50;
+
+.header {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 120px;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
+
 .logo {
-    cursor: pointer;
+  cursor: pointer;
 }
+
+
 .searchBar {
-    flex: 1;
-    
-    max-width: 500px;
-    display: flex;
-    align-items: center;
-    margin-left: 20px;
+  flex: 1;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
 }
+
 .searchInput {
-    width: 100%;
-    padding: 0.5rem 1rem;
-    border: 1px solid #db34a9;
-    border-radius: 20px 0 0 20px;
-    outline: none;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid #db34a9;
+  border-radius: 20px 0 0 20px;
+  outline: none;
 }
+
 .searchButton {
-    background-color: #ec4899;
-    color: white;
-    padding: 11.5px 1rem;
-    border-radius: o 20px 20px 0;
-    cursor: pointer;
-    border: none;
+  background-color: #ec4899;
+  color: white;
+  padding: 11.5px 1rem;
+  border-radius: 0 20px 20px 0;
+  cursor: pointer;
+  border: none;
 }
-.navLink  a {
-    color: #333;
-    text-decoration: none;
-    transition: color 0.3s ease;
+
+.header nav ul {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  gap: 1rem;
 }
+
+
+.navLink {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.navLink a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  padding-top: 2px;
+}
+
 .navLink a:hover {
-    color: #ec4899;
-    text-decoration: none;
+  color: #ec4899;
 }
+
+
 .cartBadge {
-    font-size: 0.75rem;
-    font-weight: bold;
-    
+  font-size: 0.75rem;
+  font-weight: bold;
 }
+
 
 .footer a {
   text-decoration: none !important;
@@ -58,10 +86,10 @@
 }
 
 .ql-container {
-  border: none !important; 
-  border-top: 1px solid #e5e7eb !important; 
-  border-radius: 0 0 8px 8px !important; 
-  overflow: hidden !important; 
+  border: none !important;
+  border-top: 1px solid #e5e7eb !important;
+  border-radius: 0 0 8px 8px !important;
+  overflow: hidden !important;
 }
 
 .ql-toolbar {

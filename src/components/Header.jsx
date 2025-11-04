@@ -75,7 +75,7 @@ useEffect(() => {
         </div>
 
         <nav className="flex items-center gap-5">
-          <ul className="flex items-center  gap-3 font-semibold">
+          <ul className="flex items-center   gap-3 font-semibold">
             <li className={styles.navLink}><Link href="/">Home</Link></li>
             <li className={styles.navLink}><Link href="/store">Store</Link></li>
           </ul>
