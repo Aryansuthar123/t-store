@@ -6,6 +6,16 @@ import connectDB from "../../utils/database";
 import Product from "../../../models/Product";
 import Order from "../../../models/orderModel";
 
+
+import { v2 as cloudinary } from "cloudinary";
+
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 export async function GET() {
   await connectDB();
   try {
@@ -35,13 +45,15 @@ export async function POST(req) {
   await connectDB();
   try {
     const form = await req.formData();
-    const bytesToFile = async (file) => {
+    const uploadToCloudinary = async (file) => {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const filename = `${uuidv4()}-${file.name}`;
-      const filePath = path.join(process.cwd(), "public", "uploads", filename);
-      await writeFile(filePath, buffer);
-      return `/uploads/${filename}`;
+      const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
+      const uploadRes = await cloudinary.uploader.upload(base64, {
+        folder: "products",
+        public_id: uuidv4(),
+      });
+      return uploadRes.secure_url;
     };
 
     const title = form.get("title");
@@ -53,12 +65,12 @@ export async function POST(req) {
     const salePrice = form.get("salePrice") ? Number(form.get("salePrice")) : undefined;
     
     const featureImage = form.get("featureImage");
-    const featureImageUrl = featureImage?.size > 0 ? await bytesToFile(featureImage) : "";
+    const featureImageUrl = featureImage?.size > 0 ? await uploadToCloudinary(featureImage) : "";
 
     const galleryImages = form.getAll("images");
     const imageUrls = [];
     for (const img of galleryImages) {
-      if (img?.size > 0) imageUrls.push(await bytesToFile(img));
+      if (img?.size > 0) imageUrls.push(await uploadToCloudinary(img));
     }
 
     const product = await Product.create({
@@ -75,6 +87,7 @@ export async function POST(req) {
 
     return NextResponse.json({ success: true, product });
   } catch (error) {
+    console.error("❌ Product upload error:", error);
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }
