@@ -11,13 +11,14 @@ export default function CheckoutPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [addressSaved, setAddressSaved] = useState(false);
+
   const [address, setAddress] = useState({
     fullName: "",
     mobile: "",
     pincode: "",
     flat: "",
     area: "",
-    email: "",
+   
   });
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -29,7 +30,7 @@ export default function CheckoutPage() {
   const [paymentError, setPaymentError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Load product + saved address
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem("checkoutProduct");
@@ -59,7 +60,7 @@ export default function CheckoutPage() {
     }
   }, []);
 
-  // Mock card validation
+ 
   const luhnCheck = (num) => {
     const s = num.replace(/\s+/g, "");
     if (!/^\d+$/.test(s)) return false;
@@ -90,8 +91,8 @@ export default function CheckoutPage() {
       address.mobile &&
       address.pincode &&
       address.flat &&
-      address.area &&
-      address.email
+      address.area 
+    
     ) {
       localStorage.setItem("userAddress", JSON.stringify(address));
       setAddressSaved(true);
@@ -119,13 +120,12 @@ export default function CheckoutPage() {
       (parseFloat(product?.salePrice ?? product?.price) || 0) *
       (product?.quantity || 1);
 
-    // For COD
     if (selectedPaymentMethod === "cod") {
       setLoading(true);
       try {
         const orderData = {
           product,
-          address: { ...address, email: user.email }, // <-- save email
+          address: { ...address, email: user.email }, 
           totalAmount,
           paymentMethod: "Cash on Delivery",
           paymentStatus: "Pending",
