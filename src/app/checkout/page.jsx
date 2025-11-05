@@ -28,7 +28,6 @@ export default function CheckoutPage() {
   const [paymentError, setPaymentError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Load checkout data safely (works on Vercel)
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -61,7 +60,7 @@ export default function CheckoutPage() {
     }
   }, []);
 
-  // ✅ Luhn card validation (unchanged)
+ 
   const luhnCheck = (num) => {
     const s = num.replace(/\s+/g, "");
     if (!/^\d+$/.test(s)) return false;
@@ -105,14 +104,14 @@ export default function CheckoutPage() {
  const openPaymentModal = async () => {
   try {
     const token = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("decodedUser"); // ✅ correct key name
+    const savedUser = localStorage.getItem("decodedUser"); 
 
-    // Debug logs (optional)
+   
     console.log("token:", token);
     console.log("decodedUser:", savedUser);
 
     if (!token || !savedUser) {
-      // Save product before redirecting
+    
       if (product) {
         localStorage.setItem("checkoutProduct", JSON.stringify(product));
       }

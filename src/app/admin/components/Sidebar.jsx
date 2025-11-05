@@ -47,17 +47,16 @@ export default function Sidebar() {
     },
   ];
 
-  // ✅ Logout function
+
   const handleLogout = () => {
     try {
-      // Token & user clear
+     
       localStorage.removeItem("token");
       localStorage.removeItem("decodedUser");
 
-      // Success message
       toast.success("Logged out successfully!");
 
-      // Redirect to admin login page
+    
       router.push("/admin-login");
     } catch (error) {
       toast.error("Logout failed");
@@ -76,12 +75,11 @@ export default function Sidebar() {
         ))}
       </ul>
 
-      {/* ✅ Logout Button */}
+     
       <div className="p-2 flex justify-center mt-4">
         <button
           onClick={handleLogout}
-          className="flex gap-2 items-center px-3 py-1 hover:bg-indigo-100 rounded justify-center transition-all duration-600"
-        >
+          className="flex gap-2 items-center px-3 py-1 hover:bg-indigo-100 rounded justify-center transition-all duration-600">
           <LogOut className="h-5 w-5" /> Logout
         </button>
       </div>
@@ -89,7 +87,7 @@ export default function Sidebar() {
   );
 }
 
-// ✅ Sub menu component
+
 function Tab({ item, pathname, openMenu, setOpenMenu }) {
   const isSelected = pathname === item?.link;
 
@@ -102,8 +100,7 @@ function Tab({ item, pathname, openMenu, setOpenMenu }) {
           onClick={() => setOpenMenu(isOpen ? null : item.name)}
           className={`flex w-full items-center justify-between px-4 py-2 rounded-xl font-semibold transition-all duration-600 ${
             isOpen ? "bg-indigo-100 text-black" : "bg-white text-black"
-          }`}
-        >
+          }`}>
           <div className="flex items-center gap-2">
             {item.icon} {item.name}
           </div>
@@ -118,8 +115,7 @@ function Tab({ item, pathname, openMenu, setOpenMenu }) {
                   <div
                     className={`flex items-center py-2 rounded-lg transition-all duration-300 ${
                       pathname === child.link ? "bg-[#91a4ec] text-white" : "hover:bg-gray-100 text-gray-700"
-                    }`}
-                  >
+                    }`}>
                     {child.name}
                   </div>
                 </Link>

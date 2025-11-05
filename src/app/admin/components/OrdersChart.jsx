@@ -45,7 +45,7 @@ export default function OrdersChart() {
                 backgroundColor: "#879fff40",
                 borderColor: "#879fff",
                 borderWidth: 1,
-                barThickness: 25, // thinner bars
+                barThickness: 25,
               },
             ],
           });

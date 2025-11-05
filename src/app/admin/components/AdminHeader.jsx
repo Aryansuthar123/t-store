@@ -10,7 +10,7 @@ export default function AdminHeader({ toggleSidebar }) {
   const [decodedUser, setDecodedUser] = useState(null);
 
   useEffect(() => {
-    // localStorage से decoded user पढ़ना
+   
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("decodedUser");
       if (storedUser) {
@@ -29,17 +29,15 @@ export default function AdminHeader({ toggleSidebar }) {
 
   return (
     <header className="fixed top-0 left-0 w-full flex justify-between items-center bg-white px-6 md:px-8 py-3 shadow-sm z-[100]">
-      {/* Left side — menu button for mobile */}
+      
       <div className="flex items-center">
         <button
           onClick={toggleSidebar}
-          className="md:hidden p-2 rounded-md hover:bg-gray-100 active:bg-gray-200 transition"
-        >
+          className="md:hidden p-2 rounded-md hover:bg-gray-100 active:bg-gray-200 transition">
           <Menu size={22} />
         </button>
       </div>
 
-      {/* Right side — avatar + email */}
       <div className="flex items-center gap-3">
         {decodedUser?.email && (
           <span className="hidden sm:block text-gray-700 font-medium">
@@ -48,13 +46,11 @@ export default function AdminHeader({ toggleSidebar }) {
         )}
         <div
           onClick={handleAvatarClick}
-          className="cursor-pointer w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 hover:border-indigo-400 transition-all flex-shrink-0"
-        >
+          className="cursor-pointer w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200 hover:border-indigo-400 transition-all flex-shrink-0">
           <img
             src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
             alt="User Avatar"
-            className="w-full h-full object-cover"
-          />
+            className="w-full h-full object-cover"/>
         </div>
       </div>
     </header>

@@ -7,18 +7,26 @@ import Footer from './Footer';
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
 
-  // Admin panel pages that should hide header/footer
-  const isAdminRoute =
-    pathname.startsWith('/admin') &&
-    !pathname.startsWith('/admin/forgot-password') &&
-    !pathname.startsWith('/admin/reset-password');
 
-  // Auth routes (login/signup)
-  const isAuthRoute =
-    pathname.startsWith('/login') || pathname.startsWith('/signup');
+  const cleanPath = pathname.endsWith('/')
+    ? pathname.slice(0, -1)
+    : pathname;
 
-  // Hide header/footer only for admin dashboard, login, signup
-  const hideHeaderFooter = isAdminRoute || isAuthRoute;
+
+  const hideHeaderFooterRoutes = [
+    '/login',
+    '/signup',
+    '/verify-otp',
+    '/forgot-password',
+    '/reset-password',
+    '/admin-login',           
+    '/admin/forgot-password',
+    '/admin/reset-password',
+  ];
+
+  const hideHeaderFooter = hideHeaderFooterRoutes.some(
+    (route) => cleanPath === route || cleanPath.startsWith(route)
+  );
 
   return (
     <>

@@ -7,7 +7,6 @@ export async function POST() {
       message: "Logged out successfully",
     });
 
-    // 👇 Make sure cookie name matches login API
     response.cookies.set("token", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
